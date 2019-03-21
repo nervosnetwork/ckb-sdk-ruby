@@ -1,0 +1,25 @@
+AllCops:
+  TargetRubyVersion: 2.4
+  Exclude:
+  - 'spec/**/*'
+  - 'bin/*'
+  - 'Gemfile.lock'
+  - 'ckb-sdk-ruby.gemspec'
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+  SupportedStyles:
+    - single_quotes
+    - double_quotes
+  # If `true`, strings which span multiple lines using `\` for continuation must
+  # use the same type of quotes on each line.
+  ConsistentQuotesInMultiline: false
