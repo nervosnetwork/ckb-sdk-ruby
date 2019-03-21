@@ -1,10 +1,10 @@
 AllCops:
   TargetRubyVersion: 2.4
   Exclude:
-  - 'spec/**/*'
-  - 'bin/*'
-  - 'Gemfile.lock'
-  - 'ckb-sdk-ruby.gemspec'
+    - 'spec/**/*'
+    - 'bin/*'
+    - 'Gemfile.lock'
+    - 'ckb-sdk-ruby.gemspec'
 
 Bundler/OrderedGems:
   Enabled: false
@@ -23,3 +23,10 @@ Style/StringLiterals:
   # If `true`, strings which span multiple lines using `\` for continuation must
   # use the same type of quotes on each line.
   ConsistentQuotesInMultiline: false
+
+Metrics/AbcSize:
+  Max: 100
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 50
