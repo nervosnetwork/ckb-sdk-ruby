@@ -7,13 +7,29 @@ require "json"
 require "uri"
 
 module CKB
-  class RPC
+  class API
     attr_reader :uri
+    attr_reader :system_script_out_point
+    attr_reader :system_script_cell_hash
 
     DEFAULT_URL = "http://localhost:8114"
 
     def initialize(host: DEFAULT_URL)
       @uri = URI(host)
+    end
+
+    # @param out_point [Hash] { hash: "0x...", index: 0 }
+    # @param cell_hash [String] "0x..."
+    def set_system_script_cell(out_point, cell_hash)
+      @system_script_out_point = out_point
+      @system_script_cell_hash = cell_hash
+    end
+
+    def system_script_cell
+      {
+        out_point: system_script_out_point,
+        cell_hash: system_script_cell_hash
+      }
     end
 
     def genesis_block
