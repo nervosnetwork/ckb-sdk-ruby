@@ -30,3 +30,9 @@ Metrics/AbcSize:
 Metrics/MethodLength:
   CountComments: false
   Max: 50
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/ClassLength:
+  Max: 120

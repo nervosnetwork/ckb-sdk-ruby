@@ -41,4 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.66.0"
   spec.add_development_dependency "pry", "~> 0.12.2"
+
+  spec.add_dependency "rbnacl", "~> 6.0", ">= 6.0.1"
+  spec.add_dependency "bitcoin-secp256k1", "~> 0.5.0"
 end
