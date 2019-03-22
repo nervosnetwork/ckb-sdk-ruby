@@ -9,3 +9,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * add basic wallet ([2e14b49](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2e14b49))
 * add rpc interface ([a4b1f47](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a4b1f47))
 * init project ([1cb5623](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/1cb5623))
+* extract from ([ckb-demo-ruby](https://github.com/nervosnetwork/ckb-demo-ruby))
