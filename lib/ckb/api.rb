@@ -7,7 +7,7 @@ require "json"
 require "uri"
 
 module CKB
-  class RPC
+  class API
     attr_reader :uri
     attr_reader :system_script_out_point
     attr_reader :system_script_cell_hash

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "ckb/version"
-require "ckb/rpc"
+require "ckb/api"
 require "ckb/blake2b"
 require "ckb/utils"
 require "ckb/wallet"

@@ -8,25 +8,25 @@ module CKB
   MIN_CELL_CAPACITY = 40
 
   class Wallet
-    attr_reader :rpc
+    attr_reader :api
     # privkey is a bin string
     attr_reader :privkey
 
-    # @param rpc [CKB::RPC]
+    # @param api [CKB::API]
     # @param privkey [String] bin string
-    def initialize(rpc, privkey)
+    def initialize(api, privkey)
       raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 32
 
-      @rpc = rpc
+      @api = api
       @privkey = privkey
     end
 
-    # @param rpc [CKB::RPC]
+    # @param api [CKB::API]
     # @param privkey_hex [String] hex string
     #
     # @return [CKB::Wallet]
-    def self.from_hex(rpc, privkey_hex)
-      new(rpc, CKB::Utils.hex_to_bin(privkey_hex))
+    def self.from_hex(api, privkey_hex)
+      new(api, CKB::Utils.hex_to_bin(privkey_hex))
     end
 
     def address
@@ -34,12 +34,12 @@ module CKB
     end
 
     def get_unspent_cells
-      to = rpc.get_tip_block_number
+      to = api.get_tip_block_number
       results = []
       current_from = 1
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = rpc.get_cells_by_type_hash(address, current_from, current_to)
+        cells = api.get_cells_by_type_hash(address, current_from, current_to)
         results.concat(cells)
         current_from = current_to + 1
       end
@@ -70,7 +70,7 @@ module CKB
       end
       {
         version: 0,
-        deps: [rpc.system_script_out_point],
+        deps: [api.system_script_out_point],
         inputs: CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey),
         outputs: outputs
       }
@@ -85,14 +85,14 @@ module CKB
 
     # @param hash_hex [String] "0x..."
     def get_transaction(hash_hex)
-      rpc.get_transaction(hash_hex)
+      api.get_transaction(hash_hex)
     end
 
     private
 
     def send_transaction_bin(transaction)
       transaction = CKB::Utils.normalize_tx_for_json!(transaction)
-      rpc.send_transaction(transaction)
+      api.send_transaction(transaction)
     end
 
     def gather_inputs(capacity, min_capacity)
@@ -127,7 +127,7 @@ module CKB
     def verify_script_json_object
       {
         version: 0,
-        reference: rpc.system_script_cell_hash,
+        reference: api.system_script_cell_hash,
         signed_args: [
           # We could of course just hash raw bytes, but since right now CKB
           # CLI already uses this scheme, we stick to the same way for compatibility
