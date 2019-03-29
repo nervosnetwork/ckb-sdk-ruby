@@ -16,8 +16,23 @@ module CKB
 
     DEFAULT_URL = "http://localhost:8114"
 
-    def initialize(host: DEFAULT_URL)
+    MODE_TESTNET = "testnet"
+    MODE_CUSTOM = "custom"
+
+    def initialize(host: DEFAULT_URL, mode: MODE_TESTNET)
       @uri = URI(host)
+      if mode == MODE_TESTNET
+        # For testnet chain, we can assume the first cell of the first transaction
+        # in the genesis block contains default lock script we can use here.
+        system_cell_transaction = genesis_block[:commit_transactions][0]
+        out_point = {
+          hash: system_cell_transaction[:hash],
+          index: 0
+        }
+        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction[:outputs][0][:data])
+        cell_hash = CKB::Utils.bin_to_prefix_hex(CKB::Blake2b.digest(cell_data))
+        self.set_system_script_cell(out_point, cell_hash)
+      end
     end
 
     # @param out_point [Hash] { hash: "0x...", index: 0 }
@@ -58,8 +73,8 @@ module CKB
       rpc_request("get_tip_block_number")
     end
 
-    def get_cells_by_type_hash(hash, from, to)
-      rpc_request("get_cells_by_type_hash", params: [hash, from, to])
+    def get_cells_by_lock_hash(hash, from, to)
+      rpc_request("get_cells_by_lock_hash", params: [hash, from, to])
     end
 
     def get_transaction(tx_hash)

@@ -29,17 +29,13 @@ module CKB
       new(api, CKB::Utils.hex_to_bin(privkey_hex))
     end
 
-    def address
-      verify_type_hash
-    end
-
     def get_unspent_cells
       to = api.get_tip_block_number
       results = []
       current_from = 1
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_type_hash(address, current_from, current_to)
+        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
         results.concat(cells)
         current_from = current_to + 1
       end
@@ -50,7 +46,7 @@ module CKB
       get_unspent_cells.map { |cell| cell[:capacity] }.reduce(0, &:+)
     end
 
-    def generate_tx(target_address, capacity)
+    def generate_tx(target_lock, capacity)
       i = gather_inputs(capacity, MIN_CELL_CAPACITY)
       input_capacities = i.capacities
 
@@ -58,14 +54,14 @@ module CKB
         {
           capacity: capacity,
           data: "",
-          lock: target_address
+          lock: target_lock
         }
       ]
       if input_capacities > capacity
         outputs << {
           capacity: input_capacities - capacity,
           data: "",
-          lock: address
+          lock: lock
         }
       end
       {
@@ -76,16 +72,37 @@ module CKB
       }
     end
 
-    # @param target_address [String] "0x..."
+    # @param target_lock [Hash]
     # @param capacity [Integer]
-    def send_capacity(target_address, capacity)
-      tx = generate_tx(target_address, capacity)
+    def send_capacity(target_lock, capacity)
+      tx = generate_tx(target_lock, capacity)
       send_transaction_bin(tx)
     end
 
     # @param hash_hex [String] "0x..."
     def get_transaction(hash_hex)
       api.get_transaction(hash_hex)
+    end
+
+    def lock
+      @lock ||= {
+        version: 0,
+        binary_hash: api.system_script_cell_hash,
+        args: [
+          CKB::Utils.bin_to_hex(CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin)))
+        ]
+      }
+    end
+
+    def block_assembler_config
+      args = lock[:args].map do |arg|
+        "[#{arg.bytes.map(&:to_s).join(", ")}]"
+      end.join(", ")
+      %Q(
+[block_assembler]
+binary_hash = "#{lock[:binary_hash]}"
+args = [#{args}]
+     ).strip
     end
 
     private
@@ -103,7 +120,7 @@ module CKB
       get_unspent_cells.each do |cell|
         input = {
           previous_output: cell[:out_point],
-          unlock: verify_script_json_object
+          args: [pubkey]
         }
         inputs << input
         input_capacities += cell[:capacity]
@@ -124,20 +141,8 @@ module CKB
       CKB::Utils.extract_pubkey_bin(privkey)
     end
 
-    def verify_script_json_object
-      {
-        version: 0,
-        reference: api.system_script_cell_hash,
-        signed_args: [
-          # We could of course just hash raw bytes, but since right now CKB
-          # CLI already uses this scheme, we stick to the same way for compatibility
-          pubkey
-        ]
-      }
-    end
-
-    def verify_type_hash
-      @verify_type_hash ||= CKB::Utils.json_script_to_type_hash(verify_script_json_object)
+    def lock_hash
+      @lock_hash ||= CKB::Utils.json_script_to_type_hash(lock)
     end
   end
 end
