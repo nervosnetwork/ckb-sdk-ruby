@@ -52,6 +52,19 @@ RSpec.describe CKB::API do
     expect(result).not_to be nil
   end
 
+  it "send empty transaction" do
+    tx = {
+      version: 0,
+      deps: [],
+      inputs: [],
+      outputs: []
+    }
+
+    expect {
+      api.send_transaction(tx)
+    }.to raise_error(CKB::RPCError, /:code=>-3/)
+  end
+
   it "local node info" do
     result = api.local_node_info
     expect(result).not_to be nil
@@ -59,9 +72,24 @@ RSpec.describe CKB::API do
     expect(result[:node_id].empty?).not_to be true
   end
 
-  it "get transaction trace" do
-    trace_tx_hash = "0x206925a8e9636a5546d554f1eb9d26c98bb2d99d4afb40cb761701bae102b96e"
+  it "trace empty transaction" do
+    tx = {
+      version: 0,
+      deps: [],
+      inputs: [],
+      outputs: []
+    }
+
+    # result = api.trace_transaction(tx)
+    # expect(result).not_to be nil
+    expect {
+      api.trace_transaction(tx)
+    }.to raise_error(CKB::RPCError, /:code=>-3/)
+  end
+
+  it "get empty transaction trace" do
+    trace_tx_hash = "0x1704f772f11c4c2fcb543f22cad66adad5a555e21f14c975c37d1d4bad096d47"
     result = api.get_transaction_trace(trace_tx_hash)
-    expect(result).not_to be nil
+    expect(result).to be nil
   end
 end

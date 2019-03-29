@@ -7,6 +7,8 @@ require "json"
 require "uri"
 
 module CKB
+  class RPCError < StandardError; end
+
   class API
     attr_reader :uri
     attr_reader :system_script_out_point
@@ -118,7 +120,7 @@ module CKB
       response = http.request(request)
       result = JSON.parse(response.body, symbolize_names: true)
 
-      raise "jsonrpc error: #{result[:error]}" if result[:error]
+      raise RPCError, "jsonrpc error: #{result[:error]}" if result[:error]
 
       result[:result]
     end
