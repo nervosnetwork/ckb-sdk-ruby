@@ -16,13 +16,12 @@ RSpec.describe CKB::Utils do
     always_success_cell_hash = Utils.bin_to_prefix_hex(hash_bin)
     {
       version: 0,
-      reference: always_success_cell_hash,
-      signed_args: [],
+      binary_hash: always_success_cell_hash,
       args: []
     }
   end
 
-  let(:always_success_type_hash) { "0x8954a4ac5e5c33eb7aa8bb91e0a000179708157729859bd8cf7e2278e1e12980" }
+  let(:always_success_type_hash) { "0x86f4f705a8e85905b1c73b84b1f3a3cf6dbfdd7eb8e47bfd1c489681ee2762cb" }
 
   it "hex to bin" do
     hex = "abcd12"

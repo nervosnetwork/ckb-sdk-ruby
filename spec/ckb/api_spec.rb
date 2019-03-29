@@ -4,7 +4,7 @@ RSpec.describe CKB::API do
   end
 
   let(:api) { CKB::API.new }
-  let(:type_hash) { "0x8954a4ac5e5c33eb7aa8bb91e0a000179708157729859bd8cf7e2278e1e12980" }
+  let(:lock_hash) { "0x266cec97cbede2cfbce73666f08deed9560bdf7841a7a5a51b3a3f09da249e21" }
 
   it "genesis block" do
     result = api.genesis_block
@@ -34,8 +34,8 @@ RSpec.describe CKB::API do
     expect(result > 0).to be true
   end
 
-  it "get cells by type hash" do
-    result = api.get_cells_by_type_hash(type_hash, 1, 100)
+  it "get cells by lock hash" do
+    result = api.get_cells_by_lock_hash(lock_hash, 0, 100)
     expect(result).not_to be nil
   end
 
@@ -47,20 +47,8 @@ RSpec.describe CKB::API do
   end
 
   it "get live cell" do
-    cells = api.get_cells_by_type_hash(type_hash, 1, 100)
+    cells = api.get_cells_by_lock_hash(lock_hash, 0, 100)
     result = api.get_live_cell(cells[0][:out_point])
-    expect(result).not_to be nil
-  end
-
-  it "send transaction" do
-    tx = {
-      version: 0,
-      deps: [],
-      inputs: [],
-      outputs: []
-    }
-
-    result = api.send_transaction(tx)
     expect(result).not_to be nil
   end
 
@@ -71,20 +59,8 @@ RSpec.describe CKB::API do
     expect(result[:node_id].empty?).not_to be true
   end
 
-  it "trace transaction" do
-    tx = {
-      version: 2,
-      deps: [],
-      inputs: [],
-      outputs: []
-    }
-
-    result = api.trace_transaction(tx)
-    expect(result).not_to be nil
-  end
-
   it "get transaction trace" do
-    trace_tx_hash = "0x1704f772f11c4c2fcb543f22cad66adad5a555e21f14c975c37d1d4bad096d47"
+    trace_tx_hash = "0x206925a8e9636a5546d554f1eb9d26c98bb2d99d4afb40cb761701bae102b96e"
     result = api.get_transaction_trace(trace_tx_hash)
     expect(result).not_to be nil
   end
