@@ -68,7 +68,8 @@ module CKB
         version: 0,
         deps: [api.system_script_out_point],
         inputs: CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey),
-        outputs: outputs
+        outputs: outputs,
+        witnesses: []
       }
     end
 
