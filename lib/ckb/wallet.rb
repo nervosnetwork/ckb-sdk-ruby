@@ -46,7 +46,7 @@ module CKB
       get_unspent_cells.map { |cell| cell[:capacity] }.reduce(0, &:+)
     end
 
-    def generate_tx(target_lock, capacity)
+    def generate_tx(target_address, capacity)
       i = gather_inputs(capacity, MIN_CELL_CAPACITY)
       input_capacities = i.capacities
 
@@ -54,7 +54,7 @@ module CKB
         {
           capacity: capacity,
           data: "",
-          lock: target_lock
+          lock: generate_lock(api.parse_address(target_address))
         }
       ]
       if input_capacities > capacity
@@ -72,26 +72,16 @@ module CKB
       }
     end
 
-    # @param target_lock [Hash]
+    # @param target_address [String]
     # @param capacity [Integer]
-    def send_capacity(target_lock, capacity)
-      tx = generate_tx(target_lock, capacity)
+    def send_capacity(target_address, capacity)
+      tx = generate_tx(target_address, capacity)
       send_transaction_bin(tx)
     end
 
     # @param hash_hex [String] "0x..."
     def get_transaction(hash_hex)
       api.get_transaction(hash_hex)
-    end
-
-    def lock
-      @lock ||= {
-        version: 0,
-        binary_hash: api.system_script_cell_hash,
-        args: [
-          CKB::Utils.bin_to_hex(CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin)))
-        ]
-      }
     end
 
     def block_assembler_config
@@ -103,6 +93,10 @@ module CKB
 binary_hash = "#{lock[:binary_hash]}"
 args = [#{args}]
      ).strip
+    end
+
+    def address
+      api.generate_address(pubkey_hash_bin)
     end
 
     private
@@ -141,8 +135,26 @@ args = [#{args}]
       CKB::Utils.extract_pubkey_bin(privkey)
     end
 
+    def pubkey_hash_bin
+      CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin))
+    end
+
     def lock_hash
       @lock_hash ||= CKB::Utils.json_script_to_type_hash(lock)
+    end
+
+    def lock
+      @lock ||= generate_lock(pubkey_hash_bin)
+    end
+
+    def generate_lock(target_pubkey_hash_bin)
+      {
+        version: 0,
+        binary_hash: api.system_script_cell_hash,
+        args: [
+          CKB::Utils.bin_to_hex(target_pubkey_hash_bin)
+        ]
+      }
     end
   end
 end
