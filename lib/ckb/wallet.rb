@@ -136,7 +136,7 @@ args = [#{args}]
     end
 
     def pubkey_hash_bin
-      CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin))
+      CKB::Utils.pubkey_hash_bin(pubkey_bin)
     end
 
     def lock_hash

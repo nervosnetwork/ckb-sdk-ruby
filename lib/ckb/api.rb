@@ -48,16 +48,13 @@ module CKB
     end
 
     # Generates address assuming default lock script is used
-    def generate_address(pubkey_hash)
-      Bech32.encode(prefix, "\x00\x00\x00\x00\x00\x02" + pubkey_hash)
+    def generate_address(pubkey_hash_bin)
+      CKB::Utils.generate_address(prefix, pubkey_hash_bin)
     end
 
     # Parse address into lock assuming default lock script is used
     def parse_address(address)
-      prefix, data = Bech32.decode(address)
-      raise "Invalid prefix" if prefix != @prefix
-      raise "Invalid version/type/script" if data.slice(0..5) != "\x00\x00\x00\x00\x00\x02"
-      data.slice(6..-1)
+      CKB::Utils.parse_address(address, prefix)
     end
 
     def system_script_cell

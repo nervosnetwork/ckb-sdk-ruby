@@ -84,5 +84,22 @@ module CKB
 
       transaction
     end
+
+    def self.pubkey_hash_bin(pubkey_bin)
+      CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin))
+    end
+
+    def self.generate_address(prefix, pubkey_hash_bin)
+      Bech32.encode(prefix, "\x00\x00\x00\x00\x00\x02" + pubkey_hash_bin)
+    end
+
+    def self.parse_address(address, prefix)
+      decoded_prefix, data = Bech32.decode(address)
+      raise "Invalid prefix" if decoded_prefix != prefix
+
+      raise "Invalid version/type/script" if data.slice(0..5) != "\x00\x00\x00\x00\x00\x02"
+
+      data.slice(6..-1)
+    end
   end
 end
