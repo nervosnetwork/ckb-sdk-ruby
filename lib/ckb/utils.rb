@@ -86,7 +86,7 @@ module CKB
     end
 
     def self.pubkey_hash_bin(pubkey_bin)
-      CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin))
+      CKB::Blake2b.digest(pubkey_bin)
     end
 
     def self.generate_address(prefix, pubkey_hash_bin)

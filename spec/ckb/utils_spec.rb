@@ -6,25 +6,27 @@ RSpec.describe CKB::Utils do
   let(:address) { "0xbc374983430db3686ab181138bb510cb8f83aa136d833ac18fc3e73a3ad54b8b" }
   let(:privkey_bin) { Utils.hex_to_bin(privkey) }
   let(:pubkey_bin) { Utils.hex_to_bin(pubkey) }
-  let(:pubkey_hash_twice) { "0xeda4bf9fc670dec9cfcf8138999fa47585171c9fcaf11b3cdad9699eb3c4547f" }
-  let(:pubkey_hash_twice_bin) { Utils.hex_to_bin(pubkey_hash_twice) }
+  let(:pubkey_hash) { "0x36c329ed630d6ce750712a477543672adab57f4c6fd36a71496305456bb298db" }
+  let(:pubkey_hash_bin) { Utils.hex_to_bin(pubkey_hash) }
   let(:prefix) { "ckt" }
-  let(:address) { "ckt1qqqqqqqqqtk6f0ulcecdajw0e7qn3xvl536c29cunl90zxeumtvkn84nc3287pcdy6p" }
+  let(:address) { "ckt1qqqqqqqqqgmvx20dvvxkee6swy4ywa2rvu4d4dtlf3hax6n3f93s23ttk2vdk68gmaq" }
 
   context "address" do
     it "pubkey_hash_bin" do
-      pubkey_hash_bin = Utils.pubkey_hash_bin(pubkey_bin)
-      expect(pubkey_hash_bin).to eq pubkey_hash_twice_bin
+      expect(
+        Utils.pubkey_hash_bin(pubkey_bin)
+      ).to eq pubkey_hash_bin
     end
 
     it "generate_address" do
-      generated_address = Utils.generate_address(prefix, pubkey_hash_twice_bin)
+      generated_address = Utils.generate_address(prefix, pubkey_hash_bin)
       expect(generated_address).to eq address
     end
 
     it "parse_address" do
-      pubkey_hash_bin = Utils.parse_address(address, prefix)
-      expect(pubkey_hash_bin).to eq pubkey_hash_twice_bin
+      expect(
+        Utils.parse_address(address, prefix)
+      ).to eq pubkey_hash_bin
     end
   end
 
