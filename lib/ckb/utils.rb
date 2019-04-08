@@ -31,10 +31,11 @@ module CKB
       bin_to_prefix_hex(blake2b.digest)
     end
 
-    def self.sign_sighash_all_inputs(inputs, outputs, privkey)
+    def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
       blake2b = CKB::Blake2b.new
       sighash_type = 0x1.to_s
       blake2b.update(sighash_type)
+      witnesses = []
       inputs.each do |input|
         previous_output = input[:previous_output]
         blake2b.update(hex_to_bin(previous_output[:hash]))
@@ -57,10 +58,13 @@ module CKB
       )
       signature_hex = bin_to_hex(signature_bin)
 
-      inputs.map do |input|
-        args = input[:args] + [signature_hex, sighash_type]
+      inputs = inputs.zip(pubkeys).map do |input, pubkey|
+        witnesses << [pubkey, signature_hex]
+        args = input[:args] + [sighash_type]
         input.merge(args: args)
       end
+
+      [inputs, witnesses]
     end
 
     # In Ruby, bytes are represented using String,
