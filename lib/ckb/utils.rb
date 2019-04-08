@@ -33,8 +33,6 @@ module CKB
 
     def self.sign_sighash_all_inputs(inputs, outputs, privkey)
       blake2b = CKB::Blake2b.new
-      sighash_type = 0x1.to_s
-      blake2b.update(sighash_type)
       inputs.each do |input|
         previous_output = input[:previous_output]
         blake2b.update(hex_to_bin(previous_output[:hash]))
@@ -58,7 +56,7 @@ module CKB
       signature_hex = bin_to_hex(signature_bin)
 
       inputs.map do |input|
-        args = input[:args] + [signature_hex, sighash_type]
+        args = input[:args] + [signature_hex]
         input.merge(args: args)
       end
     end
