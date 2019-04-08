@@ -1,7 +1,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.7.0](https://github.com/nervosnetwork/ckb-sdk-ruby/tree/rc/v0.7.0) (2019-03-22)
+# [v0.8.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.7.0...rc/v0.8.0) (2019-04-08)
+
+### Bug Fixes
+
+* fix tx rpc tests logic
+
+
+
+# [v0.7.0](https://github.com/nervosnetwork/ckb-sdk-ruby/tree/v0.7.0) (2019-03-22)
 
 
 ### Features
