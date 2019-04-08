@@ -3,7 +3,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [v0.8.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.7.0...rc/v0.8.0) (2019-04-08)
 
-No changes for v0.8.0.
+### Bug Fixes
+
+* fix tx rpc tests logic
 
 
 
