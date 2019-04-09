@@ -89,7 +89,7 @@ module CKB
     end
 
     def lock
-      @lock ||= {
+      {
         version: 0,
         binary_hash: api.system_script_cell_hash,
         args: [
