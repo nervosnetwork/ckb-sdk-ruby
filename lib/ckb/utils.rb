@@ -17,6 +17,12 @@ module CKB
       "0x#{bin_to_hex(bin)}"
     end
 
+    def self.add_hex_prefix(hex)
+      return hex if hex.start_with?("0x")
+
+      "0x#{hex}"
+    end
+
     def self.extract_pubkey_bin(privkey_bin)
       Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
     end
@@ -56,10 +62,10 @@ module CKB
       signature_bin = key.ecdsa_serialize(
         key.ecdsa_sign(blake2b.digest, raw: true)
       )
-      signature_hex = bin_to_hex(signature_bin)
+      signature_hex = bin_to_prefix_hex(signature_bin)
 
       inputs = inputs.zip(pubkeys).map do |input, pubkey|
-        witnesses << [pubkey, signature_hex]
+        witnesses << { data: [add_hex_prefix(pubkey), signature_hex] }
         args = input[:args] + [sighash_type]
         input.merge(args: args)
       end
