@@ -149,7 +149,6 @@ args = [#{args}]
 
     def generate_lock(target_pubkey_hash_bin)
       {
-        version: 0,
         binary_hash: api.system_script_cell_hash,
         args: [
           CKB::Utils.bin_to_hex(target_pubkey_hash_bin)
