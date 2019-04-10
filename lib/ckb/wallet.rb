@@ -30,12 +30,12 @@ module CKB
     end
 
     def get_unspent_cells
-      to = api.get_tip_block_number
+      to = api.get_tip_block_number.to_i
       results = []
       current_from = 1
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
+        cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
         results.concat(cells)
         current_from = current_to + 1
       end
@@ -43,7 +43,7 @@ module CKB
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell[:capacity] }.reduce(0, &:+)
+      get_unspent_cells.map { |cell| cell[:capacity].to_i }.reduce(0, &:+)
     end
 
     def generate_tx(target_address, capacity)
@@ -52,14 +52,14 @@ module CKB
 
       outputs = [
         {
-          capacity: capacity,
+          capacity: capacity.to_s,
           data: "",
           lock: generate_lock(api.parse_address(target_address))
         }
       ]
       if input_capacities > capacity
         outputs << {
-          capacity: input_capacities - capacity,
+          capacity: (input_capacities - capacity).to_s,
           data: "",
           lock: lock
         }
@@ -68,7 +68,8 @@ module CKB
         version: 0,
         deps: [api.system_script_out_point],
         inputs: CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey),
-        outputs: outputs
+        outputs: outputs,
+        witnesses: []
       }
     end
 
@@ -117,7 +118,7 @@ args = [#{args}]
           args: [pubkey]
         }
         inputs << input
-        input_capacities += cell[:capacity]
+        input_capacities += cell[:capacity].to_i
 
         break if input_capacities >= capacity && (input_capacities - capacity) >= min_capacity
       end
