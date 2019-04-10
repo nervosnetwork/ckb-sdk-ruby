@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "bech32"
 require "ckb/version"
 require "ckb/api"
 require "ckb/blake2b"
