@@ -84,16 +84,6 @@ module CKB
       api.get_transaction(hash_hex)
     end
 
-    def lock
-      {
-        version: 0,
-        binary_hash: api.system_script_cell_hash,
-        args: [
-          CKB::Utils.bin_to_hex(CKB::Blake2b.digest(CKB::Blake2b.digest(pubkey_bin)))
-        ]
-      }
-    end
-
     def block_assembler_config
       args = lock[:args].map do |arg|
         "[#{arg.bytes.map(&:to_s).join(", ")}]"
@@ -154,7 +144,7 @@ args = [#{args}]
     end
 
     def lock
-      @lock ||= generate_lock(pubkey_hash_bin)
+      generate_lock(pubkey_hash_bin)
     end
 
     def generate_lock(target_pubkey_hash_bin)
