@@ -69,7 +69,7 @@ module CKB
     end
 
     def genesis_block_hash
-      @genesis_block_hash ||= get_block_hash(0)
+      @genesis_block_hash ||= get_block_hash('0')
     end
 
     def get_block_hash(block_number)
