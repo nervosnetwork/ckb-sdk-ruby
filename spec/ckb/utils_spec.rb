@@ -78,4 +78,21 @@ RSpec.describe CKB::Utils do
       Utils.json_script_to_type_hash(always_success_json_object)
     ).to eq always_success_type_hash
   end
+
+  context "add_hex_prefix" do
+    let(:hex) { "1234ab" }
+    let(:hex_with_prefix) { "0x#{hex}" }
+
+    it "without prefix" do
+      expect(
+        Utils.add_hex_prefix(hex)
+      ).to eq hex_with_prefix
+    end
+
+    it "with prefix" do
+      expect(
+        Utils.add_hex_prefix(hex_with_prefix)
+      ).to eq hex_with_prefix
+    end
+  end
 end
