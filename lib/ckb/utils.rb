@@ -17,6 +17,12 @@ module CKB
       "0x#{bin_to_hex(bin)}"
     end
 
+    def self.add_hex_prefix(hex)
+      return hex if hex.start_with?("0x")
+
+      "0x#{hex}"
+    end
+
     def self.extract_pubkey_bin(privkey_bin)
       Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
     end
@@ -31,10 +37,11 @@ module CKB
       bin_to_prefix_hex(blake2b.digest)
     end
 
-    def self.sign_sighash_all_inputs(inputs, outputs, privkey)
+    def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
       blake2b = CKB::Blake2b.new
       sighash_type = 0x1.to_s
       blake2b.update(sighash_type)
+      witnesses = []
       inputs.each do |input|
         previous_output = input[:previous_output]
         blake2b.update(hex_to_bin(previous_output[:hash]))
@@ -55,12 +62,15 @@ module CKB
       signature_bin = key.ecdsa_serialize(
         key.ecdsa_sign(blake2b.digest, raw: true)
       )
-      signature_hex = bin_to_hex(signature_bin)
+      signature_hex = bin_to_prefix_hex(signature_bin)
 
-      inputs.map do |input|
-        args = input[:args] + [signature_hex, sighash_type]
+      inputs = inputs.zip(pubkeys).map do |input, pubkey|
+        witnesses << { data: [add_hex_prefix(pubkey), signature_hex] }
+        args = input[:args] + [sighash_type]
         input.merge(args: args)
       end
+
+      [inputs, witnesses]
     end
 
     # In Ruby, bytes are represented using String,

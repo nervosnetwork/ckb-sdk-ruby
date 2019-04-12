@@ -64,11 +64,15 @@ module CKB
           lock: lock
         }
       end
+
+      inputs, witnesses = CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey, i.pubkeys)
+
       {
         version: 0,
         deps: [api.system_script_out_point],
-        inputs: CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey),
-        outputs: outputs
+        inputs: inputs,
+        outputs: outputs,
+        witnesses: witnesses
       }
     end
 
@@ -85,7 +89,7 @@ module CKB
     end
 
     def lock
-      @lock ||= {
+      {
         version: 0,
         binary_hash: api.system_script_cell_hash,
         args: [
@@ -117,11 +121,13 @@ args = [#{args}]
 
       input_capacities = 0
       inputs = []
+      pubkeys = []
       get_unspent_cells.each do |cell|
         input = {
           previous_output: cell[:out_point],
-          args: [pubkey]
+          args: []
         }
+        pubkeys << pubkey
         inputs << input
         input_capacities += cell[:capacity]
 
@@ -130,7 +136,7 @@ args = [#{args}]
 
       raise "Not enough capacity!" if input_capacities < capacity
 
-      OpenStruct.new(inputs: inputs, capacities: input_capacities)
+      OpenStruct.new(inputs: inputs, capacities: input_capacities, pubkeys: pubkeys)
     end
 
     def pubkey
