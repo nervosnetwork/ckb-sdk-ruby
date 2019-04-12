@@ -90,12 +90,12 @@ module CKB
 
     def block_assembler_config
       args = lock[:args].map do |arg|
-        "[#{arg.bytes.map(&:to_s).join(", ")}]"
-      end.join(", ")
+        "0x#{arg}"
+      end
       %Q(
 [block_assembler]
 binary_hash = "#{lock[:binary_hash]}"
-args = [#{args}]
+args = #{args}
      ).strip
     end
 
