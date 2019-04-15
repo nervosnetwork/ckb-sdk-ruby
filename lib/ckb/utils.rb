@@ -32,7 +32,7 @@ module CKB
       blake2b << hex_to_bin(script[:binary_hash]) if script[:binary_hash]
       args = script[:args] || []
       args.each do |arg|
-        blake2b << arg
+        blake2b << hex_to_bin(arg)
       end
       bin_to_prefix_hex(blake2b.digest)
     end

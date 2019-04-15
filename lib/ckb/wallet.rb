@@ -89,13 +89,10 @@ module CKB
     end
 
     def block_assembler_config
-      args = lock[:args].map do |arg|
-        "0x#{arg}"
-      end
       %Q(
 [block_assembler]
 binary_hash = "#{lock[:binary_hash]}"
-args = #{args}
+args = #{lock[:args]}
      ).strip
     end
 
@@ -119,7 +116,8 @@ args = #{args}
       get_unspent_cells.each do |cell|
         input = {
           previous_output: cell[:out_point],
-          args: []
+          args: [],
+          valid_since: 0
         }
         pubkeys << pubkey
         inputs << input
@@ -157,7 +155,16 @@ args = #{args}
       {
         binary_hash: api.system_script_cell_hash,
         args: [
-          CKB::Utils.bin_to_hex(target_pubkey_hash_bin)
+          # There are 2 conversions from binary to hex string here:
+          # 1. The inner bin_to_hex is required since the deployed lock script
+          # now accepts a hex string version of the public key hash so we can
+          # treat it as a null-terminated string in C for ease of processing.
+          # So even though the inner CKB::Utils.bin_to_hex already converts
+          # the public key hash binary to a hex string format, we should still
+          # see it as a binary from the SDK point of view.
+          # 2. The outer bin_to_prefix_hex then converts the binary (in SDK
+          # point of view) to a hex string required by CKB RPC.
+          CKB::Utils.bin_to_prefix_hex(CKB::Utils.bin_to_hex(target_pubkey_hash_bin))
         ]
       }
     end
