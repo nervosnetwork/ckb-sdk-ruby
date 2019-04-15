@@ -71,10 +71,11 @@ module CKB
       bin_to_hex(hash_bin[0...20])
     end
 
-    # payload = type(\x00) | bin-idx(\x00\x00\x00\x02) | pubkey blake160
+    # payload = type(01) | bin-idx("P2PH" => "50/32/50/48") | pubkey blake160
+    # see https://github.com/nervosnetwork/ckb/wiki/Common-Address-Format for more info.
     def self.generate_address(prefix, pubkey_blake160)
       pubkey_blake160_bin = hex_to_bin(pubkey_blake160)
-      payload = "\x00\x00\x00\x00\x02" + pubkey_blake160_bin
+      payload = ["0150325048"].pack("H*") + pubkey_blake160_bin
       Bech32.encode(prefix, payload)
     end
 
@@ -82,7 +83,7 @@ module CKB
       decoded_prefix, data = Bech32.decode(address)
       raise "Invalid prefix" if decoded_prefix != prefix
 
-      raise "Invalid version/type/script" if data.slice(0..4) != "\x00\x00\x00\x00\x02"
+      raise "Invalid type/bin-idx" if data.slice(0..4) != ["0150325048"].pack("H*")
 
       CKB::Utils.bin_to_hex(data.slice(5..-1))
     end
