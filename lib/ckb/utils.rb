@@ -65,28 +65,30 @@ module CKB
       [inputs, witnesses]
     end
 
-    def self.pubkey_hash(pubkey)
+    def self.pubkey_blake160(pubkey)
       pubkey_bin = hex_to_bin(pubkey)
       hash_bin = CKB::Blake2b.digest(pubkey_bin)
-      bin_to_hex(hash_bin)
+      bin_to_hex(hash_bin[0...20])
     end
 
-    def self.generate_address(prefix, pubkey_hash)
-      pubkey_hash_bin = hex_to_bin(pubkey_hash)
-      Bech32.encode(prefix, "\x00\x00\x00\x00\x00\x02" + pubkey_hash_bin)
+    # payload = type(\x00) | bin-idx(\x00\x00\x00\x02) | pubkey blake160
+    def self.generate_address(prefix, pubkey_blake160)
+      pubkey_blake160_bin = hex_to_bin(pubkey_blake160)
+      payload = "\x00\x00\x00\x00\x02" + pubkey_blake160_bin
+      Bech32.encode(prefix, payload)
     end
 
     def self.parse_address(address, prefix)
       decoded_prefix, data = Bech32.decode(address)
       raise "Invalid prefix" if decoded_prefix != prefix
 
-      raise "Invalid version/type/script" if data.slice(0..5) != "\x00\x00\x00\x00\x00\x02"
+      raise "Invalid version/type/script" if data.slice(0..4) != "\x00\x00\x00\x00\x02"
 
-      CKB::Utils.bin_to_hex(data.slice(6..-1))
+      CKB::Utils.bin_to_hex(data.slice(5..-1))
     end
 
-    def self.generate_lock(target_pubkey_hash, system_script_cell_hash)
-      target_pubkey_hash_bin = CKB::Utils.hex_to_bin(target_pubkey_hash)
+    def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)
+      target_pubkey_blake160_bin = CKB::Utils.hex_to_bin(target_pubkey_blake160)
       {
         binary_hash: system_script_cell_hash,
         args: [
@@ -99,7 +101,7 @@ module CKB
           # binary from the SDK point of view.
           # 2. The outer bin_to_hex then converts the binary (in SDK
           # point of view) to a hex string required by CKB RPC.
-          CKB::Utils.bin_to_hex(target_pubkey_hash_bin.unpack1("H*"))
+          CKB::Utils.bin_to_hex(target_pubkey_blake160_bin.unpack1("H*"))
         ]
       }
     end

@@ -103,7 +103,7 @@ args = #{lock[:args]}
     end
 
     def address
-      api.generate_address(pubkey_hash)
+      api.generate_address(pubkey_blake160)
     end
 
     private
@@ -140,8 +140,8 @@ args = #{lock[:args]}
       CKB::Utils.extract_pubkey(privkey)
     end
 
-    def pubkey_hash
-      CKB::Utils.pubkey_hash(pubkey)
+    def pubkey_blake160
+      CKB::Utils.pubkey_blake160(pubkey)
     end
 
     def lock_hash
@@ -149,7 +149,7 @@ args = #{lock[:args]}
     end
 
     def lock
-      CKB::Utils.generate_lock(pubkey_hash, api.system_script_cell_hash)
+      CKB::Utils.generate_lock(pubkey_blake160, api.system_script_cell_hash)
     end
 
   end
