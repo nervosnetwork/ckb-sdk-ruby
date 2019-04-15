@@ -4,27 +4,18 @@ require "secp256k1"
 
 module CKB
   module Utils
-    def self.hex_to_bin(hex)
-      hex = hex[2..-1] if hex.start_with?("0x")
-      [hex].pack("H*")
-    end
-
     def self.bin_to_hex(bin)
-      bin.unpack1("H*")
+      "0x#{bin.unpack1("H*")}"
     end
 
-    def self.bin_to_prefix_hex(bin)
-      "0x#{bin_to_hex(bin)}"
+    def self.valid_hex_string?(hex)
+      hex.start_with?("0x") && hex.length % 2 == 0
     end
 
-    def self.add_hex_prefix(hex)
-      return hex if hex.start_with?("0x")
-
-      "0x#{hex}"
-    end
-
-    def self.extract_pubkey_bin(privkey_bin)
-      Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
+    def self.extract_pubkey(privkey)
+      privkey_bin = hex_to_bin(privkey)
+      pubkey_bin = Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
+      bin_to_hex(pubkey_bin)
     end
 
     def self.json_script_to_type_hash(script)
@@ -34,7 +25,7 @@ module CKB
       args.each do |arg|
         blake2b << hex_to_bin(arg)
       end
-      bin_to_prefix_hex(blake2b.digest)
+      bin_to_hex(blake2b.digest)
     end
 
     def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
@@ -58,48 +49,30 @@ module CKB
           )
         )
       end
-      key = Secp256k1::PrivateKey.new(privkey: privkey)
+      privkey_bin = hex_to_bin(privkey)
+      key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
       signature_bin = key.ecdsa_serialize(
         key.ecdsa_sign(blake2b.digest, raw: true)
       )
-      signature_hex = bin_to_prefix_hex(signature_bin)
+      signature_hex = bin_to_hex(signature_bin)
 
       inputs = inputs.zip(pubkeys).map do |input, pubkey|
-        witnesses << { data: [add_hex_prefix(pubkey), signature_hex] }
-        args = input[:args] + [sighash_type]
+        witnesses << { data: [pubkey, signature_hex] }
+        args = input[:args] + [bin_to_hex(sighash_type)]
         input.merge(args: args)
       end
 
       [inputs, witnesses]
     end
 
-    # In Ruby, bytes are represented using String,
-    # since JSON has no native byte arrays,
-    # CKB convention bytes passed with a "0x" prefix hex encoding,
-    # hence we have to do type conversions here.
-    def self.normalize_tx_for_json!(transaction)
-      transaction[:inputs].each do |input|
-        input[:args] = input[:args].map { |arg| bin_to_prefix_hex(arg) }
-      end
-
-      transaction[:outputs].each do |output|
-        output[:data] = bin_to_prefix_hex(output[:data])
-        lock = output[:lock]
-        lock[:args] = lock[:args].map { |arg| bin_to_prefix_hex(arg) }
-        next unless output[:type]
-
-        type = output[:type]
-        type[:args] = type[:args].map { |arg| bin_to_prefix_hex(arg) }
-      end
-
-      transaction
+    def self.pubkey_hash(pubkey)
+      pubkey_bin = hex_to_bin(pubkey)
+      hash_bin = CKB::Blake2b.digest(pubkey_bin)
+      bin_to_hex(hash_bin)
     end
 
-    def self.pubkey_hash_bin(pubkey_bin)
-      CKB::Blake2b.digest(pubkey_bin)
-    end
-
-    def self.generate_address(prefix, pubkey_hash_bin)
+    def self.generate_address(prefix, pubkey_hash)
+      pubkey_hash_bin = hex_to_bin(pubkey_hash)
       Bech32.encode(prefix, "\x00\x00\x00\x00\x00\x02" + pubkey_hash_bin)
     end
 
@@ -109,7 +82,35 @@ module CKB
 
       raise "Invalid version/type/script" if data.slice(0..5) != "\x00\x00\x00\x00\x00\x02"
 
-      data.slice(6..-1)
+      CKB::Utils.bin_to_hex(data.slice(6..-1))
+    end
+
+    def self.generate_lock(target_pubkey_hash, system_script_cell_hash)
+      target_pubkey_hash_bin = CKB::Utils.hex_to_bin(target_pubkey_hash)
+      {
+        binary_hash: system_script_cell_hash,
+        args: [
+          # There are 2 conversions from binary to hex string here:
+          # 1. The inner unpack1 is required since the deployed lock script
+          # now accepts a hex string version of the public key hash so we can
+          # treat it as a null-terminated string in C for ease of processing.
+          # So even though the inner unpack1 already converts the public key
+          # hash binary to a hex string format, we should still see it as a
+          # binary from the SDK point of view.
+          # 2. The outer bin_to_hex then converts the binary (in SDK
+          # point of view) to a hex string required by CKB RPC.
+          CKB::Utils.bin_to_hex(target_pubkey_hash_bin.unpack1("H*"))
+        ]
+      }
+    end
+
+    private
+    # Conversions from hex string to binary is kept as private method
+    # so we can ensure code outside of this utils module only needs to deal
+    # with hex strings
+    def self.hex_to_bin(hex)
+      raise ArgumentError, "invalid hex string!" unless valid_hex_string?(hex)
+      [hex[2..-1]].pack("H*")
     end
   end
 end

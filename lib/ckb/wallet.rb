@@ -13,20 +13,25 @@ module CKB
     attr_reader :privkey
 
     # @param api [CKB::API]
-    # @param privkey [String] bin string
+    # @param privkey [String] hex string
     def initialize(api, privkey)
-      raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 32
+      raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 66
+      raise ArgumentError, "invalid hex string!" unless CKB::Utils.valid_hex_string?(privkey)
 
       @api = api
       @privkey = privkey
+    end
+
+    def self.random_private_key
+      CKB::Utils.bin_to_hex(SecureRandom.bytes(32))
     end
 
     # @param api [CKB::API]
     # @param privkey_hex [String] hex string
     #
     # @return [CKB::Wallet]
-    def self.from_hex(api, privkey_hex)
-      new(api, CKB::Utils.hex_to_bin(privkey_hex))
+    def self.from_hex(api, privkey)
+      new(api, privkey)
     end
 
     def get_unspent_cells
@@ -53,14 +58,15 @@ module CKB
       outputs = [
         {
           capacity: capacity.to_s,
-          data: "",
-          lock: generate_lock(api.parse_address(target_address))
+          data: "0x",
+          lock: CKB::Utils.generate_lock(api.parse_address(target_address),
+                                         api.system_script_cell_hash)
         }
       ]
       if input_capacities > capacity
         outputs << {
           capacity: (input_capacities - capacity).to_s,
-          data: "",
+          data: "0x",
           lock: lock
         }
       end
@@ -80,12 +86,12 @@ module CKB
     # @param capacity [Integer]
     def send_capacity(target_address, capacity)
       tx = generate_tx(target_address, capacity)
-      send_transaction_bin(tx)
+      send_transaction(tx)
     end
 
     # @param hash_hex [String] "0x..."
-    def get_transaction(hash_hex)
-      api.get_transaction(hash_hex)
+    def get_transaction(hash)
+      api.get_transaction(hash)
     end
 
     def block_assembler_config
@@ -97,13 +103,12 @@ args = #{lock[:args]}
     end
 
     def address
-      api.generate_address(pubkey_hash_bin)
+      api.generate_address(pubkey_hash)
     end
 
     private
 
-    def send_transaction_bin(transaction)
-      transaction = CKB::Utils.normalize_tx_for_json!(transaction)
+    def send_transaction(transaction)
       api.send_transaction(transaction)
     end
 
@@ -132,15 +137,11 @@ args = #{lock[:args]}
     end
 
     def pubkey
-      CKB::Utils.bin_to_hex(pubkey_bin)
+      CKB::Utils.extract_pubkey(privkey)
     end
 
-    def pubkey_bin
-      CKB::Utils.extract_pubkey_bin(privkey)
-    end
-
-    def pubkey_hash_bin
-      CKB::Utils.pubkey_hash_bin(pubkey_bin)
+    def pubkey_hash
+      CKB::Utils.pubkey_hash(pubkey)
     end
 
     def lock_hash
@@ -148,26 +149,9 @@ args = #{lock[:args]}
     end
 
     def lock
-      generate_lock(pubkey_hash_bin)
+      CKB::Utils.generate_lock(pubkey_hash, api.system_script_cell_hash)
     end
 
-    def generate_lock(target_pubkey_hash_bin)
-      {
-        binary_hash: api.system_script_cell_hash,
-        args: [
-          # There are 2 conversions from binary to hex string here:
-          # 1. The inner bin_to_hex is required since the deployed lock script
-          # now accepts a hex string version of the public key hash so we can
-          # treat it as a null-terminated string in C for ease of processing.
-          # So even though the inner CKB::Utils.bin_to_hex already converts
-          # the public key hash binary to a hex string format, we should still
-          # see it as a binary from the SDK point of view.
-          # 2. The outer bin_to_prefix_hex then converts the binary (in SDK
-          # point of view) to a hex string required by CKB RPC.
-          CKB::Utils.bin_to_prefix_hex(CKB::Utils.bin_to_hex(target_pubkey_hash_bin))
-        ]
-      }
-    end
   end
 end
 
