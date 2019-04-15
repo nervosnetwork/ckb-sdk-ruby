@@ -30,8 +30,6 @@ module CKB
 
     def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
       blake2b = CKB::Blake2b.new
-      sighash_type = 0x1.to_s
-      blake2b.update(sighash_type)
       witnesses = []
       inputs.each do |input|
         previous_output = input[:previous_output]
@@ -56,10 +54,16 @@ module CKB
       )
       signature_hex = bin_to_hex(signature_bin)
 
-      inputs = inputs.zip(pubkeys).map do |input, pubkey|
-        witnesses << { data: [pubkey, signature_hex] }
-        args = input[:args] + [bin_to_hex(sighash_type)]
-        input.merge(args: args)
+      witnesses = inputs.zip(pubkeys).map do |input, pubkey|
+        # Same as lock arguments, the witness data here will be considered hex
+        # strings by the C script, those exact hex strings are binaries to the
+        # SDK, hence we also need 2 binary to hex string conversions.
+        {
+          data: [
+            CKB::Utils.bin_to_hex(CKB::Utils.hex_to_bin(pubkey).unpack1("H*")),
+            CKB::Utils.bin_to_hex(CKB::Utils.hex_to_bin(signature_hex).unpack1("H*"))
+          ]
+        }
       end
 
       [inputs, witnesses]
