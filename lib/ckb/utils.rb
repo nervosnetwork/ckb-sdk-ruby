@@ -5,11 +5,11 @@ require "secp256k1"
 module CKB
   module Utils
     def self.bin_to_hex(bin)
-      "0x#{bin.unpack1("H*")}"
+      "0x#{bin.unpack1('H*')}"
     end
 
     def self.valid_hex_string?(hex)
-      hex.start_with?("0x") && hex.length % 2 == 0
+      hex.start_with?("0x") && hex.length.even?
     end
 
     def self.extract_pubkey(privkey)
@@ -54,7 +54,7 @@ module CKB
       )
       signature_hex = bin_to_hex(signature_bin)
 
-      witnesses = inputs.zip(pubkeys).map do |input, pubkey|
+      witnesses = inputs.zip(pubkeys).map do |_input, pubkey|
         # Same as lock arguments, the witness data here will be considered hex
         # strings by the C script, those exact hex strings are binaries to the
         # SDK, hence we also need 2 binary to hex string conversions.
@@ -80,11 +80,11 @@ module CKB
     def self.generate_address(prefix, pubkey_blake160)
       pubkey_blake160_bin = hex_to_bin(pubkey_blake160)
       payload = ["0150325048"].pack("H*") + pubkey_blake160_bin
-      Bech32.encode(prefix, payload)
+      CKB::ConvertAddress.encode(prefix, payload)
     end
 
     def self.parse_address(address, prefix)
-      decoded_prefix, data = Bech32.decode(address)
+      decoded_prefix, data = CKB::ConvertAddress.decode(address)
       raise "Invalid prefix" if decoded_prefix != prefix
 
       raise "Invalid type/bin-idx" if data.slice(0..4) != ["0150325048"].pack("H*")
@@ -112,11 +112,13 @@ module CKB
     end
 
     private
+
     # Conversions from hex string to binary is kept as private method
     # so we can ensure code outside of this utils module only needs to deal
     # with hex strings
     def self.hex_to_bin(hex)
       raise ArgumentError, "invalid hex string!" unless valid_hex_string?(hex)
+
       [hex[2..-1]].pack("H*")
     end
   end
