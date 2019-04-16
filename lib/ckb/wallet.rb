@@ -122,7 +122,7 @@ args = #{lock[:args]}
         input = {
           previous_output: cell[:out_point],
           args: [],
-          valid_since: 0
+          valid_since: "0"
         }
         pubkeys << pubkey
         inputs << input
