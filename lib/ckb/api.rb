@@ -13,15 +13,11 @@ module CKB
     attr_reader :uri
     attr_reader :system_script_out_point
     attr_reader :system_script_cell_hash
-    attr_reader :prefix
 
     DEFAULT_URL = "http://localhost:8114"
 
     MODE_TESTNET = "testnet"
     MODE_CUSTOM = "custom"
-
-    PREFIX_MAINNET = "ckb"
-    PREFIX_TESTNET = "ckt"
 
     def initialize(host: DEFAULT_URL, mode: MODE_TESTNET)
       @uri = URI(host)
@@ -35,26 +31,15 @@ module CKB
         }
         cell_data = CKB::Utils.hex_to_bin(system_cell_transaction[:outputs][0][:data])
         cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
-        self.set_system_script_cell(out_point, cell_hash, prefix: PREFIX_TESTNET)
+        set_system_script_cell(out_point, cell_hash)
       end
     end
 
     # @param out_point [Hash] { hash: "0x...", index: 0 }
     # @param cell_hash [String] "0x..."
-    def set_system_script_cell(out_point, cell_hash, prefix: PREFIX_MAINNET)
+    def set_system_script_cell(out_point, cell_hash)
       @system_script_out_point = out_point
       @system_script_cell_hash = cell_hash
-      @prefix = prefix
-    end
-
-    # Generates address assuming default lock script is used
-    def generate_address(pubkey_blake160)
-      CKB::Utils.generate_address(prefix, pubkey_blake160)
-    end
-
-    # Parse address into lock assuming default lock script is used
-    def parse_address(address)
-      CKB::Utils.parse_address(address, prefix)
     end
 
     def system_script_cell
@@ -69,7 +54,7 @@ module CKB
     end
 
     def genesis_block_hash
-      @genesis_block_hash ||= get_block_hash('0')
+      @genesis_block_hash ||= get_block_hash("0")
     end
 
     def get_block_hash(block_number)
