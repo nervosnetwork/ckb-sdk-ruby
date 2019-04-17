@@ -28,7 +28,7 @@ module CKB
       bin_to_hex(blake2b.digest)
     end
 
-    def self.sign_sighash_all_inputs(inputs, outputs, privkey, _pubkeys)
+    def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
       blake2b = CKB::Blake2b.new
       inputs.each do |input|
         previous_output = input[:previous_output]
@@ -94,6 +94,7 @@ module CKB
     def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)
       target_pubkey_blake160_bin = CKB::Utils.hex_to_bin(target_pubkey_blake160)
       {
+        version: 0,
         binary_hash: system_script_cell_hash,
         args: [
           # There are 2 conversions from binary to hex string here:

@@ -26,16 +26,16 @@ RSpec.describe CKB::API do
   it "get tip header" do
     result = api.get_tip_header
     expect(result).not_to be nil
-    expect(result[:number].to_i > 0).to be true
+    expect(result[:number] > 0).to be true
   end
 
   it "get tip block number" do
     result = api.get_tip_block_number
-    expect(result.to_i > 0).to be true
+    expect(result > 0).to be true
   end
 
   it "get cells by lock hash" do
-    result = api.get_cells_by_lock_hash(lock_hash, '0', '100')
+    result = api.get_cells_by_lock_hash(lock_hash, 0, 100)
     expect(result).not_to be nil
   end
 
@@ -47,7 +47,7 @@ RSpec.describe CKB::API do
   end
 
   it "get live cell" do
-    cells = api.get_cells_by_lock_hash(lock_hash, '0', '100')
+    cells = api.get_cells_by_lock_hash(lock_hash, 0, 100)
     result = api.get_live_cell(cells[0][:out_point])
     expect(result).not_to be nil
   end

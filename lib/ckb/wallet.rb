@@ -35,12 +35,12 @@ module CKB
     end
 
     def get_unspent_cells
-      to = api.get_tip_block_number.to_i
+      to = api.get_tip_block_number
       results = []
       current_from = 1
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
+        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
         results.concat(cells)
         current_from = current_to + 1
       end
@@ -48,7 +48,7 @@ module CKB
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell[:capacity].to_i }.reduce(0, &:+)
+      get_unspent_cells.map { |cell| cell[:capacity] }.reduce(0, &:+)
     end
 
     def generate_tx(target_address, capacity)
@@ -57,7 +57,7 @@ module CKB
 
       outputs = [
         {
-          capacity: capacity.to_s,
+          capacity: capacity,
           data: "0x",
           lock: CKB::Utils.generate_lock(api.parse_address(target_address),
                                          api.system_script_cell_hash)
@@ -65,7 +65,7 @@ module CKB
       ]
       if input_capacities > capacity
         outputs << {
-          capacity: (input_capacities - capacity).to_s,
+          capacity: input_capacities - capacity,
           data: "0x",
           lock: lock
         }
@@ -95,10 +95,13 @@ module CKB
     end
 
     def block_assembler_config
-      %Q(
+      args = lock[:args].map do |arg|
+        "[#{CKB::Utils.hex_to_bin(arg).bytes.map(&:to_s).join(', ')}]"
+      end.join(", ")
+      %(
 [block_assembler]
 binary_hash = "#{lock[:binary_hash]}"
-args = #{lock[:args]}
+args = [#{args}]
      ).strip
     end
 
@@ -121,12 +124,11 @@ args = #{lock[:args]}
       get_unspent_cells.each do |cell|
         input = {
           previous_output: cell[:out_point],
-          args: [],
-          valid_since: 0
+          args: []
         }
         pubkeys << pubkey
         inputs << input
-        input_capacities += cell[:capacity].to_i
+        input_capacities += cell[:capacity]
 
         break if input_capacities >= capacity && (input_capacities - capacity) >= min_capacity
       end
@@ -151,7 +153,6 @@ args = #{lock[:args]}
     def lock
       CKB::Utils.generate_lock(pubkey_blake160, api.system_script_cell_hash)
     end
-
   end
 end
 
