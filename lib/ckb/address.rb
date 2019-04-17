@@ -25,7 +25,9 @@ module CKB
     # see https://github.com/nervosnetwork/ckb/wiki/Common-Address-Format for more info.
     def generate
       blake160_bin = [blake160[2..-1]].pack("H*")
-      payload = ["0150325048"].pack("H*") + blake160_bin
+      type = ["01"].pack("H*")
+      bin_idx = ["P2PH".each_char.map { |c| c.ord.to_s(16) }.join].pack("H*")
+      payload = type + bin_idx + blake160_bin
       ConvertAddress.encode(@prefix, payload)
     end
 
