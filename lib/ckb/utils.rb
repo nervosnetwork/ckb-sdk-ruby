@@ -37,11 +37,8 @@ module CKB
       bin_to_prefix_hex(blake2b.digest)
     end
 
-    def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
+    def self.sign_sighash_all_inputs(inputs, outputs, privkey, _pubkeys)
       blake2b = CKB::Blake2b.new
-      sighash_type = 0x1.to_s
-      blake2b.update(sighash_type)
-      witnesses = []
       inputs.each do |input|
         previous_output = input[:previous_output]
         blake2b.update(hex_to_bin(previous_output[:hash]))
@@ -64,9 +61,8 @@ module CKB
       )
       signature_hex = bin_to_prefix_hex(signature_bin)
 
-      inputs = inputs.zip(pubkeys).map do |input, pubkey|
-        witnesses << { data: [add_hex_prefix(pubkey), signature_hex] }
-        args = input[:args] + [sighash_type]
+      inputs.map do |input|
+        args = input[:args] + [signature_hex]
         input.merge(args: args)
       end
 
@@ -93,6 +89,23 @@ module CKB
       end
 
       transaction
+    end
+
+    def self.pubkey_hash_bin(pubkey_bin)
+      CKB::Blake2b.digest(pubkey_bin)
+    end
+
+    def self.generate_address(prefix, pubkey_hash_bin)
+      Bech32.encode(prefix, "\x00\x00\x00\x00\x00\x02" + pubkey_hash_bin)
+    end
+
+    def self.parse_address(address, prefix)
+      decoded_prefix, data = Bech32.decode(address)
+      raise "Invalid prefix" if decoded_prefix != prefix
+
+      raise "Invalid version/type/script" if data.slice(0..5) != "\x00\x00\x00\x00\x00\x02"
+
+      data.slice(6..-1)
     end
   end
 end
