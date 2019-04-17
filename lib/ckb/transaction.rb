@@ -79,7 +79,7 @@ module CKB
       signature_bin = secp_key.ecdsa_serialize(
         secp_key.ecdsa_sign(blake2b.digest, raw: true)
       )
-      bin_to_hex(signature_bin)
+      Utils.bin_to_hex(signature_bin)
     end
   end
 end

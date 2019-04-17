@@ -30,28 +30,19 @@ module CKB
     def generate
       blake160_bin = [blake160[2..-1]].pack("H*")
       payload = ["0150325048"].pack("H*") + blake160_bin
-      Bech32.encode(@prefix, payload)
+      ConvertAddress.encode(@prefix, payload)
     end
 
     alias to_s generate
 
     # Parse address into lock assuming default lock script is used
     def parse(address)
-      decoded_prefix, data = Bech32.decode(address)
+      decoded_prefix, data = ConvertAddress.decode(address)
       raise "Invalid prefix" if decoded_prefix != @prefix
 
       raise "Invalid type/bin-idx" if data.slice(0..4) != ["0150325048"].pack("H*")
 
       CKB::Utils.bin_to_hex(data.slice(5..-1))
-    end
-
-    def self.parse(address)
-      decoded_prefix, data = Bech32.decode(address)
-      # raise "Invalid prefix" if decoded_prefix != prefix
-
-      raise "Invalid type/bin-idx" if data.slice(0..4) != ["0150325048"].pack("H*")
-
-      [decoded_prefix, CKB::Utils.bin_to_hex(data.slice(5..-1))]
     end
 
     def self.blake160(pubkey)
