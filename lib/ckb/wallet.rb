@@ -106,6 +106,13 @@ args = #{lock[:args]}
       api.generate_address(pubkey_blake160)
     end
 
+    # @param elf_path [String]
+    # @param capacity [Integer]
+    def deploy_contract(elf_path)
+      tx = generate_deploy_contract_tx(elf_path)
+      send_transaction(tx)
+    end
+
     private
 
     def send_transaction(transaction)
@@ -118,7 +125,7 @@ args = #{lock[:args]}
       input_capacities = 0
       inputs = []
       pubkeys = []
-      get_unspent_cells.each do |cell|
+      get_unspent_cells.shuffle.each do |cell|
         input = {
           previous_output: cell[:out_point],
           args: [],
@@ -150,6 +157,47 @@ args = #{lock[:args]}
 
     def lock
       CKB::Utils.generate_lock(pubkey_blake160, api.system_script_cell_hash)
+    end
+
+    def generate_deploy_contract_tx(elf_path)
+      # read code
+      puts "deploy contract #{elf_path}"
+      elf_bin = File.binread(elf_path)
+      code_len = elf_bin.length
+      capacity = code_len + 50
+      puts "code len #{code_len}, use capacity #{capacity}"
+
+      i = gather_inputs(capacity, MIN_CELL_CAPACITY)
+      input_capacities = i.capacities
+
+      outputs = [
+        {
+          capacity: capacity.to_s,
+          data: "0x#{elf_bin.unpack1('H*')}",
+          lock:
+          {
+            binary_hash: "0x0000000000000000000000000000000000000000000000000000000000000001",
+            args: []
+          }
+        }
+      ]
+      if input_capacities > capacity
+        outputs << {
+          capacity: (input_capacities - capacity).to_s,
+          data: "0x",
+          lock: lock
+        }
+      end
+
+      inputs, witnesses = CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey, i.pubkeys)
+
+      {
+        version: 0,
+        deps: [api.system_script_out_point],
+        inputs: inputs,
+        outputs: outputs,
+        witnesses: witnesses
+      }
     end
 
   end
