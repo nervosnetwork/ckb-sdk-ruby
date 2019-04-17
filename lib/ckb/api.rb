@@ -16,12 +16,9 @@ module CKB
 
     DEFAULT_URL = "http://localhost:8114"
 
-    MODE_TESTNET = "testnet"
-    MODE_CUSTOM = "custom"
-
-    def initialize(host: DEFAULT_URL, mode: MODE_TESTNET)
+    def initialize(host: DEFAULT_URL, mode: MODE::TESTNET)
       @uri = URI(host)
-      if mode == MODE_TESTNET
+      if mode == MODE::TESTNET
         # For testnet chain, we can assume the first cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block[:commit_transactions][0]

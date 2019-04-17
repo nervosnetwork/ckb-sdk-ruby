@@ -4,18 +4,14 @@ module CKB
   class Address
     attr_reader :pubkey
 
-    MODE_TESTNET = "testnet"
-    MODE_MAINNET = "mainnet"
-    MODE_CUSTOM = "custom"
-
     PREFIX_MAINNET = "ckb"
     PREFIX_TESTNET = "ckt"
 
-    def initialize(pubkey, mode: MODE_TESTNET)
+    def initialize(pubkey, mode: MODE::TESTNET)
       @pubkey = pubkey
-      @prefix = if mode == MODE_TESTNET
+      @prefix = if mode == MODE::TESTNET
                   PREFIX_TESTNET
-                elsif mode == MODE_MAINNET
+                elsif mode == MODE::MAINNET
                   PREFIX_MAINNET
                 end
     end

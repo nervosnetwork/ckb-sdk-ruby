@@ -2,6 +2,7 @@
 
 require "bech32"
 require "ckb/version"
+require "ckb/mode"
 require "ckb/api"
 require "ckb/blake2b"
 require "ckb/convert_address"
