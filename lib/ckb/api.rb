@@ -48,8 +48,8 @@ module CKB
     end
 
     # Generates address assuming default lock script is used
-    def generate_address(pubkey_hash)
-      CKB::Utils.generate_address(prefix, pubkey_hash)
+    def generate_address(pubkey_blake160)
+      CKB::Utils.generate_address(prefix, pubkey_blake160)
     end
 
     # Parse address into lock assuming default lock script is used
