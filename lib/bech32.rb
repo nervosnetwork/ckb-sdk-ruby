@@ -1,5 +1,4 @@
 # Taken from https://github.com/sipa/bech32/blob/bdc264f84014c234e908d72026b7b780122be11f/ref/ruby/bech32.rb
-# Modified to add this function: https://github.com/sipa/bech32/blob/bdc264f84014c234e908d72026b7b780122be11f/ref/ruby/segwit_addr.rb#L64-L85
 
 # Copyright (c) 2017 Shigeyuki Azuchi
 #
@@ -29,32 +28,8 @@ module Bech32
 
   module_function
 
-  def convert_bits(data, from, to, padding=true)
-    acc = 0
-    bits = 0
-    ret = []
-    maxv = (1 << to) - 1
-    max_acc = (1 << (from + to - 1)) - 1
-    data.each do |v|
-      return nil if v < 0 || (v >> from) != 0
-      acc = ((acc << from) | v) & max_acc
-      bits += from
-      while bits >= to
-        bits -= to
-        ret << ((acc >> bits) & maxv)
-      end
-    end
-    if padding
-      ret << ((acc << (to - bits)) & maxv) unless bits == 0
-    elsif bits >= from || ((acc << (to - bits)) & maxv) != 0
-      return nil
-    end
-    ret
-  end
-
   # Encode Bech32 string
   def encode(hrp, data)
-    data = convert_bits(data.bytes, 8, 5)
     checksummed = data + create_checksum(hrp, data)
     hrp + SEPARATOR + checksummed.map{|i|CHARSET[i]}.join
   end
@@ -77,7 +52,7 @@ module Bech32
     data = bech[pos+1..-1].each_char.map{|c|CHARSET.index(c)}
     # check checksum
     return nil unless verify_checksum(hrp, data)
-    [hrp, convert_bits(data[0..-7], 5, 8, false).map(&:chr).join]
+    [hrp, data[0..-7]]
   end
 
   # Compute the checksum values given hrp and data.

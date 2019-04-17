@@ -34,7 +34,7 @@ module CKB
           index: 0
         }
         cell_data = CKB::Utils.hex_to_bin(system_cell_transaction[:outputs][0][:data])
-        cell_hash = CKB::Utils.bin_to_prefix_hex(CKB::Blake2b.digest(cell_data))
+        cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
         self.set_system_script_cell(out_point, cell_hash, prefix: PREFIX_TESTNET)
       end
     end
@@ -48,8 +48,8 @@ module CKB
     end
 
     # Generates address assuming default lock script is used
-    def generate_address(pubkey_hash_bin)
-      CKB::Utils.generate_address(prefix, pubkey_hash_bin)
+    def generate_address(pubkey_blake160)
+      CKB::Utils.generate_address(prefix, pubkey_blake160)
     end
 
     # Parse address into lock assuming default lock script is used
@@ -69,7 +69,7 @@ module CKB
     end
 
     def genesis_block_hash
-      @genesis_block_hash ||= get_block_hash(0)
+      @genesis_block_hash ||= get_block_hash('0')
     end
 
     def get_block_hash(block_number)
