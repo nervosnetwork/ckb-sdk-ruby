@@ -12,10 +12,10 @@ module CKB
       hex.start_with?("0x") && hex.length.even?
     end
 
-    def self.extract_pubkey(privkey)
-      privkey_bin = hex_to_bin(privkey)
-      pubkey_bin = Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
-      bin_to_hex(pubkey_bin)
+    def self.hex_to_bin(hex)
+      raise ArgumentError, "invalid hex string!" unless valid_hex_string?(hex)
+
+      [hex[2..-1]].pack("H*")
     end
 
     def self.json_script_to_type_hash(script)
@@ -26,70 +26,6 @@ module CKB
         blake2b << hex_to_bin(arg)
       end
       bin_to_hex(blake2b.digest)
-    end
-
-    def self.sign_sighash_all_inputs(inputs, outputs, privkey, pubkeys)
-      blake2b = CKB::Blake2b.new
-      witnesses = []
-      inputs.each do |input|
-        previous_output = input[:previous_output]
-        blake2b.update(hex_to_bin(previous_output[:hash]))
-        blake2b.update(previous_output[:index].to_s)
-      end
-      outputs.each do |output|
-        blake2b.update(output[:capacity].to_s)
-        blake2b.update(hex_to_bin(json_script_to_type_hash(output[:lock])))
-        next unless output[:type]
-
-        blake2b.update(
-          hex_to_bin(
-            json_script_to_type_hash(output[:type])
-          )
-        )
-      end
-      privkey_bin = hex_to_bin(privkey)
-      key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-      signature_bin = key.ecdsa_serialize(
-        key.ecdsa_sign(blake2b.digest, raw: true)
-      )
-      signature_hex = bin_to_hex(signature_bin)
-
-      witnesses = inputs.zip(pubkeys).map do |_input, pubkey|
-        # Same as lock arguments, the witness data here will be considered hex
-        # strings by the C script, those exact hex strings are binaries to the
-        # SDK, hence we also need 2 binary to hex string conversions.
-        {
-          data: [
-            CKB::Utils.bin_to_hex(CKB::Utils.hex_to_bin(pubkey).unpack1("H*")),
-            CKB::Utils.bin_to_hex(CKB::Utils.hex_to_bin(signature_hex).unpack1("H*"))
-          ]
-        }
-      end
-
-      [inputs, witnesses]
-    end
-
-    def self.pubkey_blake160(pubkey)
-      pubkey_bin = hex_to_bin(pubkey)
-      hash_bin = CKB::Blake2b.digest(pubkey_bin)
-      bin_to_hex(hash_bin[0...20])
-    end
-
-    # payload = type(01) | bin-idx("P2PH" => "50/32/50/48") | pubkey blake160
-    # see https://github.com/nervosnetwork/ckb/wiki/Common-Address-Format for more info.
-    def self.generate_address(prefix, pubkey_blake160)
-      pubkey_blake160_bin = hex_to_bin(pubkey_blake160)
-      payload = ["0150325048"].pack("H*") + pubkey_blake160_bin
-      CKB::ConvertAddress.encode(prefix, payload)
-    end
-
-    def self.parse_address(address, prefix)
-      decoded_prefix, data = CKB::ConvertAddress.decode(address)
-      raise "Invalid prefix" if decoded_prefix != prefix
-
-      raise "Invalid type/bin-idx" if data.slice(0..4) != ["0150325048"].pack("H*")
-
-      CKB::Utils.bin_to_hex(data.slice(5..-1))
     end
 
     def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)
@@ -109,17 +45,6 @@ module CKB
           CKB::Utils.bin_to_hex(target_pubkey_blake160_bin.unpack1("H*"))
         ]
       }
-    end
-
-    private
-
-    # Conversions from hex string to binary is kept as private method
-    # so we can ensure code outside of this utils module only needs to deal
-    # with hex strings
-    def self.hex_to_bin(hex)
-      raise ArgumentError, "invalid hex string!" unless valid_hex_string?(hex)
-
-      [hex[2..-1]].pack("H*")
     end
   end
 end

@@ -10,28 +10,17 @@ module CKB
   class Wallet
     attr_reader :api
     # privkey is a bin string
-    attr_reader :privkey
+    attr_reader :key
 
     # @param api [CKB::API]
-    # @param privkey [String] hex string
-    def initialize(api, privkey)
-      raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 66
-      raise ArgumentError, "invalid hex string!" unless CKB::Utils.valid_hex_string?(privkey)
-
+    # @param key [CKB::Key]
+    def initialize(api, key)
       @api = api
-      @privkey = privkey
+      @key = key
     end
 
-    def self.random_private_key
-      CKB::Utils.bin_to_hex(SecureRandom.bytes(32))
-    end
-
-    # @param api [CKB::API]
-    # @param privkey_hex [String] hex string
-    #
-    # @return [CKB::Wallet]
     def self.from_hex(api, privkey)
-      new(api, privkey)
+      new(api, Key.new(privkey))
     end
 
     def get_unspent_cells
@@ -59,8 +48,10 @@ module CKB
         {
           capacity: capacity.to_s,
           data: "0x",
-          lock: CKB::Utils.generate_lock(api.parse_address(target_address),
-                                         api.system_script_cell_hash)
+          lock: CKB::Utils.generate_lock(
+            key.address.parse(target_address),
+            api.system_script_cell_hash
+          )
         }
       ]
       if input_capacities > capacity
@@ -71,15 +62,14 @@ module CKB
         }
       end
 
-      inputs, witnesses = CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey, i.pubkeys)
-
-      {
+      tx = Transaction.new(
         version: 0,
         deps: [api.system_script_out_point],
-        inputs: inputs,
-        outputs: outputs,
-        witnesses: witnesses
-      }
+        inputs: i.inputs,
+        outputs: outputs
+      )
+
+      tx.sign(key)
     end
 
     # @param target_address [String]
@@ -95,7 +85,7 @@ module CKB
     end
 
     def block_assembler_config
-      %Q(
+      %(
 [block_assembler]
 binary_hash = "#{lock[:binary_hash]}"
 args = #{lock[:args]}
@@ -103,13 +93,14 @@ args = #{lock[:args]}
     end
 
     def address
-      api.generate_address(pubkey_blake160)
+      @key.address.to_s
     end
 
     private
 
+    # @param transaction [CKB::Transaction | Hash]
     def send_transaction(transaction)
-      api.send_transaction(transaction)
+      api.send_transaction(transaction.to_h)
     end
 
     def gather_inputs(capacity, min_capacity)
@@ -137,11 +128,7 @@ args = #{lock[:args]}
     end
 
     def pubkey
-      CKB::Utils.extract_pubkey(privkey)
-    end
-
-    def pubkey_blake160
-      CKB::Utils.pubkey_blake160(pubkey)
+      @key.pubkey
     end
 
     def lock_hash
@@ -149,9 +136,11 @@ args = #{lock[:args]}
     end
 
     def lock
-      CKB::Utils.generate_lock(pubkey_blake160, api.system_script_cell_hash)
+      CKB::Utils.generate_lock(
+        @key.address.blake160,
+        api.system_script_cell_hash
+      )
     end
-
   end
 end
 
