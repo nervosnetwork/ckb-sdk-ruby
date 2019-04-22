@@ -4,7 +4,7 @@ RSpec.describe CKB::API do
   end
 
   let(:api) { CKB::API.new }
-  let(:type_hash) { "0x8954a4ac5e5c33eb7aa8bb91e0a000179708157729859bd8cf7e2278e1e12980" }
+  let(:lock_hash) { "0x266cec97cbede2cfbce73666f08deed9560bdf7841a7a5a51b3a3f09da249e21" }
 
   it "genesis block" do
     result = api.genesis_block
@@ -34,8 +34,8 @@ RSpec.describe CKB::API do
     expect(result > 0).to be true
   end
 
-  it "get cells by type hash" do
-    result = api.get_cells_by_type_hash(type_hash, 1, 100)
+  it "get cells by lock hash" do
+    result = api.get_cells_by_lock_hash(lock_hash, 0, 100)
     expect(result).not_to be nil
   end
 
@@ -47,7 +47,7 @@ RSpec.describe CKB::API do
   end
 
   it "get live cell" do
-    cells = api.get_cells_by_type_hash(type_hash, 1, 100)
+    cells = api.get_cells_by_lock_hash(lock_hash, 0, 100)
     result = api.get_live_cell(cells[0][:out_point])
     expect(result).not_to be nil
   end

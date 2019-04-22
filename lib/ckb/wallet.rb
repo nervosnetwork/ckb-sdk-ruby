@@ -13,24 +13,25 @@ module CKB
     attr_reader :privkey
 
     # @param api [CKB::API]
-    # @param privkey [String] bin string
+    # @param privkey [String] hex string
     def initialize(api, privkey)
-      raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 32
+      raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 66
+      raise ArgumentError, "invalid hex string!" unless CKB::Utils.valid_hex_string?(privkey)
 
       @api = api
       @privkey = privkey
+    end
+
+    def self.random_private_key
+      CKB::Utils.bin_to_hex(SecureRandom.bytes(32))
     end
 
     # @param api [CKB::API]
     # @param privkey_hex [String] hex string
     #
     # @return [CKB::Wallet]
-    def self.from_hex(api, privkey_hex)
-      new(api, CKB::Utils.hex_to_bin(privkey_hex))
-    end
-
-    def address
-      verify_type_hash
+    def self.from_hex(api, privkey)
+      new(api, privkey)
     end
 
     def get_unspent_cells
@@ -39,7 +40,7 @@ module CKB
       current_from = 1
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_type_hash(address, current_from, current_to)
+        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
         results.concat(cells)
         current_from = current_to + 1
       end
@@ -57,41 +58,60 @@ module CKB
       outputs = [
         {
           capacity: capacity,
-          data: "",
-          lock: target_address
+          data: "0x",
+          lock: CKB::Utils.generate_lock(api.parse_address(target_address),
+                                         api.system_script_cell_hash)
         }
       ]
       if input_capacities > capacity
         outputs << {
           capacity: input_capacities - capacity,
-          data: "",
-          lock: address
+          data: "0x",
+          lock: lock
         }
       end
+
+      inputs, witnesses = CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey, i.pubkeys)
+
       {
         version: 0,
         deps: [api.system_script_out_point],
-        inputs: CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey),
-        outputs: outputs
+        inputs: inputs,
+        outputs: outputs,
+        witnesses: witnesses
       }
     end
 
-    # @param target_address [String] "0x..."
+    # @param target_address [String]
     # @param capacity [Integer]
     def send_capacity(target_address, capacity)
       tx = generate_tx(target_address, capacity)
-      send_transaction_bin(tx)
+      send_transaction(tx)
     end
 
     # @param hash_hex [String] "0x..."
-    def get_transaction(hash_hex)
-      api.get_transaction(hash_hex)
+    def get_transaction(hash)
+      api.get_transaction(hash)
+    end
+
+    def block_assembler_config
+      args = lock[:args].map do |arg|
+        "[#{CKB::Utils.hex_to_bin(arg).bytes.map(&:to_s).join(', ')}]"
+      end.join(", ")
+      %(
+[block_assembler]
+binary_hash = "#{lock[:binary_hash]}"
+args = [#{args}]
+     ).strip
+    end
+
+    def address
+      api.generate_address(pubkey_blake160)
     end
 
     private
 
-    def send_transaction_bin(transaction)
-      transaction = CKB::Utils.normalize_tx_for_json!(transaction)
+    def send_transaction(transaction)
       api.send_transaction(transaction)
     end
 
@@ -100,11 +120,13 @@ module CKB
 
       input_capacities = 0
       inputs = []
+      pubkeys = []
       get_unspent_cells.each do |cell|
         input = {
           previous_output: cell[:out_point],
-          unlock: verify_script_json_object
+          args: []
         }
+        pubkeys << pubkey
         inputs << input
         input_capacities += cell[:capacity]
 
@@ -113,31 +135,23 @@ module CKB
 
       raise "Not enough capacity!" if input_capacities < capacity
 
-      OpenStruct.new(inputs: inputs, capacities: input_capacities)
+      OpenStruct.new(inputs: inputs, capacities: input_capacities, pubkeys: pubkeys)
     end
 
     def pubkey
-      CKB::Utils.bin_to_hex(pubkey_bin)
+      CKB::Utils.extract_pubkey(privkey)
     end
 
-    def pubkey_bin
-      CKB::Utils.extract_pubkey_bin(privkey)
+    def pubkey_blake160
+      CKB::Utils.pubkey_blake160(pubkey)
     end
 
-    def verify_script_json_object
-      {
-        version: 0,
-        reference: api.system_script_cell_hash,
-        signed_args: [
-          # We could of course just hash raw bytes, but since right now CKB
-          # CLI already uses this scheme, we stick to the same way for compatibility
-          pubkey
-        ]
-      }
+    def lock_hash
+      @lock_hash ||= CKB::Utils.json_script_to_type_hash(lock)
     end
 
-    def verify_type_hash
-      @verify_type_hash ||= CKB::Utils.json_script_to_type_hash(verify_script_json_object)
+    def lock
+      CKB::Utils.generate_lock(pubkey_blake160, api.system_script_cell_hash)
     end
   end
 end

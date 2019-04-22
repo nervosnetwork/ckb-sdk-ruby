@@ -13,18 +13,48 @@ module CKB
     attr_reader :uri
     attr_reader :system_script_out_point
     attr_reader :system_script_cell_hash
+    attr_reader :prefix
 
     DEFAULT_URL = "http://localhost:8114"
 
-    def initialize(host: DEFAULT_URL)
+    MODE_TESTNET = "testnet"
+    MODE_CUSTOM = "custom"
+
+    PREFIX_MAINNET = "ckb"
+    PREFIX_TESTNET = "ckt"
+
+    def initialize(host: DEFAULT_URL, mode: MODE_TESTNET)
       @uri = URI(host)
+      if mode == MODE_TESTNET
+        # For testnet chain, we can assume the first cell of the first transaction
+        # in the genesis block contains default lock script we can use here.
+        system_cell_transaction = genesis_block[:commit_transactions][0]
+        out_point = {
+          hash: system_cell_transaction[:hash],
+          index: 0
+        }
+        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction[:outputs][0][:data])
+        cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
+        self.set_system_script_cell(out_point, cell_hash, prefix: PREFIX_TESTNET)
+      end
     end
 
     # @param out_point [Hash] { hash: "0x...", index: 0 }
     # @param cell_hash [String] "0x..."
-    def set_system_script_cell(out_point, cell_hash)
+    def set_system_script_cell(out_point, cell_hash, prefix: PREFIX_MAINNET)
       @system_script_out_point = out_point
       @system_script_cell_hash = cell_hash
+      @prefix = prefix
+    end
+
+    # Generates address assuming default lock script is used
+    def generate_address(pubkey_blake160)
+      CKB::Utils.generate_address(prefix, pubkey_blake160)
+    end
+
+    # Parse address into lock assuming default lock script is used
+    def parse_address(address)
+      CKB::Utils.parse_address(address, prefix)
     end
 
     def system_script_cell
@@ -58,8 +88,8 @@ module CKB
       rpc_request("get_tip_block_number")
     end
 
-    def get_cells_by_type_hash(hash, from, to)
-      rpc_request("get_cells_by_type_hash", params: [hash, from, to])
+    def get_cells_by_lock_hash(hash, from, to)
+      rpc_request("get_cells_by_lock_hash", params: [hash, from, to])
     end
 
     def get_transaction(tx_hash)
