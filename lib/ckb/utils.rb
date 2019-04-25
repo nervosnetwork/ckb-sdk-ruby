@@ -20,7 +20,7 @@ module CKB
 
     def self.json_script_to_type_hash(script)
       blake2b = CKB::Blake2b.new
-      blake2b << hex_to_bin(script[:binary_hash]) if script[:binary_hash]
+      blake2b << hex_to_bin(script[:code_hash]) if script[:code_hash]
       args = script[:args] || []
       args.each do |arg|
         blake2b << hex_to_bin(arg)
@@ -31,7 +31,7 @@ module CKB
     def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)
       target_pubkey_blake160_bin = CKB::Utils.hex_to_bin(target_pubkey_blake160)
       {
-        binary_hash: system_script_cell_hash,
+        code_hash: system_script_cell_hash,
         args: [
           # There are 2 conversions from binary to hex string here:
           # 1. The inner unpack1 is required since the deployed lock script

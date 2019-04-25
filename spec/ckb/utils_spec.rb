@@ -19,7 +19,7 @@ RSpec.describe CKB::Utils do
     )
     always_success_cell_hash = Utils.bin_to_hex(hash_bin)
     {
-      binary_hash: always_success_cell_hash,
+      code_hash: always_success_cell_hash,
       args: []
     }
   end
