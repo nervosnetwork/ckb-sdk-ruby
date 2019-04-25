@@ -5,7 +5,7 @@
 require "secp256k1"
 
 module CKB
-  MIN_CELL_CAPACITY = 40
+  MIN_CELL_CAPACITY = 40 * (10 ** 8)
 
   class Wallet
     attr_reader :api
