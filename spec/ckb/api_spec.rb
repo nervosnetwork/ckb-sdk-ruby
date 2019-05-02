@@ -43,7 +43,7 @@ RSpec.describe CKB::API do
     tx = api.genesis_block[:transactions].first
     result = api.get_transaction(tx[:hash])
     expect(result).not_to be nil
-    expect(result[:hash]).to eq tx[:hash]
+    expect(result[:transaction][:hash]).to eq tx[:hash]
   end
 
   it "get live cell" do
