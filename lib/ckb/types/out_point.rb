@@ -19,7 +19,7 @@ module CKB
         }
       end
 
-      def from_h(hash)
+      def self.from_h(hash)
         new(
           tx_hash: hash[:tx_hash],
           index: hash[:index]

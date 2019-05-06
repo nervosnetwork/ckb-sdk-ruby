@@ -44,14 +44,14 @@ module CKB
       def to_h
         {
           version: @version,
-          deps: @deps,
-          inputs: @inputs,
-          outputs: @outputs,
-          witnesses: @witnesses
+          deps: @deps.map(&:to_h),
+          inputs: @inputs.map(&:to_h),
+          outputs: @outputs.map(&:to_h),
+          witnesses: @witnesses.map(&:to_h)
         }
       end
 
-      def from_h(hash)
+      def self.from_h(hash)
         new(
           version: hash[:version],
           deps: hash[:deps].map { |dep| OutPoint.from_h(dep) },

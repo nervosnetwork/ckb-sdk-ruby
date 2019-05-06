@@ -9,7 +9,7 @@ module CKB
       # @param data: [String] 0x...
       # @param lock [CKB::Types::Script]
       # @param type [CKB::Types::Script]
-      def initialize(capactity:, data: "0x", lock:, type: nil)
+      def initialize(capacity:, data: "0x", lock:, type: nil)
         @capacity = capacity.to_i
         @data = data
         @lock = lock

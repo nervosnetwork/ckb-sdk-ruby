@@ -14,8 +14,8 @@ module CKB
 
       def to_h
         {
-          transactions: @transaction.map(&:to_h),
-          header: header
+          transactions: @transactions.map(&:to_h),
+          header: header.to_h
         }
       end
 
