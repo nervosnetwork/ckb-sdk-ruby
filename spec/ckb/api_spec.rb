@@ -9,6 +9,7 @@ RSpec.describe CKB::API do
   it "genesis block" do
     result = api.genesis_block
     expect(result).not_to be nil
+    expect(result[:header][:number]).to eq "0"
   end
 
   it "genesis block hash" do
