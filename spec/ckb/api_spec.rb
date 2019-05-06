@@ -23,6 +23,13 @@ RSpec.describe CKB::API do
     expect(result[:header][:hash]).to eq genesis_block_hash
   end
 
+  it "get block by number" do
+    block_number = "0"
+    result = api.get_block_by_number(block_number)
+    expect(result).not_to be nil
+    expect(result[:header][:number]).to eq block_number
+  end
+
   it "get tip header" do
     result = api.get_tip_header
     expect(result).not_to be nil
