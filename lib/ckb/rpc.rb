@@ -18,6 +18,14 @@ module CKB
       @uri = URI(host)
     end
 
+    def genesis_block
+      @genesis_block ||= get_block_by_number("0")
+    end
+
+    def genesis_block_hash
+      @genesis_block_hash ||= get_block_hash("0")
+    end
+
     def get_block_hash(block_number)
       rpc_request("get_block_hash", params: [block_number])
     end
