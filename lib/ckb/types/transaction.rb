@@ -20,7 +20,7 @@ module CKB
           # Same as lock arguments, the witness data here will be considered hex
           # strings by the C script, those exact hex strings are binaries to the
           # SDK, hence we also need 2 binary to hex string conversions.
-          {
+          Types::Witness.from_h(
             data: [
               CKB::Utils.bin_to_hex(
                 CKB::Utils.hex_to_bin(key.pubkey).unpack1("H*")
@@ -29,7 +29,7 @@ module CKB
                 CKB::Utils.hex_to_bin(signature_hex_var).unpack1("H*")
               )
             ]
-          }
+          )
         end
 
         self.class.new(
@@ -66,22 +66,22 @@ module CKB
       def signature_hex(key)
         blake2b = CKB::Blake2b.new
         inputs.each do |input|
-          previous_output = input[:previous_output]
-          blake2b.update(Utils.hex_to_bin(previous_output[:tx_hash]))
-          blake2b.update(previous_output[:index].to_s)
+          previous_output = input.previous_output
+          blake2b.update(Utils.hex_to_bin(previous_output.tx_hash))
+          blake2b.update(previous_output.index.to_s)
         end
         outputs.each do |output|
-          blake2b.update(output[:capacity].to_s)
+          blake2b.update(output.capacity.to_s)
           blake2b.update(
             Utils.hex_to_bin(
-              Utils.json_script_to_type_hash(output[:lock])
+              output.lock.to_hash
             )
           )
-          next unless output[:type]
+          next unless output.type
 
           blake2b.update(
             Utils.hex_to_bin(
-              Utils.json_script_to_type_hash(output[:type])
+              output.type.to_hash
             )
           )
         end
