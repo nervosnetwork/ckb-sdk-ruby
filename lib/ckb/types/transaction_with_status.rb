@@ -14,14 +14,14 @@ module CKB
       def to_h
         {
           transaction: @transaction.to_h,
-          tx_status: @tx_status.to_h,
+          tx_status: @tx_status.to_h
         }
       end
 
       def self.from_h(hash)
         new(
           transaction: Transaction.from_h(hash[:transaction]),
-          tx_stauts: TxStatus.from_h(hash[:tx_status])
+          tx_status: TxStatus.from_h(hash[:tx_status])
         )
       end
     end

@@ -3,9 +3,10 @@
 module CKB
   module Types
     class Transaction
-      attr_reader :version, :deps, :inputs, :outputs, :witnesses
+      attr_reader :version, :deps, :inputs, :outputs, :witnesses, :hash
 
-      def initialize(version: 0, deps: [], inputs: [], outputs: [], witnesses: [])
+      def initialize(hash: nil, version: 0, deps: [], inputs: [], outputs: [], witnesses: [])
+        @hash = hash
         @version = version
         @deps = deps
         @inputs = inputs
@@ -33,6 +34,7 @@ module CKB
         end
 
         self.class.new(
+          hash: hash,
           version: version,
           deps: deps,
           inputs: inputs,
@@ -42,19 +44,22 @@ module CKB
       end
 
       def to_h
-        {
+        hash = {
           version: @version,
           deps: @deps.map(&:to_h),
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
           witnesses: @witnesses.map(&:to_h)
         }
+        hash[:hash] = @hash if @hash
+        hash
       end
 
       def self.from_h(hash)
         new(
+          hash: hash[:hash],
           version: hash[:version],
-          deps: hash[:deps].map { |dep| OutPoint.from_h(dep) },
+          deps: hash[:deps]&.map { |dep| OutPoint.from_h(dep) },
           inputs: hash[:inputs].map { |input| Input.from_h(input) },
           outputs: hash[:outputs].map { |output| Output.from_h(output) },
           witnesses: hash[:witnesses].map { |witness| Witness.from_h(witness) }

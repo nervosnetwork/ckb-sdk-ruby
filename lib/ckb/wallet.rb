@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-# rubocop:disable Naming/AccessorMethodName
-
 require "secp256k1"
 
 module CKB
-  MIN_CELL_CAPACITY = 40 * (10 ** 8)
+  MIN_CELL_CAPACITY = 40 * (10**8)
 
   class Wallet
     attr_reader :api
@@ -23,6 +21,7 @@ module CKB
       new(api, Key.new(privkey))
     end
 
+    # @return [CKB::Types::Output[]]
     def get_unspent_cells
       to = api.get_tip_block_number.to_i
       results = []
@@ -37,7 +36,7 @@ module CKB
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell[:capacity].to_i }.reduce(0, &:+)
+      get_unspent_cells.map { |cell| cell.capacity.to_i }.reduce(0, &:+)
     end
 
     def generate_tx(target_address, capacity)
@@ -45,24 +44,22 @@ module CKB
       input_capacities = i.capacities
 
       outputs = [
-        {
-          capacity: capacity.to_s,
-          data: "0x",
-          lock: CKB::Utils.generate_lock(
+        Types::Output.new(
+          capacity: capacity,
+          lock: Types::Script.generate_lock(
             key.address.parse(target_address),
             api.system_script_cell_hash
           )
-        }
+        )
       ]
       if input_capacities > capacity
-        outputs << {
-          capacity: (input_capacities - capacity).to_s,
-          data: "0x",
+        outputs << Types::Output.new(
+          capacity: input_capacities - capacity,
           lock: lock
-        }
+        )
       end
 
-      tx = Transaction.new(
+      tx = Types::Transaction.new(
         version: 0,
         deps: [api.system_script_out_point],
         inputs: i.inputs,
@@ -80,6 +77,8 @@ module CKB
     end
 
     # @param hash_hex [String] "0x..."
+    #
+    # @return [CKB::Types::Transaction]
     def get_transaction(hash)
       api.get_transaction(hash)
     end
@@ -87,8 +86,8 @@ module CKB
     def block_assembler_config
       %(
 [block_assembler]
-code_hash = "#{lock[:code_hash]}"
-args = #{lock[:args]}
+code_hash = "#{lock.code_hash}"
+args = #{lock.args}
      ).strip
     end
 
@@ -98,11 +97,13 @@ args = #{lock[:args]}
 
     private
 
-    # @param transaction [CKB::Transaction | Hash]
+    # @param transaction [CKB::Transaction]
     def send_transaction(transaction)
-      api.send_transaction(transaction.to_h)
+      api.send_transaction(transaction)
     end
 
+    # @param capacity [Integer]
+    # @param min_capacity [Integer]
     def gather_inputs(capacity, min_capacity)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
@@ -110,14 +111,14 @@ args = #{lock[:args]}
       inputs = []
       pubkeys = []
       get_unspent_cells.each do |cell|
-        input = {
-          previous_output: cell[:out_point],
+        input = Types::Input.new(
+          previous_output: cell.out_point,
           args: [],
           since: "0"
-        }
+        )
         pubkeys << pubkey
         inputs << input
-        input_capacities += cell[:capacity].to_i
+        input_capacities += cell.capacity.to_i
 
         break if input_capacities >= capacity && (input_capacities - capacity) >= min_capacity
       end
@@ -132,16 +133,15 @@ args = #{lock[:args]}
     end
 
     def lock_hash
-      @lock_hash ||= CKB::Utils.json_script_to_type_hash(lock)
+      @lock_hash ||= lock.to_hash
     end
 
+    # @return [CKB::Types::Script]
     def lock
-      CKB::Utils.generate_lock(
+      Types::Script.generate_lock(
         @key.address.blake160,
         api.system_script_cell_hash
       )
     end
   end
 end
-
-# rubocop:enable Naming/AccessorMethodName

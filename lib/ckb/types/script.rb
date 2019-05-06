@@ -28,12 +28,12 @@ module CKB
 
       def to_hash
         blake2b = CKB::Blake2b.new
-        blake2b << hex_to_bin(@code_hash) if @code_hash
+        blake2b << Utils.hex_to_bin(@code_hash) if @code_hash
         args = @args || []
         args.each do |arg|
-          blake2b << hex_to_bin(arg)
+          blake2b << Utils.hex_to_bin(arg)
         end
-        bin_to_hex(blake2b.digest)
+        Utils.bin_to_hex(blake2b.digest)
       end
 
       def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)

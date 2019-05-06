@@ -94,10 +94,10 @@ module CKB
 
     # @param tx_hash [String]
     #
-    # @return [CKB::Types::Transaction]
+    # @return [CKB::Types::TransactionWithStatus]
     def get_transaction(tx_hash)
       tx_h = rpc.get_transaction(tx_hash)
-      Types::Transaction.from_h(tx_h)
+      Types::TransactionWithStatus.from_h(tx_h)
     end
 
     # @param out_point [CKB::Types::OutPoint]
