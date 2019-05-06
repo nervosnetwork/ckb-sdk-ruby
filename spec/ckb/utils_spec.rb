@@ -11,25 +11,6 @@ RSpec.describe CKB::Utils do
   let(:prefix) { "ckt" }
   let(:address) { "ckt1q9gry5zgxmpjnmtrp4kww5r39frh2sm89tdt2l6v234ygf" }
 
-  context "address" do
-    it "pubkey blake160" do
-      expect(
-        Utils.pubkey_blake160(pubkey)
-      ).to eq pubkey_blake160
-    end
-
-    it "generate_address" do
-      generated_address = Utils.generate_address(prefix, pubkey_blake160)
-      expect(generated_address).to eq address
-    end
-
-    it "parse_address" do
-      expect(
-        Utils.parse_address(address, prefix)
-      ).to eq pubkey_blake160
-    end
-  end
-
   def always_success_json_object
     hash_bin = CKB::Blake2b.digest(
       Utils.hex_to_bin(
@@ -38,7 +19,6 @@ RSpec.describe CKB::Utils do
     )
     always_success_cell_hash = Utils.bin_to_hex(hash_bin)
     {
-      version: 0,
       binary_hash: always_success_cell_hash,
       args: []
     }
@@ -69,10 +49,6 @@ RSpec.describe CKB::Utils do
     bin = [hex].pack("H*")
     prefix_hex = "0x#{hex}"
     expect(Utils.bin_to_hex(bin)).to eq prefix_hex
-  end
-
-  it "extract pubkey" do
-    expect(Utils.extract_pubkey(privkey)).to eq pubkey
   end
 
   it "json script to type hash" do

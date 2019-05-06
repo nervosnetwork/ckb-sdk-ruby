@@ -5,6 +5,7 @@ AllCops:
     - 'bin/*'
     - 'Gemfile.lock'
     - 'ckb-sdk-ruby.gemspec'
+    - 'lib/bech32.rb'
 
 Bundler/OrderedGems:
   Enabled: false

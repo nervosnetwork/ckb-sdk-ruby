@@ -10,37 +10,26 @@ module CKB
   class Wallet
     attr_reader :api
     # privkey is a bin string
-    attr_reader :privkey
+    attr_reader :key
 
     # @param api [CKB::API]
-    # @param privkey [String] hex string
-    def initialize(api, privkey)
-      raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 66
-      raise ArgumentError, "invalid hex string!" unless CKB::Utils.valid_hex_string?(privkey)
-
+    # @param key [CKB::Key]
+    def initialize(api, key)
       @api = api
-      @privkey = privkey
+      @key = key
     end
 
-    def self.random_private_key
-      CKB::Utils.bin_to_hex(SecureRandom.bytes(32))
-    end
-
-    # @param api [CKB::API]
-    # @param privkey_hex [String] hex string
-    #
-    # @return [CKB::Wallet]
     def self.from_hex(api, privkey)
-      new(api, privkey)
+      new(api, Key.new(privkey))
     end
 
     def get_unspent_cells
-      to = api.get_tip_block_number
+      to = api.get_tip_block_number.to_i
       results = []
       current_from = 1
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
+        cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
         results.concat(cells)
         current_from = current_to + 1
       end
@@ -48,7 +37,7 @@ module CKB
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell[:capacity] }.reduce(0, &:+)
+      get_unspent_cells.map { |cell| cell[:capacity].to_i }.reduce(0, &:+)
     end
 
     def generate_tx(target_address, capacity)
@@ -57,29 +46,30 @@ module CKB
 
       outputs = [
         {
-          capacity: capacity,
+          capacity: capacity.to_s,
           data: "0x",
-          lock: CKB::Utils.generate_lock(api.parse_address(target_address),
-                                         api.system_script_cell_hash)
+          lock: CKB::Utils.generate_lock(
+            key.address.parse(target_address),
+            api.system_script_cell_hash
+          )
         }
       ]
       if input_capacities > capacity
         outputs << {
-          capacity: input_capacities - capacity,
+          capacity: (input_capacities - capacity).to_s,
           data: "0x",
           lock: lock
         }
       end
 
-      inputs, witnesses = CKB::Utils.sign_sighash_all_inputs(i.inputs, outputs, privkey, i.pubkeys)
-
-      {
+      tx = Transaction.new(
         version: 0,
         deps: [api.system_script_out_point],
-        inputs: inputs,
-        outputs: outputs,
-        witnesses: witnesses
-      }
+        inputs: i.inputs,
+        outputs: outputs
+      )
+
+      tx.sign(key)
     end
 
     # @param target_address [String]
@@ -95,24 +85,22 @@ module CKB
     end
 
     def block_assembler_config
-      args = lock[:args].map do |arg|
-        "[#{CKB::Utils.hex_to_bin(arg).bytes.map(&:to_s).join(', ')}]"
-      end.join(", ")
       %(
 [block_assembler]
 binary_hash = "#{lock[:binary_hash]}"
-args = [#{args}]
+args = #{lock[:args]}
      ).strip
     end
 
     def address
-      api.generate_address(pubkey_blake160)
+      @key.address.to_s
     end
 
     private
 
+    # @param transaction [CKB::Transaction | Hash]
     def send_transaction(transaction)
-      api.send_transaction(transaction)
+      api.send_transaction(transaction.to_h)
     end
 
     def gather_inputs(capacity, min_capacity)
@@ -124,11 +112,12 @@ args = [#{args}]
       get_unspent_cells.each do |cell|
         input = {
           previous_output: cell[:out_point],
-          args: []
+          args: [],
+          valid_since: "0"
         }
         pubkeys << pubkey
         inputs << input
-        input_capacities += cell[:capacity]
+        input_capacities += cell[:capacity].to_i
 
         break if input_capacities >= capacity && (input_capacities - capacity) >= min_capacity
       end
@@ -139,11 +128,7 @@ args = [#{args}]
     end
 
     def pubkey
-      CKB::Utils.extract_pubkey(privkey)
-    end
-
-    def pubkey_blake160
-      CKB::Utils.pubkey_blake160(pubkey)
+      @key.pubkey
     end
 
     def lock_hash
@@ -151,7 +136,10 @@ args = [#{args}]
     end
 
     def lock
-      CKB::Utils.generate_lock(pubkey_blake160, api.system_script_cell_hash)
+      CKB::Utils.generate_lock(
+        @key.address.blake160,
+        api.system_script_cell_hash
+      )
     end
   end
 end
