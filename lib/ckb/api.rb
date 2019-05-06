@@ -7,32 +7,28 @@ require "json"
 require "uri"
 
 module CKB
-  class RPCError < StandardError; end
-
   class API
-    attr_reader :uri
+    attr_reader :rpc
     attr_reader :system_script_out_point
     attr_reader :system_script_cell_hash
 
-    DEFAULT_URL = "http://localhost:8114"
-
-    def initialize(host: DEFAULT_URL, mode: MODE::TESTNET)
-      @uri = URI(host)
+    def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
+      @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # For testnet chain, we can assume the first cell of the first transaction
         # in the genesis block contains default lock script we can use here.
-        system_cell_transaction = genesis_block[:transactions][0]
-        out_point = {
-          tx_hash: system_cell_transaction[:hash],
+        system_cell_transaction = genesis_block.transactions.first
+        out_point = Types::OutPoint.new(
+          tx_hash: system_cell_transaction.hash,
           index: 0
-        }
-        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction[:outputs][0][:data])
+        )
+        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[0].data)
         cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
         set_system_script_cell(out_point, cell_hash)
       end
     end
 
-    # @param out_point [Hash] { hash: "0x...", index: 0 }
+    # @param out_point [CKB::Types::OutPoint]
     # @param cell_hash [String] "0x..."
     def set_system_script_cell(out_point, cell_hash)
       @system_script_out_point = out_point
@@ -54,76 +50,92 @@ module CKB
       @genesis_block_hash ||= get_block_hash("0")
     end
 
+    # @return [String | Integer]
     def get_block_hash(block_number)
-      rpc_request("get_block_hash", params: [block_number])
+      rpc.get_block_hash(block_number.to_s)
     end
 
+    # @param block_hash [String] 0x...
+    #
+    # @return [CKB::Types::Block]
     def get_block(block_hash)
-      rpc_request("get_block", params: [block_hash])
+      block_h = rpc.get_block(block_hash)
+      Types::Block.from_h(block_h)
     end
 
+    # @param block_number [String | Integer]
+    #
+    # @return [CKB::Types::Block]
     def get_block_by_number(block_number)
-      rpc_request("get_block_by_number", params: [block_number.to_s])
+      block_h = rpc.get_block_by_number(block_number.to_s)
+      Types::Block.from_h(block_h)
     end
 
+    # @return [CKB::Types::BlockHeader]
     def get_tip_header
-      rpc_request("get_tip_header")
+      header_h = rpc.get_tip_header
+      Types::BlockHeader.from_h(header_h)
     end
 
+    # @return [String]
     def get_tip_block_number
-      rpc_request("get_tip_block_number")
+      rpc.get_tip_block_number
     end
 
+    # @param hash [String] 0x...
+    # @param from [String | Integer]
+    # @param to [String | Integer]
+    #
+    # @return [CKB::Types::Output[]]
     def get_cells_by_lock_hash(hash, from, to)
-      rpc_request("get_cells_by_lock_hash", params: [hash, from, to])
+      outputs = rpc.get_cells_by_lock_hash(hash, from.to_s, to.to_s)
+      outputs.map { |output| Types::Output.from_h(output) }
     end
 
+    # @param tx_hash [String]
+    #
+    # @return [CKB::Types::Transaction]
     def get_transaction(tx_hash)
-      rpc_request("get_transaction", params: [tx_hash])
+      tx_h = rpc.get_transaction(tx_hash)
+      Types::Transaction.from_h(tx_h)
     end
 
+    # @param out_point [CKB::Types::OutPoint]
+    #
+    # @return [CKB::Types::CellWithStatus]
     def get_live_cell(out_point)
-      rpc_request("get_live_cell", params: [out_point])
+      cell_h = rpc.get_live_cell(out_point.to_h)
+      Types::CellWithStatus.from_h(cell_h)
     end
 
+    # @param transaction [CKB::Types::Transaction]
+    #
+    # @return [String] tx_hash
     def send_transaction(transaction)
-      rpc_request("send_transaction", params: [transaction])
+      rpc.send_transaction(transaction.to_h)
     end
 
+    # @return [Hash]
     def local_node_info
-      rpc_request("local_node_info")
+      rpc.local_node_info
     end
 
+    # @param transaction [CKB::Types::Transaction]
+    #
+    # @return [String] tx_hash
     def trace_transaction(transaction)
-      rpc_request("trace_transaction", params: [transaction])
+      rpc.trace_transaction(transaction.to_h)
     end
 
+    # @param hash [String]
+    #
+    # @return [Hash[]]
     def get_transaction_trace(hash)
-      rpc_request("get_transaction_trace", params: [hash])
+      rpc.get_transaction_trace(hash)
     end
 
     def inspect
       "\#<API@#{uri}>"
-    end
-
-    private
-
-    def rpc_request(method, params: nil)
-      http = Net::HTTP.new(uri.host, uri.port)
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.body = {
-        id: 1,
-        jsonrpc: "2.0",
-        method: method.to_s,
-        params: params
-      }.to_json
-      request["Content-Type"] = "application/json"
-      response = http.request(request)
-      result = JSON.parse(response.body, symbolize_names: true)
-
-      raise RPCError, "jsonrpc error: #{result[:error]}" if result[:error]
-
-      result[:result]
     end
   end
 end
