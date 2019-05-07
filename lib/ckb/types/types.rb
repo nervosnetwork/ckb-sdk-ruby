@@ -11,6 +11,7 @@ require_relative "transaction_with_status"
 require_relative "transaction"
 require_relative "tx_status"
 require_relative "witness"
+require_relative "epoch"
 
 module CKB
   module Types

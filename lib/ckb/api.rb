@@ -134,6 +134,11 @@ module CKB
       rpc.get_transaction_trace(hash)
     end
 
+    # @return [CKB::Types::Epoch]
+    def get_current_epoch
+      Types::Epoch.from_h(rpc.get_current_epoch)
+    end
+
     def inspect
       "\#<API@#{uri}>"
     end

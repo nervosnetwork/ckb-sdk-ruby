@@ -70,4 +70,10 @@ RSpec.describe CKB::API do
       api.send_transaction(tx)
     }.to raise_error(CKB::RPCError, /:code=>-3/)
   end
+
+  it "get current epoch" do
+    result = api.get_current_epoch
+    expect(result).not_to be nil
+    expect(result).to be_a(Types::Epoch)
+  end
 end
