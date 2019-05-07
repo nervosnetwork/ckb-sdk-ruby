@@ -28,7 +28,8 @@ module CKB
     end
 
     class BlockHeader
-      attr_reader :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_root, :uncles_count, :uncles_hash, :version, :witness_root
+      attr_reader :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_root, \
+                  :uncles_count, :uncles_hash, :version, :witness_root, :epoch
 
       def initialize(
         difficulty:,
@@ -42,7 +43,8 @@ module CKB
         uncles_count:,
         uncles_hash:,
         version:,
-        witness_root:
+        witness_root:,
+        epoch:
       )
         @difficulty = difficulty
         @hash = hash
@@ -56,6 +58,7 @@ module CKB
         @uncles_hash = uncles_hash
         @version = version
         @witness_root = witness_root
+        @epoch = epoch
       end
 
       def to_h
@@ -71,7 +74,8 @@ module CKB
           uncles_count: @uncles_count.to_i,
           uncles_hash: @uncles_hash,
           version: @version,
-          witness_root: @witness_root
+          witness_root: @witness_root,
+          epoch: @epoch
         }
       end
 
@@ -88,7 +92,8 @@ module CKB
           uncles_count: hash[:uncles_count],
           uncles_hash: hash[:uncles_hash],
           version: hash[:version],
-          witness_root: hash[:witnesses_root]
+          witness_root: hash[:witnesses_root],
+          epoch: hash[:epoch]
         )
       end
     end

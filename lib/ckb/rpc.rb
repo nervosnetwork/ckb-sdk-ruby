@@ -74,6 +74,10 @@ module CKB
       rpc_request("get_transaction_trace", params: [hash])
     end
 
+    def get_current_epoch
+      rpc_request("get_current_epoch")
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
