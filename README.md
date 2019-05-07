@@ -31,7 +31,7 @@ rpc = CKB::RPC.new
 rpc.get_tip_header
 ```
 
-API interface return `Types` instead of `Hash`
+API interface returns `Types` instead of `Hash`
 
 ```ruby
 api = CKB::API.new
