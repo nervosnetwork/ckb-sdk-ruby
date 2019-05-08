@@ -82,6 +82,16 @@ module CKB
       rpc_request("get_epoch_by_number", params: [number.to_s])
     end
 
+    # @return [Hash[]]
+    def get_peers
+      rpc_request("get_peers")
+    end
+
+    # @return [Hash]
+    def tx_pool_info
+      rpc_request("tx_pool_info")
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
