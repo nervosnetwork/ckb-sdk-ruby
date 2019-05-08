@@ -100,4 +100,11 @@ RSpec.describe CKB::RPC do
     result = rpc.get_transaction_trace(trace_tx_hash)
     expect(result).to be nil
   end
+
+  it "get epoch by number" do
+    number = '1'
+    result = rpc.get_epoch_by_number(number)
+    expect(result).to be_a(Hash)
+    expect(result[:number]).to eq number
+  end
 end

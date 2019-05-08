@@ -78,6 +78,10 @@ module CKB
       rpc_request("get_current_epoch")
     end
 
+    def get_epoch_by_number(number)
+      rpc_request("get_epoch_by_number", params: [number.to_s])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
