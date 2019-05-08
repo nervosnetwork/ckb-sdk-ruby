@@ -151,6 +151,16 @@ module CKB
       )
     end
 
+    # @return [Hash[]]
+    def get_peers
+      rpc.get_peers
+    end
+
+    # @return [Hash]
+    def tx_pool_info
+      rpc.tx_pool_info
+    end
+
     def inspect
       "\#<API@#{uri}>"
     end

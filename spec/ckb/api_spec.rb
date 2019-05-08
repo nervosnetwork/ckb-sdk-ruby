@@ -83,4 +83,14 @@ RSpec.describe CKB::API do
     expect(result).to be_a(Types::Epoch)
     expect(result.number).to eq number.to_s
   end
+
+  it "get peers" do
+    result = api.get_peers
+    expect(result).not_to be nil
+  end
+
+  it "tx pool info" do
+    result = api.tx_pool_info
+    expect(result[:pending] >= 0).to be true
+  end
 end
