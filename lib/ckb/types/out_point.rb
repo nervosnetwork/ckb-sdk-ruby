@@ -3,26 +3,27 @@
 module CKB
   module Types
     class OutPoint
-      attr_reader :tx_hash, :index
+      attr_reader :block_hash, :cell
 
-      # @param tx_hash [String] 0x...
-      # @param index [Integer] 0x...
-      def initialize(tx_hash:, index:)
-        @tx_hash = tx_hash
-        @index = index
+      # @param block_hash [String | nil] 0x...
+      # @param cell [CKB::Types::OutPointCell | nil]
+      def initialize(block_hash: nil, cell: nil)
+        @block_hash = block_hash
+        @cell = cell
       end
 
       def to_h
         {
-          tx_hash: @tx_hash,
-          index: @index
+          block_hash: @block_hash,
+          cell: @cell&.to_h
         }
       end
 
       def self.from_h(hash)
+        cell = OutPointCell.from_h(hash[:cell]) if hash[:cell]
         new(
-          tx_hash: hash[:tx_hash],
-          index: hash[:index]
+          block_hash: hash[:block_hash],
+          cell: cell
         )
       end
     end
