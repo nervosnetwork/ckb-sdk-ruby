@@ -23,6 +23,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           args: hash[:args],
           previous_output: OutPoint.from_h(hash[:previous_output]),

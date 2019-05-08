@@ -19,6 +19,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           transaction: Transaction.from_h(hash[:transaction]),
           tx_status: TxStatus.from_h(hash[:tx_status])

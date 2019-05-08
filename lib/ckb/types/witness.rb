@@ -17,6 +17,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           data: hash[:data]
         )

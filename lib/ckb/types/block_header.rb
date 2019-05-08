@@ -20,6 +20,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           nonce: hash[:nonce],
           proof: hash[:proof]
@@ -80,6 +82,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           difficulty: hash[:difficulty],
           hash: hash[:hash],
