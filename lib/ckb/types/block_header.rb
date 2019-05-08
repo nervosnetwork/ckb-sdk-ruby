@@ -28,7 +28,7 @@ module CKB
     end
 
     class BlockHeader
-      attr_reader :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_root, \
+      attr_reader :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_hash, \
                   :uncles_count, :uncles_hash, :version, :witness_root, :epoch
 
       def initialize(
@@ -39,7 +39,7 @@ module CKB
         seal:,
         timestamp:,
         transactions_root:,
-        proposals_root:,
+        proposals_hash:,
         uncles_count:,
         uncles_hash:,
         version:,
@@ -53,7 +53,7 @@ module CKB
         @seal = seal
         @timestamp = timestamp.to_s
         @transactions_root = transactions_root
-        @proposals_root = proposals_root
+        @proposals_hash = proposals_hash
         @uncles_count = uncles_count.to_i
         @uncles_hash = uncles_hash
         @version = version
@@ -70,7 +70,7 @@ module CKB
           seal: @seal.to_h,
           timestamp: @timestamp,
           transactions_root: @transactions_root,
-          proposals_root: @proposals_root,
+          proposals_hash: @proposals_hash,
           uncles_count: @uncles_count.to_i,
           uncles_hash: @uncles_hash,
           version: @version,
@@ -88,7 +88,7 @@ module CKB
           seal: Seal.from_h(hash[:seal]),
           timestamp: hash[:timestamp],
           transactions_root: hash[:transactions_root],
-          proposals_root: hash[:proposals_root],
+          proposals_hash: hash[:proposals_hash],
           uncles_count: hash[:uncles_count],
           uncles_hash: hash[:uncles_hash],
           version: hash[:version],
