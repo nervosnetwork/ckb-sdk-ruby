@@ -139,6 +139,15 @@ module CKB
       Types::Epoch.from_h(rpc.get_current_epoch)
     end
 
+    # @param number [Integer | String]
+    #
+    # @return [CKB::Types::Epoch]
+    def get_epoch_by_number(number)
+      Types::Epoch.from_h(
+        rpc.get_epoch_by_number(number)
+      )
+    end
+
     def inspect
       "\#<API@#{uri}>"
     end

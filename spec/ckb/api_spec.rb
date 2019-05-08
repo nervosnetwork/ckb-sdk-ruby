@@ -76,4 +76,11 @@ RSpec.describe CKB::API do
     expect(result).not_to be nil
     expect(result).to be_a(Types::Epoch)
   end
+
+  it "get epoch by number" do
+    number = 1
+    result = api.get_epoch_by_number(number)
+    expect(result).to be_a(Types::Epoch)
+    expect(result.number).to eq number.to_s
+  end
 end
