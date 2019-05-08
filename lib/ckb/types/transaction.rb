@@ -74,8 +74,8 @@ module CKB
         blake2b = CKB::Blake2b.new
         inputs.each do |input|
           previous_output = input.previous_output
-          blake2b.update(Utils.hex_to_bin(previous_output.tx_hash))
-          blake2b.update(previous_output.index.to_s)
+          blake2b.update(Utils.hex_to_bin(previous_output.cell.tx_hash))
+          blake2b.update(previous_output.cell.index.to_s)
         end
         outputs.each do |output|
           blake2b.update(output.capacity.to_s)
