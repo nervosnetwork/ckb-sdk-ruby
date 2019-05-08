@@ -18,9 +18,12 @@ module CKB
         # For testnet chain, we can assume the first cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
-        out_point = Types::OutPoint.new(
+        out_point_cell = Types::CellOutPoint.new(
           tx_hash: system_cell_transaction.hash,
           index: 0
+        )
+        out_point = Types::OutPoint.new(
+          cell: out_point_cell
         )
         cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[0].data)
         cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
