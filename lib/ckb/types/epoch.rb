@@ -44,6 +44,7 @@ module CKB
 
       def self.from_h(hash)
         return if hash.nil?
+
         new(
           block_reward: hash[:block_reward],
           difficulty: hash[:difficulty],

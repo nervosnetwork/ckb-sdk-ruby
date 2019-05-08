@@ -56,6 +56,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           hash: hash[:hash],
           version: hash[:version],

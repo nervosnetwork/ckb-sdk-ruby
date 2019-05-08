@@ -20,6 +20,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           transactions: hash[:transactions].map { |tx| Transaction.from_h(tx) },
           header: BlockHeader.from_h(hash[:header])

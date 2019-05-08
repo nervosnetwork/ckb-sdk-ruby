@@ -20,6 +20,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           cell: Output.from_h(hash[:cell]),
           status: hash[:status]

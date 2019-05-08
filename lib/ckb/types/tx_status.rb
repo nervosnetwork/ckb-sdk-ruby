@@ -20,6 +20,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         new(
           status: hash[:status],
           block_hash: hash[:block_hash]

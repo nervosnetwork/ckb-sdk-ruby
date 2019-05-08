@@ -29,6 +29,8 @@ module CKB
       end
 
       def self.from_h(hash)
+        return if hash.nil?
+
         type = Script.from_h(hash[:type]) if hash[:type]
         out_point = OutPoint.from_h(hash[:out_point]) if hash[:out_point]
         new(
