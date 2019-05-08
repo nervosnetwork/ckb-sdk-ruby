@@ -6,7 +6,7 @@ module CKB
       attr_reader :block_hash, :cell
 
       # @param block_hash [String | nil] 0x...
-      # @param cell [CKB::Types::OutPointCell | nil]
+      # @param cell [CKB::Types::CellOutPoint | nil]
       def initialize(block_hash: nil, cell: nil)
         @block_hash = block_hash
         @cell = cell
@@ -20,7 +20,7 @@ module CKB
       end
 
       def self.from_h(hash)
-        cell = OutPointCell.from_h(hash[:cell]) if hash[:cell]
+        cell = CellOutPoint.from_h(hash[:cell]) if hash[:cell]
         new(
           block_hash: hash[:block_hash],
           cell: cell

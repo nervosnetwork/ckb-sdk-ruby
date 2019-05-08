@@ -18,7 +18,7 @@ module CKB
         # For testnet chain, we can assume the first cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
-        out_point_cell = Types::OutPointCell.new(
+        out_point_cell = Types::CellOutPoint.new(
           tx_hash: system_cell_transaction.hash,
           index: 0
         )

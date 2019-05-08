@@ -2,7 +2,7 @@
 
 module CKB
   module Types
-    class OutPointCell
+    class CellOutPoint
       attr_reader :tx_hash, :index
 
       # @param tx_hash [String] 0x...
