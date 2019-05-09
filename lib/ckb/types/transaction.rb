@@ -16,10 +16,12 @@ module CKB
 
       def sign(key, tx_hash)
         signature_hex_var = signature_hex(key, tx_hash)
+        signature_size = Utils.hex_to_bin(signature_hex_var).size
 
         witnesses = inputs.map do |_input|
           Types::Witness.from_h(
-            data: [key.pubkey, signature_hex_var]
+            data: [key.pubkey, signature_hex_var,
+                   Utils.bin_to_hex([signature_size].pack("Q<"))]
           )
         end
 
@@ -65,7 +67,7 @@ module CKB
         blake2b.update(Utils.hex_to_bin(tx_hash))
         privkey_bin = Utils.hex_to_bin(key.privkey)
         secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-        signature_bin = secp_key.ecdsa_serialize_compact(
+        signature_bin = secp_key.ecdsa_serialize(
           secp_key.ecdsa_sign(blake2b.digest, raw: true)
         )
         Utils.bin_to_hex(signature_bin)
