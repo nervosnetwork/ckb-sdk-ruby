@@ -100,6 +100,10 @@ module CKB
       rpc_request("get_peers_state")
     end
 
+    def compute_transaction_hash(transaction)
+      rpc_request("_compute_transaction_hash", params: [transaction])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end

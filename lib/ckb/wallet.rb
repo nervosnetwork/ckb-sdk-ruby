@@ -65,8 +65,9 @@ module CKB
         inputs: i.inputs,
         outputs: outputs
       )
+      tx_hash = api.compute_transaction_hash(tx)
 
-      tx.sign(key)
+      tx.sign(key, tx_hash)
     end
 
     # @param target_address [String]
