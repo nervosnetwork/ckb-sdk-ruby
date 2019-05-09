@@ -118,9 +118,11 @@ module CKB
       rpc.send_transaction(transaction.to_h)
     end
 
-    # @return [Hash]
+    # @return [CKB::Type::Peer]
     def local_node_info
-      rpc.local_node_info
+      Types::Peer.from_h(
+        rpc.local_node_info
+      )
     end
 
     # @param transaction [CKB::Types::Transaction]
@@ -151,14 +153,16 @@ module CKB
       )
     end
 
-    # @return [Hash[]]
+    # @return [CKB::Types::Peer[]]
     def get_peers
-      rpc.get_peers
+      rpc.get_peers.map { |peer| Types::Peer.from_h(peer) }
     end
 
-    # @return [Hash]
+    # @return [CKB::Types::TxPoolInfo]
     def tx_pool_info
-      rpc.tx_pool_info
+      Types::TxPoolInfo.from_h(
+        rpc.tx_pool_info
+      )
     end
 
     # @return [CKB::Types::ChainInfo]
