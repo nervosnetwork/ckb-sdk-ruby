@@ -84,6 +84,11 @@ RSpec.describe CKB::API do
     expect(result.number).to eq number.to_s
   end
 
+  it "local node info" do
+    result = api.local_node_info
+    expect(result).to be_a(Types::Peer)
+  end
+
   it "get peers" do
     result = api.get_peers
     expect(result).not_to be nil

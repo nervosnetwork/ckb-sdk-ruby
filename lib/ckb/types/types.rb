@@ -16,6 +16,8 @@ require_relative "witness"
 require_relative "epoch"
 require_relative "chain_info"
 require_relative "peer_state"
+require_relative "address_info"
+require_relative "peer"
 
 module CKB
   module Types
