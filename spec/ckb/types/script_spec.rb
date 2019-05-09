@@ -16,7 +16,7 @@ RSpec.describe CKB::Types::Script do
 
   it "to_hash" do
     expect(
-      lock.to_hash
+      always_success.to_hash
     ).to eq always_success_type_hash
   end
 end

@@ -161,6 +161,18 @@ module CKB
       rpc.tx_pool_info
     end
 
+    # @return [CKB::Types::ChainInfo]
+    def get_blockchain_info
+      Types::ChainInfo.from_h(
+        rpc.get_blockchain_info
+      )
+    end
+
+    # @return [CKB::Types::PeerState[]]
+    def get_peers_state
+      rpc.get_peers_state.map { |peer| Types::PeerState.from_h(peer) }
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
