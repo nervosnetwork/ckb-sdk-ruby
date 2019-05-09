@@ -162,7 +162,7 @@ module CKB
     end
 
     def inspect
-      "\#<API@#{uri}>"
+      "\#<API@#{rpc.uri}>"
     end
   end
 end
