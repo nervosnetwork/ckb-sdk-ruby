@@ -158,9 +158,11 @@ module CKB
       rpc.get_peers.map { |peer| Types::Peer.from_h(peer) }
     end
 
-    # @return [Hash]
+    # @return [CKB::Types::TxPoolInfo]
     def tx_pool_info
-      rpc.tx_pool_info
+      Types::TxPoolInfo.from_h(
+        rpc.tx_pool_info
+      )
     end
 
     # @return [CKB::Types::ChainInfo]

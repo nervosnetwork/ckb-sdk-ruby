@@ -18,6 +18,7 @@ require_relative "chain_info"
 require_relative "peer_state"
 require_relative "address_info"
 require_relative "peer"
+require_relative "tx_pool_info"
 
 module CKB
   module Types
