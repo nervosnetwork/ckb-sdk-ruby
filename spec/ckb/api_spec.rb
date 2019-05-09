@@ -93,4 +93,15 @@ RSpec.describe CKB::API do
     result = api.tx_pool_info
     expect(result[:pending] >= 0).to be true
   end
+
+  it "get blockchain info" do
+    result = api.get_blockchain_info
+    expect(result).to be_a(Types::ChainInfo)
+    expect(result.epoch.to_i >= 0).to be true
+  end
+
+  it "get peers state" do
+    result = api.get_peers_state
+    expect(result).to be_an(Array)
+  end
 end

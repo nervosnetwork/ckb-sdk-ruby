@@ -92,6 +92,14 @@ module CKB
       rpc_request("tx_pool_info")
     end
 
+    def get_blockchain_info
+      rpc_request("get_blockchain_info")
+    end
+
+    def get_peers_state
+      rpc_request("get_peers_state")
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end

@@ -14,6 +14,8 @@ require_relative "transaction"
 require_relative "tx_status"
 require_relative "witness"
 require_relative "epoch"
+require_relative "chain_info"
+require_relative "peer_state"
 
 module CKB
   module Types
