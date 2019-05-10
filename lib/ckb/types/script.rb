@@ -39,7 +39,6 @@ module CKB
       end
 
       def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)
-        target_pubkey_blake160_bin = CKB::Utils.hex_to_bin(target_pubkey_blake160)
         new(
           code_hash: system_script_cell_hash,
           args: [
