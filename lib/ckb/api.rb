@@ -129,20 +129,6 @@ module CKB
       )
     end
 
-    # @param transaction [CKB::Types::Transaction]
-    #
-    # @return [String] tx_hash
-    def trace_transaction(transaction)
-      rpc.trace_transaction(transaction.to_h)
-    end
-
-    # @param hash [String]
-    #
-    # @return [Hash[]]
-    def get_transaction_trace(hash)
-      rpc.get_transaction_trace(hash)
-    end
-
     # @return [CKB::Types::Epoch]
     def get_current_epoch
       Types::Epoch.from_h(rpc.get_current_epoch)

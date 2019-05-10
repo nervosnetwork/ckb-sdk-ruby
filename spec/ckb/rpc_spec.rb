@@ -80,27 +80,6 @@ RSpec.describe CKB::RPC do
     expect(result[:node_id].empty?).not_to be true
   end
 
-  it "trace empty transaction" do
-    tx = {
-      version: 0,
-      deps: [],
-      inputs: [],
-      outputs: []
-    }
-
-    # result = rpc.trace_transaction(tx)
-    # expect(result).not_to be nil
-    expect {
-      rpc.trace_transaction(tx)
-    }.to raise_error(CKB::RPCError, /:code=>-3/)
-  end
-
-  it "get empty transaction trace" do
-    trace_tx_hash = "0x1704f772f11c4c2fcb543f22cad66adad5a555e21f14c975c37d1d4bad096d47"
-    result = rpc.get_transaction_trace(trace_tx_hash)
-    expect(result).to be nil
-  end
-
   it "get epoch by number" do
     number = '1'
     result = rpc.get_epoch_by_number(number)
