@@ -5,6 +5,8 @@ module CKB
     class Block
       attr_reader :uncles, :proposals, :transactions, :header
 
+      # @param uncles [CKB::Types::Uncle[]]
+      # @param proposals [String[]] 0x...
       # @param transactions [CKB::Type::Transaction[]]
       # @param header [CKB::Type::BlockHeader]
       def initialize(uncles:, proposals:, transactions:, header:)
@@ -27,7 +29,7 @@ module CKB
         return if hash.nil?
 
         new(
-          uncles: hash[:uncles].map { |uncle| Uncle::from_h(uncle) },
+          uncles: hash[:uncles].map { |uncle| Uncle.from_h(uncle) },
           proposals: hash[:proposals],
           transactions: hash[:transactions].map { |tx| Transaction.from_h(tx) },
           header: BlockHeader.from_h(hash[:header])

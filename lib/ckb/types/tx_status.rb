@@ -5,7 +5,7 @@ module CKB
     class TxStatus
       attr_reader :status, :block_hash
 
-      # @param status [String] proposed", "pending", "committed"
+      # @param status [String] "proposed", "pending", "committed"
       # @param block_hash [String | nil] "0x..."
       def initialize(status:, block_hash:)
         @status = status

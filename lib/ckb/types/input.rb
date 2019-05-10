@@ -7,7 +7,7 @@ module CKB
 
       # @param args [String[]] ["0x..."]
       # @param previous_output [CKB::Types::OutPoint]
-      # @param since [String | Integer]
+      # @param since [String]
       def initialize(args:, previous_output:, since: "0")
         @args = args
         @previous_output = previous_output

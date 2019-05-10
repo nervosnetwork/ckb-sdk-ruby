@@ -5,6 +5,7 @@ module CKB
     class Uncle
       attr_reader :proposals, :header
 
+      # @param proposals [String[]] 0x..
       # @param header [CKB::Type::BlockHeader]
       def initialize(proposals:, header:)
         @proposals = proposals

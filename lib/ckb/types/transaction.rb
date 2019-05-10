@@ -5,7 +5,20 @@ module CKB
     class Transaction
       attr_reader :version, :deps, :inputs, :outputs, :witnesses, :hash
 
-      def initialize(hash: nil, version: 0, deps: [], inputs: [], outputs: [], witnesses: [])
+      # @param hash [String | nil] 0x...
+      # @param version [Integer]
+      # @param deps [CKB::Types::OutPoint[]]
+      # @param inputs [CKB::Types::Input[]]
+      # @param outputs [CKB::Types::Output[]]
+      # @param witnesses [CKB::Types::Witness[]]
+      def initialize(
+        hash: nil,
+        version: 0,
+        deps: [],
+        inputs: [],
+        outputs: [],
+        witnesses: []
+      )
         @hash = hash
         @version = version
         @deps = deps
@@ -14,6 +27,8 @@ module CKB
         @witnesses = witnesses
       end
 
+      # @param key [CKB::Key]
+      # @param tx_hash [String] 0x...
       def sign(key, tx_hash)
         signature_hex_var = signature_hex(key, tx_hash)
         signature_size = Utils.hex_to_bin(signature_hex_var).size
