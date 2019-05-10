@@ -84,6 +84,11 @@ RSpec.describe CKB::API do
     expect(result.number).to eq number.to_s
   end
 
+  it "local node info" do
+    result = api.local_node_info
+    expect(result).to be_a(Types::Peer)
+  end
+
   it "get peers" do
     result = api.get_peers
     expect(result).not_to be nil
@@ -91,7 +96,8 @@ RSpec.describe CKB::API do
 
   it "tx pool info" do
     result = api.tx_pool_info
-    expect(result[:pending] >= 0).to be true
+    expect(result).to be_a(Types::TxPoolInfo)
+    expect(result.pending >= 0).to be true
   end
 
   it "get blockchain info" do
