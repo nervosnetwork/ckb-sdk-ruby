@@ -66,14 +66,6 @@ module CKB
       rpc_request("local_node_info")
     end
 
-    def trace_transaction(transaction)
-      rpc_request("trace_transaction", params: [transaction])
-    end
-
-    def get_transaction_trace(hash)
-      rpc_request("get_transaction_trace", params: [hash])
-    end
-
     def get_current_epoch
       rpc_request("get_current_epoch")
     end
