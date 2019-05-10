@@ -118,6 +118,10 @@ module CKB
       rpc.send_transaction(transaction.to_h)
     end
 
+    def compute_transaction_hash(transaction)
+      rpc.compute_transaction_hash(transaction.to_h)
+    end
+
     # @return [CKB::Type::Peer]
     def local_node_info
       Types::Peer.from_h(
