@@ -4,6 +4,7 @@ module CKB
   module Types
     class TransactionWithStatus
       attr_reader :transaction, :tx_status
+
       # @param transaction [CKB::Types::Transaction]
       # @param tx_status [CKB::Types::TxStatus]
       def initialize(transaction:, tx_status:)

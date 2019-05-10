@@ -2,37 +2,23 @@
 
 module CKB
   module Types
-    class Seal
-      attr_reader :nonce, :proof
-
-      # @param nonce [String] decimal number
-      # @param proof [String] 0x...
-      def initialize(nonce:, proof:)
-        @nonce = nonce
-        @proof = proof
-      end
-
-      def to_h
-        {
-          nonce: @nonce,
-          proof: @proof
-        }
-      end
-
-      def self.from_h(hash)
-        return if hash.nil?
-
-        new(
-          nonce: hash[:nonce],
-          proof: hash[:proof]
-        )
-      end
-    end
-
     class BlockHeader
       attr_reader :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_hash, \
                   :uncles_count, :uncles_hash, :version, :witness_root, :epoch
 
+      # @param difficulty [String] 0x...
+      # @param hash [String] 0x...
+      # @param number [String] number
+      # @param parent_hash [String] 0x...
+      # @param seal [CKB::Types::Seal]
+      # @param timestamp [String]
+      # @param transactions_root [String] 0x...
+      # @param proposals_root [String] 0x...
+      # @param uncles_count [Integer] number
+      # @param uncles_hash [String] 0x...
+      # @param version [Integer]
+      # @param witness_root [String] 0x...
+      # @param epoch [String] number
       def initialize(
         difficulty:,
         hash:,

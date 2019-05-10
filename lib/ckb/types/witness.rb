@@ -5,7 +5,7 @@ module CKB
     class Witness
       attr_reader :data
 
-      # @param data [String] 0x...
+      # @param data [String[]] 0x...
       def initialize(data:)
         @data = data
       end
