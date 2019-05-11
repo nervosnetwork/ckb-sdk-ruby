@@ -167,6 +167,14 @@ module CKB
       rpc.get_peers_state.map { |peer| Types::PeerState.from_h(peer) }
     end
 
+    # @param transaction [CKB::Types::Transaction]
+    #
+    # @return [CKB::Types::DryRunResult]
+    def dry_run_transaction(transaction)
+      result = rpc.dry_run_transaction(transaction.to_h)
+      Types::DryRunResult.from_h(result)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end

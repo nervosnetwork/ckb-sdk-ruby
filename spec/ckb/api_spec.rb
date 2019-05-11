@@ -78,7 +78,7 @@ RSpec.describe CKB::API do
   end
 
   it "get epoch by number" do
-    number = 1
+    number = 0
     result = api.get_epoch_by_number(number)
     expect(result).to be_a(Types::Epoch)
     expect(result.number).to eq number.to_s
@@ -109,5 +109,18 @@ RSpec.describe CKB::API do
   it "get peers state" do
     result = api.get_peers_state
     expect(result).to be_an(Array)
+  end
+
+  it "dry run transaction" do
+    tx = Types::Transaction.new(
+      version: 0,
+      deps: [],
+      inputs: [],
+      outputs: []
+    )
+
+    result = api.dry_run_transaction(tx)
+    expect(result).to be_a(Types::DryRunResult)
+    expect(result.cycles.to_i >= 0).to be true
   end
 end
