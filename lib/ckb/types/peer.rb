@@ -28,8 +28,6 @@ module CKB
       def self.from_h(hash)
         return if hash.nil?
 
-        return hash if hash.is_a?(self.class)
-
         new(
           addresses: hash[:addresses].map { |addr| AddressInfo.from_h(addr) },
           is_outbound: hash[:is_outbound],

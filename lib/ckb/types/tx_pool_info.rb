@@ -28,8 +28,6 @@ module CKB
       def self.from_h(hash)
         return if hash.nil?
 
-        return hash if hash.is_a?(self.class)
-
         new(
           pending: hash[:pending],
           staging: hash[:staging],
