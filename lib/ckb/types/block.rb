@@ -16,7 +16,7 @@ module CKB
 
       def to_h
         {
-          uncles: @uncles,
+          uncles: @uncles.map(&:to_h),
           proposals: @proposals,
           transactions: @transactions.map(&:to_h),
           header: header.to_h
