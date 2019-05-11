@@ -15,7 +15,7 @@ module CKB
       def to_h
         {
           tx_hash: @tx_hash,
-          index: @index
+          index: @index.to_s
         }
       end
 
@@ -24,7 +24,7 @@ module CKB
 
         new(
           tx_hash: hash[:tx_hash],
-          index: hash[:index]
+          index: hash[:index].to_i
         )
       end
     end
