@@ -81,7 +81,7 @@ RSpec.describe CKB::RPC do
   end
 
   it "get epoch by number" do
-    number = '1'
+    number = '0'
     result = rpc.get_epoch_by_number(number)
     expect(result).to be_a(Hash)
     expect(result[:number]).to eq number

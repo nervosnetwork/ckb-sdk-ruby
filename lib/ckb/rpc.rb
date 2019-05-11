@@ -96,6 +96,11 @@ module CKB
       rpc_request("_compute_transaction_hash", params: [transaction])
     end
 
+    # @param transaction [Hash]
+    def dry_run_transaction(transaction)
+      rpc_request("dry_run_transaction", params: [transaction])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
