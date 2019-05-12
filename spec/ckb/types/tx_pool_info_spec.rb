@@ -2,7 +2,7 @@ RSpec.describe CKB::Types::TxPoolInfo do
   let(:tx_pool_info_h) do
     {
       "pending": 34,
-      "staging": 22,
+      "proposed": 22,
       "orphan": 33,
       "last_txs_updated_at": "1555507787683"
     }
