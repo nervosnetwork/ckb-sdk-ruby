@@ -175,6 +175,14 @@ module CKB
       Types::DryRunResult.from_h(result)
     end
 
+    # @param out_point [CKB::Types::OutPoint]
+    # @param hash [String]
+    #
+    # @return [String]
+    def calculate_dao_maximum_withdraw(out_point, hash)
+      rpc.calculate_dao_maximum_withdraw(out_point.to_h, hash)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end

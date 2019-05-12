@@ -101,6 +101,10 @@ module CKB
       rpc_request("dry_run_transaction", params: [transaction])
     end
 
+    def calculate_dao_maximum_withdraw(out_point, hash)
+      rpc_request("calculate_dao_maximum_withdraw", params: [out_point, hash])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
