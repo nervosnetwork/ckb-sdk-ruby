@@ -6,10 +6,10 @@ module CKB
       attr_reader :tx_hash, :index
 
       # @param tx_hash [String] 0x...
-      # @param index [Integer] 0x...
+      # @param index [String] number
       def initialize(tx_hash:, index:)
         @tx_hash = tx_hash
-        @index = index
+        @index = index.to_s
       end
 
       def to_h

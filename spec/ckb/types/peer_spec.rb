@@ -4,7 +4,7 @@ RSpec.describe CKB::Types::Peer do
       "addresses": [
           {
               "address": "/ip4/192.168.0.3/tcp/8115",
-              "score": 1
+              "score": "1"
           }
       ],
       "is_outbound": true,

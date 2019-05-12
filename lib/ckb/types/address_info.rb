@@ -6,10 +6,10 @@ module CKB
       attr_reader :address, :score
 
       # @param address [String]
-      # @param score [Integer]
+      # @param score [String] number
       def initialize(address:, score:)
         @address = address
-        @score = score
+        @score = score.to_s
       end
 
       def to_h

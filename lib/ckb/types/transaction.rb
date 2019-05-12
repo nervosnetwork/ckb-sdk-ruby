@@ -6,7 +6,7 @@ module CKB
       attr_reader :version, :deps, :inputs, :outputs, :witnesses, :hash
 
       # @param hash [String | nil] 0x...
-      # @param version [Integer]
+      # @param version [String]
       # @param deps [CKB::Types::OutPoint[]]
       # @param inputs [CKB::Types::Input[]]
       # @param outputs [CKB::Types::Output[]]
@@ -20,7 +20,7 @@ module CKB
         witnesses: []
       )
         @hash = hash
-        @version = version
+        @version = version.to_s
         @deps = deps
         @inputs = inputs
         @outputs = outputs
