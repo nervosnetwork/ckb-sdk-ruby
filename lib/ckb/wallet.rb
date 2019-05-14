@@ -5,7 +5,7 @@
 require "secp256k1"
 
 module CKB
-  MIN_CELL_CAPACITY = 40
+  MIN_CELL_CAPACITY = 40 * (10 ** 8)
 
   class Wallet
     attr_reader :api
@@ -87,7 +87,7 @@ module CKB
     def block_assembler_config
       %(
 [block_assembler]
-binary_hash = "#{lock[:binary_hash]}"
+code_hash = "#{lock[:code_hash]}"
 args = #{lock[:args]}
      ).strip
     end
@@ -113,7 +113,7 @@ args = #{lock[:args]}
         input = {
           previous_output: cell[:out_point],
           args: [],
-          valid_since: "0"
+          since: "0"
         }
         pubkeys << pubkey
         inputs << input

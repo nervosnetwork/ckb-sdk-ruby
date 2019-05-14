@@ -9,6 +9,7 @@ RSpec.describe CKB::API do
   it "genesis block" do
     result = api.genesis_block
     expect(result).not_to be nil
+    expect(result[:header][:number]).to eq "0"
   end
 
   it "genesis block hash" do
@@ -21,6 +22,13 @@ RSpec.describe CKB::API do
     result = api.get_block(genesis_block_hash)
     expect(result).not_to be nil
     expect(result[:header][:hash]).to eq genesis_block_hash
+  end
+
+  it "get block by number" do
+    block_number = "0"
+    result = api.get_block_by_number(block_number)
+    expect(result).not_to be nil
+    expect(result[:header][:number]).to eq block_number
   end
 
   it "get tip header" do
@@ -40,10 +48,10 @@ RSpec.describe CKB::API do
   end
 
   it "get transaction" do
-    tx = api.genesis_block[:"commit_transactions"].first
+    tx = api.genesis_block[:transactions].first
     result = api.get_transaction(tx[:hash])
     expect(result).not_to be nil
-    expect(result[:hash]).to eq tx[:hash]
+    expect(result[:transaction][:hash]).to eq tx[:hash]
   end
 
   it "get live cell" do
