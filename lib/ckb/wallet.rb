@@ -130,6 +130,10 @@ module CKB
       current_block = api.get_tip_header
       current_block_number = current_block.number.to_i
 
+      if deposit_block_number == current_block_number
+        raise "You need to at least wait for 1 block before generating DAO withdraw transaction!"
+      end
+
       windowleft = DAO_LOCK_PERIOD_BLOCKS - (current_block_number - deposit_block_number) % DAO_LOCK_PERIOD_BLOCKS
       windowleft = DAO_MATURITY_BLOCKS if windowleft < DAO_MATURITY_BLOCKS
       since = current_block_number + windowleft + 1
