@@ -78,12 +78,10 @@ module CKB
       private
 
       def signature_hex(key, tx_hash)
-        blake2b = CKB::Blake2b.new
-        blake2b.update(Utils.hex_to_bin(tx_hash))
         privkey_bin = Utils.hex_to_bin(key.privkey)
         secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
         signature_bin = secp_key.ecdsa_serialize(
-          secp_key.ecdsa_sign(blake2b.digest, raw: true)
+          secp_key.ecdsa_sign(Utils.hex_to_bin(tx_hash), raw: true)
         )
         Utils.bin_to_hex(signature_bin)
       end
