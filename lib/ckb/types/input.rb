@@ -18,7 +18,7 @@ module CKB
         {
           args: @args,
           previous_output: @previous_output.to_h,
-          since: since.to_s
+          since: since
         }
       end
 

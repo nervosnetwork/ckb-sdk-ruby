@@ -52,7 +52,7 @@ module CKB
 
       def to_h
         hash = {
-          version: @version.to_s,
+          version: @version,
           deps: @deps.map(&:to_h),
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
@@ -67,7 +67,7 @@ module CKB
 
         new(
           hash: hash[:hash],
-          version: hash[:version].to_i,
+          version: hash[:version],
           deps: hash[:deps]&.map { |dep| OutPoint.from_h(dep) },
           inputs: hash[:inputs].map { |input| Input.from_h(input) },
           outputs: hash[:outputs].map { |output| Output.from_h(output) },

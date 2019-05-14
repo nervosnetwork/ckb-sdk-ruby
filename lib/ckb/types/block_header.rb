@@ -42,9 +42,9 @@ module CKB
         @timestamp = timestamp.to_s
         @transactions_root = transactions_root
         @proposals_hash = proposals_hash
-        @uncles_count = uncles_count.to_i
+        @uncles_count = uncles_count.to_s
         @uncles_hash = uncles_hash
-        @version = version
+        @version = version.to_s
         @witnesses_root = witnesses_root
         @epoch = epoch
       end
@@ -53,13 +53,13 @@ module CKB
         {
           difficulty: @difficulty,
           hash: @hash,
-          number: @number.to_s,
+          number: @number,
           parent_hash: parent_hash,
           seal: @seal.to_h,
           timestamp: @timestamp,
           transactions_root: @transactions_root,
           proposals_hash: @proposals_hash,
-          uncles_count: @uncles_count.to_i,
+          uncles_count: @uncles_count,
           uncles_hash: @uncles_hash,
           version: @version,
           witnesses_root: @witnesses_root,
@@ -73,7 +73,7 @@ module CKB
         new(
           difficulty: hash[:difficulty],
           hash: hash[:hash],
-          number: hash[:number].to_s,
+          number: hash[:number],
           parent_hash: hash[:parent_hash],
           seal: Seal.from_h(hash[:seal]),
           timestamp: hash[:timestamp],
