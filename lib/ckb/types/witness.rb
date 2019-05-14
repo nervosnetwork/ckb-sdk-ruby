@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Witness
-      attr_reader :data
+      attr_accessor :data
 
       # @param data [String[]] 0x...
       def initialize(data:)
