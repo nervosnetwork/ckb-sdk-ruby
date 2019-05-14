@@ -20,12 +20,12 @@ module CKB
         system_cell_transaction = genesis_block.transactions.first
         out_point_cell = Types::CellOutPoint.new(
           tx_hash: system_cell_transaction.hash,
-          index: 0
+          index: "1"
         )
         out_point = Types::OutPoint.new(
           cell: out_point_cell
         )
-        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[0].data)
+        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[1].data)
         cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
         set_system_script_cell(out_point, cell_hash)
       end
