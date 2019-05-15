@@ -32,12 +32,9 @@ module CKB
       def sign(key, tx_hash)
         signature_hex_var = signature_hex(key, tx_hash)
         signature_size = Utils.hex_to_bin(signature_hex_var).size
-
-        witnesses = inputs.map do |_input|
-          Types::Witness.from_h(
-            data: [key.pubkey, signature_hex_var,
-                   Utils.bin_to_hex([signature_size].pack("Q<"))]
-          )
+        data = [key.pubkey, signature_hex_var, Utils.bin_to_hex([signature_size].pack("Q<"))]
+        witnesses = inputs.size.times.map do
+          Types::Witness.from_h(data: data)
         end
 
         self.class.new(
