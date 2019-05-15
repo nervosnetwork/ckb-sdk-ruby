@@ -15,18 +15,22 @@ module CKB
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
-        # For testnet chain, we can assume the first cell of the first transaction
+        # Testnet system script code_hash
+        code_hash = "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08"
+        # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
-        out_point_cell = Types::CellOutPoint.new(
-          tx_hash: system_cell_transaction.hash,
-          index: 0
-        )
         out_point = Types::OutPoint.new(
-          cell: out_point_cell
+          cell: Types::CellOutPoint.new(
+            tx_hash: system_cell_transaction.hash,
+            index: "1"
+          )
         )
-        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[0].data)
+        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[1].data)
         cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
+
+        raise "System script code_hash error!" unless code_hash == cell_hash
+
         set_system_script_cell(out_point, cell_hash)
       end
     end

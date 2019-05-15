@@ -41,7 +41,7 @@ module CKB
         end
 
         self.class.new(
-          hash: hash,
+          hash: tx_hash, # using real tx_hash instead
           version: version,
           deps: deps,
           inputs: inputs,
