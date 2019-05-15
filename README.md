@@ -27,7 +27,7 @@ RPC interface returns parsed `JSON` object
 ```ruby
 rpc = CKB::RPC.new
 
-# using RPC `get_tip_header`, it will returns a Hash
+# using RPC `get_tip_header`, it will return a Hash
 rpc.get_tip_header
 ```
 
