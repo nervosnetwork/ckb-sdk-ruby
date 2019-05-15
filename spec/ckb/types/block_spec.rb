@@ -7,7 +7,7 @@ RSpec.describe CKB::Types::Block do
             "block_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
             "cell": {
               "tx_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-              "index": 4294967295
+              "index": "4294967295"
             }
           ],
           "hash": "0xbd9ed8dec5288bdeb2ebbcc4c118a8adb6baab07a44ea79843255ccda6c57915",
@@ -20,7 +20,7 @@ RSpec.describe CKB::Types::Block do
                 "block_hash": nil,
                 "cell": {
                   "tx_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-                  "index": 4294967295
+                  "index": "4294967295"
                 }
               },
               "since": "0"
@@ -37,7 +37,7 @@ RSpec.describe CKB::Types::Block do
               "type": nil
             }
           ],
-          "version": 0,
+          "version": "0",
           "witnesses": [
             {
                 data: "0x1234"
@@ -57,9 +57,9 @@ RSpec.describe CKB::Types::Block do
         "timestamp": "1555422499746",
         "transactions_root": "0xbd9ed8dec5288bdeb2ebbcc4c118a8adb6baab07a44ea79843255ccda6c57915",
         "proposals_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "uncles_count": 0,
+        "uncles_count": "0",
         "uncles_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "version": 0,
+        "version": "0",
         "witnesses_root": "0x0000000000000000000000000000000000000000000000000000000000000000"
       },
       "proposals": [],

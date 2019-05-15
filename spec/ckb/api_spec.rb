@@ -97,7 +97,7 @@ RSpec.describe CKB::API do
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).to be_a(Types::TxPoolInfo)
-    expect(result.pending >= 0).to be true
+    expect(result.pending.to_i >= 0).to be true
   end
 
   it "get blockchain info" do
