@@ -1,6 +1,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.11.0...v0.12.0) (2019-05-18)
+
+
+### Bug Fixes
+
+* fix cell exception ([df5a81d](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/df5a81d))
+* fix dao generation bug ([91f40ee](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/91f40ee))
+* fix types ([aeb03fb](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/aeb03fb))
+* fix witnesses_root ([fb26eac](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/fb26eac))
+* remove check self in from_h ([8758713](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8758713))
+* return if hash.nil? in from_h ([28b61cb](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/28b61cb))
+* script test ([2838ed8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2838ed8))
+
+
+### Code Refactoring
+
+* rename to system_script_code_hash ([036c6bd](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/036c6bd))
+
+
+### Features
+
+* add `dry_run_transaction` RPC ([4501a69](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4501a69))
+* add `get_epoch_by_number` RPC ([51eb43f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/51eb43f))
+* add `get_peers` & `tx_pool_info` RPCs ([77ec29c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/77ec29c))
+* add `TxPoolInfo` type ([0f257a4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/0f257a4))
+* add data setter in `Types::Witness` ([4774ead](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4774ead))
+* add epoch type and add `get_current_epoch` RPC ([035d43e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/035d43e))
+* add peer and address_info types ([933da45](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/933da45))
+* add state RPCs ([2ec5580](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2ec5580))
+* add types ([1347073](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/1347073))
+* follow RPCs to set number to string ([4891865](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4891865))
+* Generalize OutPoint struct to reference headers ([253f96b](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/253f96b))
+* keep der signature ([e54e5d2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/e54e5d2))
+* NervosDAO integration ([0f6ec28](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/0f6ec28))
+* remove unneeded blake2b hash ([fdb1a42](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/fdb1a42))
+* Test transaction sign ([ab45e04](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ab45e04))
+* update SDK per lock script changes ([29ad6ae](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/29ad6ae))
+* update system script cell index to 1 ([6c0759f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/6c0759f))
+* use fixed code_hash and out_point in testnet mode ([adb47f4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/adb47f4))
+* using genesis block first transaction second output as system script ([518a124](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/518a124))
+* using real tx_hash after sign ([373e38a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/373e38a))
+
+
+### BREAKING CHANGES
+
+* `system_script_cell_hash` => `system_script_code_hash`
+* trace RPCs are deleted
+* `api.tx_pool_info` returns `TxPoolInfo` instead of `Hash`
+* `local_node_info` and `get_peers` return types instead of Hash
+* `OutPoint` structure changed
+
+
 # [v0.11.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.10.0...v0.11.0) (2019-05-14)
 
 
