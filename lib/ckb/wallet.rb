@@ -58,7 +58,7 @@ module CKB
           capacity: capacity,
           lock: Types::Script.generate_lock(
             key.address.parse(target_address),
-            api.system_script_cell_hash
+            api.system_script_code_hash
           )
         )
       ]
@@ -223,7 +223,7 @@ args = #{lock.args}
     def lock
       Types::Script.generate_lock(
         @key.address.blake160,
-        api.system_script_cell_hash
+        api.system_script_code_hash
       )
     end
   end
