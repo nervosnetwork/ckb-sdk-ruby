@@ -38,9 +38,9 @@ module CKB
         Utils.bin_to_hex(blake2b.digest)
       end
 
-      def self.generate_lock(target_pubkey_blake160, system_script_cell_hash)
+      def self.generate_lock(target_pubkey_blake160, system_script_code_hash)
         new(
-          code_hash: system_script_cell_hash,
+          code_hash: system_script_code_hash,
           args: [
             target_pubkey_blake160
           ]

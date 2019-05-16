@@ -10,13 +10,13 @@ module CKB
   class API
     attr_reader :rpc
     attr_reader :system_script_out_point
-    attr_reader :system_script_cell_hash
+    attr_reader :system_script_code_hash
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        code_hash = "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08"
+        expected_code_hash = "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -27,25 +27,25 @@ module CKB
           )
         )
         cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[1].data)
-        cell_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
+        code_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
 
-        raise "System script code_hash error!" unless code_hash == cell_hash
+        raise "System script code_hash error!" unless code_hash == expected_code_hash
 
-        set_system_script_cell(out_point, cell_hash)
+        set_system_script_cell(out_point, code_hash)
       end
     end
 
     # @param out_point [CKB::Types::OutPoint]
-    # @param cell_hash [String] "0x..."
-    def set_system_script_cell(out_point, cell_hash)
+    # @param code_hash [String] "0x..."
+    def set_system_script_cell(out_point, code_hash)
       @system_script_out_point = out_point
-      @system_script_cell_hash = cell_hash
+      @system_script_code_hash = code_hash
     end
 
     def system_script_cell
       {
         out_point: system_script_out_point,
-        cell_hash: system_script_cell_hash
+        code_hash: system_script_code_hash
       }
     end
 
