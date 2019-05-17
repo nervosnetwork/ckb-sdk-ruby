@@ -1,11 +1,19 @@
 # frozen_string_literal: true
 
-# rubocop:disable Naming/AccessorMethodName
-
 require "secp256k1"
 
 module CKB
-  MIN_CELL_CAPACITY = 40 * (10 ** 8)
+  MIN_CELL_CAPACITY = 40 * (10**8)
+
+  DAO_CODE_HASH = "0x0000000000000000000000000000004e4552564f5344414f434f444530303031"
+
+  DAO_ISSUING_OUT_POINT = Types::OutPoint.new(
+    cell: Types::CellOutPoint.new(
+      tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031",
+      index: 0))
+
+  DAO_LOCK_PERIOD_BLOCKS = 10
+  DAO_MATURITY_BLOCKS = 5
 
   class Wallet
     attr_reader :api
@@ -23,6 +31,7 @@ module CKB
       new(api, Key.new(privkey))
     end
 
+    # @return [CKB::Types::Output[]]
     def get_unspent_cells
       to = api.get_tip_block_number.to_i
       results = []
@@ -37,7 +46,7 @@ module CKB
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell[:capacity].to_i }.reduce(0, &:+)
+      get_unspent_cells.map { |cell| cell.capacity.to_i }.reduce(0, &:+)
     end
 
     def generate_tx(target_address, capacity)
@@ -45,31 +54,30 @@ module CKB
       input_capacities = i.capacities
 
       outputs = [
-        {
-          capacity: capacity.to_s,
-          data: "0x",
-          lock: CKB::Utils.generate_lock(
+        Types::Output.new(
+          capacity: capacity,
+          lock: Types::Script.generate_lock(
             key.address.parse(target_address),
-            api.system_script_cell_hash
+            api.system_script_code_hash
           )
-        }
+        )
       ]
       if input_capacities > capacity
-        outputs << {
-          capacity: (input_capacities - capacity).to_s,
-          data: "0x",
+        outputs << Types::Output.new(
+          capacity: input_capacities - capacity,
           lock: lock
-        }
+        )
       end
 
-      tx = Transaction.new(
+      tx = Types::Transaction.new(
         version: 0,
         deps: [api.system_script_out_point],
         inputs: i.inputs,
         outputs: outputs
       )
+      tx_hash = api.compute_transaction_hash(tx)
 
-      tx.sign(key)
+      tx.sign(key, tx_hash)
     end
 
     # @param target_address [String]
@@ -79,7 +87,81 @@ module CKB
       send_transaction(tx)
     end
 
+    def deposit_to_dao(capacity)
+      i = gather_inputs(capacity, MIN_CELL_CAPACITY)
+      input_capacities = i.capacities
+
+      outputs = [
+        Types::Output.new(
+          capacity: capacity,
+          lock: Types::Script.generate_lock(@key.address.blake160, DAO_CODE_HASH)
+        )
+      ]
+      if input_capacities > capacity
+        outputs << Types::Output.new(
+          capacity: input_capacities - capacity,
+          lock: lock
+        )
+      end
+
+      tx = Types::Transaction.new(
+        version: 0,
+        deps: [api.system_script_out_point],
+        inputs: i.inputs,
+        outputs: outputs
+      )
+      tx_hash = api.compute_transaction_hash(tx)
+      send_transaction(tx.sign(key, tx_hash))
+
+      Types::OutPoint.new(cell: Types::CellOutPoint.new(tx_hash: tx_hash, index: 0))
+    end
+
+    def generate_withdraw_from_dao_transaction(cell_out_point)
+      cell_status = api.get_live_cell(cell_out_point)
+      unless cell_status.status == "live"
+        raise "Cell is not yet live!"
+      end
+      tx = api.get_transaction(cell_out_point.cell.tx_hash)
+      unless tx.tx_status.status == "committed"
+        raise "Transaction is not commtted yet!"
+      end
+      deposit_block = api.get_block(tx.tx_status.block_hash).header
+      deposit_block_number = deposit_block.number.to_i
+      current_block = api.get_tip_header
+      current_block_number = current_block.number.to_i
+
+      if deposit_block_number == current_block_number
+        raise "You need to at least wait for 1 block before generating DAO withdraw transaction!"
+      end
+
+      windowleft = DAO_LOCK_PERIOD_BLOCKS - (current_block_number - deposit_block_number) % DAO_LOCK_PERIOD_BLOCKS
+      windowleft = DAO_MATURITY_BLOCKS if windowleft < DAO_MATURITY_BLOCKS
+      since = current_block_number + windowleft + 1
+
+      output_capacity = api.calculate_dao_maximum_withdraw(cell_out_point, current_block.hash).to_i
+
+      new_cell_out_point = Types::OutPoint.new(
+        block_hash: deposit_block.hash,
+        cell: cell_out_point.cell.dup
+      )
+      tx = Types::Transaction.new(
+        version: 0,
+        deps: [{block_hash: current_block.hash}],
+        inputs: [
+          Types::Input.new(args: [current_block.hash], previous_output: new_cell_out_point, since: since),
+          Types::Input.new(args: [], previous_output: DAO_ISSUING_OUT_POINT)
+        ],
+        outputs: [
+          Types::Output.new(capacity: output_capacity, lock: lock)
+        ]
+      )
+      tx_hash = api.compute_transaction_hash(tx)
+      tx = tx.sign(key, tx_hash)
+    end
+
     # @param hash_hex [String] "0x..."
+    #
+    # @return [CKB::Types::Transaction]
     def get_transaction(hash)
       api.get_transaction(hash)
     end
@@ -87,8 +169,8 @@ module CKB
     def block_assembler_config
       %(
 [block_assembler]
-code_hash = "#{lock[:code_hash]}"
-args = #{lock[:args]}
+code_hash = "#{lock.code_hash}"
+args = #{lock.args}
      ).strip
     end
 
@@ -98,11 +180,13 @@ args = #{lock[:args]}
 
     private
 
-    # @param transaction [CKB::Transaction | Hash]
+    # @param transaction [CKB::Transaction]
     def send_transaction(transaction)
-      api.send_transaction(transaction.to_h)
+      api.send_transaction(transaction)
     end
 
+    # @param capacity [Integer]
+    # @param min_capacity [Integer]
     def gather_inputs(capacity, min_capacity)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
@@ -110,14 +194,14 @@ args = #{lock[:args]}
       inputs = []
       pubkeys = []
       get_unspent_cells.each do |cell|
-        input = {
-          previous_output: cell[:out_point],
+        input = Types::Input.new(
+          previous_output: cell.out_point,
           args: [],
           since: "0"
-        }
+        )
         pubkeys << pubkey
         inputs << input
-        input_capacities += cell[:capacity].to_i
+        input_capacities += cell.capacity.to_i
 
         break if input_capacities >= capacity && (input_capacities - capacity) >= min_capacity
       end
@@ -132,16 +216,15 @@ args = #{lock[:args]}
     end
 
     def lock_hash
-      @lock_hash ||= CKB::Utils.json_script_to_type_hash(lock)
+      @lock_hash ||= lock.to_hash
     end
 
+    # @return [CKB::Types::Script]
     def lock
-      CKB::Utils.generate_lock(
+      Types::Script.generate_lock(
         @key.address.blake160,
-        api.system_script_cell_hash
+        api.system_script_code_hash
       )
     end
   end
 end
-
-# rubocop:enable Naming/AccessorMethodName

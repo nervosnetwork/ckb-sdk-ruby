@@ -22,12 +22,39 @@ And then execute:
 
 ## Usage
 
-RPC interface:
+RPC interface returns parsed `JSON` object
+
+```ruby
+rpc = CKB::RPC.new
+
+# using RPC `get_tip_header`, it will return a Hash
+rpc.get_tip_header
+```
+
+API interface returns `Types` instead of `Hash`
 
 ```ruby
 api = CKB::API.new
-# using RPC `get_tip_header`
+
+# it will return a CKB::Types::BlockHeader
 api.get_tip_header
+```
+
+Send capacity
+
+```ruby
+# create api first
+api = CKB::API.new
+
+# create two wallet object
+bob = CKB::Wallet.from_hex(api, "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
+alice = CKB::Wallet.from_hex(api, "0x76e853efa8245389e33f6fe49dcbd359eb56be2f6c3594e12521d2a806d32156")
+
+# bob send 1000 bytes to alice
+tx_hash = bob.send_capacity(alice.address, 1000 * 10**8)
+
+# loop up the transaction by tx_hash
+api.get_transaction(tx_hash)
 ```
 
 ## Development
