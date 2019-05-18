@@ -16,6 +16,13 @@ Please be noted that the SDK depends on the [bitcoin-secp256k1](https://github.c
 sudo apt-get install libsecp256k1-dev libsodium-dev
 ```
 
+### macOS
+
+```bash
+brew tap nervosnetwork/tap
+brew install libsodium libsecp256k1
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
