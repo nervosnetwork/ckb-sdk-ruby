@@ -169,6 +169,7 @@ module CKB
     def block_assembler_config
       %(
 [block_assembler]
+enable = true
 code_hash = "#{lock.code_hash}"
 args = #{lock.args}
      ).strip
