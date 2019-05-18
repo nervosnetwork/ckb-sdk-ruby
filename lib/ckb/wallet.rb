@@ -203,7 +203,8 @@ args = #{lock.args}
         inputs << input
         input_capacities += cell.capacity.to_i
 
-        break if input_capacities >= capacity && (input_capacities - capacity) >= min_capacity
+        diff = input_capacities - capacity
+        break if input_capacities >= capacity && (diff >= min_capacity || diff.zero?)
       end
 
       raise "Not enough capacity!" if input_capacities < capacity

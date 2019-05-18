@@ -1,6 +1,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.12.0...v0.12.1) (2019-05-18)
+
+
+### Bug Fixes
+
+* fix for gather_inputs when diff = 0 ([e690a71](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/e690a71))
+
+
+### Features
+
+* persistent http client ([041eb60](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/041eb60))
+
+
 # [0.12.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.11.0...v0.12.0) (2019-05-18)
 
 
