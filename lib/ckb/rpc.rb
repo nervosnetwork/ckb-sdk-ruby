@@ -2,7 +2,7 @@
 
 # rubocop:disable Naming/AccessorMethodName
 
-require "net/http"
+require 'net/http/persistent'
 require "json"
 require "uri"
 
@@ -10,12 +10,13 @@ module CKB
   class RPCError < StandardError; end
 
   class RPC
-    attr_reader :uri
+    attr_reader :uri, :http
 
     DEFAULT_URL = "http://localhost:8114"
 
     def initialize(host: DEFAULT_URL)
       @uri = URI(host)
+      @http = Net::HTTP::Persistent.new
     end
 
     def genesis_block
@@ -112,8 +113,7 @@ module CKB
     private
 
     def rpc_request(method, params: nil)
-      http = Net::HTTP.new(uri.host, uri.port)
-      request = Net::HTTP::Post.new(uri.request_uri)
+      request = Net::HTTP::Post.new("/")
       request.body = {
         id: 1,
         jsonrpc: "2.0",
@@ -121,7 +121,7 @@ module CKB
         params: params
       }.to_json
       request["Content-Type"] = "application/json"
-      response = http.request(request)
+      response = http.request(uri, request)
       result = JSON.parse(response.body, symbolize_names: true)
 
       raise RPCError, "jsonrpc error: #{result[:error]}" if result[:error]
