@@ -2,22 +2,19 @@
 
 module CKB
   class Address
-    attr_reader :pubkey
+    attr_reader :blake160 # pubkey hash
+    alias pubkey_hash blake160
 
     PREFIX_MAINNET = "ckb"
     PREFIX_TESTNET = "ckt"
 
-    def initialize(pubkey, mode: MODE::TESTNET)
-      @pubkey = pubkey
+    def initialize(blake160, mode: MODE::TESTNET)
+      @blake160 = blake160
       @prefix = if mode == MODE::TESTNET
                   PREFIX_TESTNET
                 elsif mode == MODE::MAINNET
                   PREFIX_MAINNET
                 end
-    end
-
-    def blake160
-      @blake160 ||= self.class.blake160(@pubkey)
     end
 
     # Generates address assuming default lock script is used
@@ -47,6 +44,10 @@ module CKB
       pubkey_bin = [pubkey[2..-1]].pack("H*")
       hash_bin = CKB::Blake2b.digest(pubkey_bin)
       Utils.bin_to_hex(hash_bin[0...20])
+    end
+
+    def self.address(pubkey, mode: MODE::TESTNET)
+      new(blake160(pubkey), mode: mode)
     end
   end
 end

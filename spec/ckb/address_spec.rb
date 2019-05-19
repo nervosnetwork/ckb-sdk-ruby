@@ -8,26 +8,43 @@ RSpec.describe CKB::Address do
   let(:prefix) { "ckt" }
   let(:address) { "ckt1q9gry5zgxmpjnmtrp4kww5r39frh2sm89tdt2l6v234ygf" }
 
-  let(:addr) { CKB::Address.new(pubkey) }
+  describe "from pubkey" do
+    let(:addr) { CKB::Address.address(pubkey) }
 
-  it "pubkey blake160" do
-    puts "addr.blake160"
-    addr.blake160
-    pubkey_blake160
-    expect(
+    it "pubkey blake160" do
       addr.blake160
-    ).to eq pubkey_blake160
+      pubkey_blake160
+      expect(
+        addr.blake160
+      ).to eq pubkey_blake160
+    end
+
+    it "generate_address" do
+      expect(
+        addr.to_s
+      ).to eq address
+    end
+
+    it "parse_address" do
+      expect(
+        addr.parse(address)
+      ).to eq pubkey_blake160
+    end
   end
 
-  it "generate_address" do
-    expect(
-      addr.to_s
-    ).to eq address
-  end
+  describe "from pubkey hash" do
+    let(:addr) { CKB::Address.new(pubkey_blake160) }
 
-  it "parse_address" do
-    expect(
-      addr.parse(address)
-    ).to eq pubkey_blake160
+    it "generate_address" do
+      expect(
+        addr.to_s
+      ).to eq address
+    end
+
+    it "parse_address" do
+      expect(
+        addr.parse(address)
+      ).to eq pubkey_blake160
+    end
   end
 end
