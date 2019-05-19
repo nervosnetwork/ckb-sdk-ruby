@@ -46,7 +46,7 @@ module CKB
       Utils.bin_to_hex(hash_bin[0...20])
     end
 
-    def self.address(pubkey, mode: MODE::TESTNET)
+    def self.from_pubkey(pubkey, mode: MODE::TESTNET)
       new(blake160(pubkey), mode: mode)
     end
   end

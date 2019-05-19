@@ -9,7 +9,7 @@ RSpec.describe CKB::Address do
   let(:address) { "ckt1q9gry5zgxmpjnmtrp4kww5r39frh2sm89tdt2l6v234ygf" }
 
   describe "from pubkey" do
-    let(:addr) { CKB::Address.address(pubkey) }
+    let(:addr) { CKB::Address.from_pubkey(pubkey) }
 
     it "pubkey blake160" do
       addr.blake160
