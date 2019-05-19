@@ -49,13 +49,14 @@ module CKB
       get_unspent_cells.map { |cell| cell.capacity.to_i }.reduce(0, &:+)
     end
 
-    def generate_tx(target_address, capacity)
+    def generate_tx(target_address, capacity, data = "0x")
       i = gather_inputs(capacity, MIN_CELL_CAPACITY)
       input_capacities = i.capacities
 
       outputs = [
         Types::Output.new(
           capacity: capacity,
+          data: data,
           lock: Types::Script.generate_lock(
             key.address.parse(target_address),
             api.system_script_code_hash
@@ -82,8 +83,9 @@ module CKB
 
     # @param target_address [String]
     # @param capacity [Integer]
-    def send_capacity(target_address, capacity)
-      tx = generate_tx(target_address, capacity)
+    # @param data [String] "0x..."
+    def send_capacity(target_address, capacity, data = "0x")
+      tx = generate_tx(target_address, capacity, data)
       send_transaction(tx)
     end
 
