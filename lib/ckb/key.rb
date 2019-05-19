@@ -14,7 +14,7 @@ module CKB
 
       @pubkey = self.class.pubkey(@privkey)
 
-      @address = Address.new(pubkey)
+      @address = Address.from_pubkey(pubkey)
     end
 
     def self.random_private_key
