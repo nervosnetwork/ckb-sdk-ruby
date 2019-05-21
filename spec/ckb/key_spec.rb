@@ -15,4 +15,8 @@ RSpec.describe CKB::Key do
   it "pubkey" do
     expect(key.pubkey).to eq pubkey
   end
+
+  it "address" do
+    expect(key.address.to_s).to eq address
+  end
 end

@@ -8,7 +8,20 @@ Ruby SDK for CKB
 
 Require Ruby 2.4 and above.
 
-Please be noted that the SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem and the [rbnacl](https://github.com/crypto-rb/rbnacl) gem, which require manual install of secp256k1 and libsodium library. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) and [this](https://github.com/crypto-rb/rbnacl#installation) to install them locally.
+Please be noted that the SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem and the [rbnacl](https://github.com/crypto-rb/rbnacl) gem, which require manual install of secp256k1 and libsodium library. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) and [this](https://github.com/crypto-rb/rbnacl#installation) to install them locally. Following are examples of installing the dependencies in popular systems.
+
+### Ubuntu
+
+```bash
+sudo apt-get install libsecp256k1-dev libsodium-dev
+```
+
+### macOS
+
+```bash
+brew tap nervosnetwork/tap
+brew install libsodium libsecp256k1
+```
 
 ## Installation
 
@@ -20,7 +33,16 @@ gem 'ckb-sdk-ruby', github: 'nervosnetwork/ckb-sdk-ruby', require: 'ckb'
 
 And then execute:
 
-    $ bundle
+    $ bundle install
+
+Or if you just want to use it in a console:
+
+```
+git clone https://github.com/nervosnetwork/ckb-sdk-ruby.git
+cd ckb-sdk-ruby
+bundle install
+bin/console
+```
 
 ## Usage
 
