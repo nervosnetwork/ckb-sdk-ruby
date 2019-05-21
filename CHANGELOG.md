@@ -1,7 +1,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.12.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.12.0...v0.12.1) (2019-05-18)
+# [v0.12.2](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.12.1...v0.12.2) (2019-05-21)
+
+
+### Bug Fixes
+
+* update ffi version ([b0db2c7](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/b0db2c7))
+
+
+### Features
+
+* allows sending capacity with data ([9ffd2f3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/9ffd2f3))
+* Take pubkey hash(blake160) instead of pubkey as Address input ([3fe2fab](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3fe2fab))
+
+
+### BREAKING CHANGES
+
+* Address initialize requires blake160 (pubkey hash). Use Address.from_pubkey(pubkey)
+to create address for pubkey.
+
+
+# [v0.12.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.12.0...v0.12.1) (2019-05-18)
 
 
 ### Bug Fixes
@@ -14,7 +34,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * persistent http client ([041eb60](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/041eb60))
 
 
-# [0.12.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.11.0...v0.12.0) (2019-05-18)
+# [v0.12.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.11.0...v0.12.0) (2019-05-18)
 
 
 ### Bug Fixes
