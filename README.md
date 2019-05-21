@@ -8,13 +8,13 @@ Ruby SDK for CKB
 
 Require Ruby 2.4 and above.
 
-Please be noted that the SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem and the [rbnacl](https://github.com/crypto-rb/rbnacl) gem, which require manual install of secp256k1 and libsodium library. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) and [this](https://github.com/crypto-rb/rbnacl#installation) to install them locally. Following are examples of installing the dependencies in popular systems.
-
 ### Ubuntu
 
 ```bash
-sudo apt-get install libsecp256k1-dev libsodium-dev
+sudo apt install libsecp256k1-dev libsodium-dev
 ```
+
+This SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem. If you are using Ubuntu 16.04 or below, you might need to install libsecp256k1(on which bitcoin-secp256k1 depends) manually. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) to do so.
 
 ### macOS
 
