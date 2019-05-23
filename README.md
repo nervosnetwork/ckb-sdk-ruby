@@ -35,13 +35,25 @@ And then execute:
 
     $ bundle install
 
-Or if you just want to use it in a console:
+If you just want to use it in a console:
 
 ```
 git clone https://github.com/nervosnetwork/ckb-sdk-ruby.git
 cd ckb-sdk-ruby
 bundle install
 bundle exec bin/console
+```
+
+It is also possible to install this gem into system:
+
+```
+bundle exec rake install
+```
+
+Now you should be able to run a console using the command:
+
+```
+ckb-console
 ```
 
 ## Usage
