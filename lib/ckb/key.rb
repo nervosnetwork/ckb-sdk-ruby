@@ -17,6 +17,24 @@ module CKB
       @address = Address.from_pubkey(pubkey)
     end
 
+    def sign(hex_data)
+      privkey_bin = Utils.hex_to_bin(privkey)
+      secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
+      signature_bin = secp_key.ecdsa_serialize(
+        secp_key.ecdsa_sign(Utils.hex_to_bin(hex_data), raw: true)
+      )
+      Utils.bin_to_hex(signature_bin)
+    end
+
+    def sign_compact(hex_data)
+      privkey_bin = Utils.hex_to_bin(privkey)
+      secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
+      signature_bin = secp_key.ecdsa_serialize_compact(
+        secp_key.ecdsa_sign(Utils.hex_to_bin(hex_data), raw: true)
+      )
+      Utils.bin_to_hex(signature_bin)
+    end
+
     def self.random_private_key
       CKB::Utils.bin_to_hex(SecureRandom.bytes(32))
     end
