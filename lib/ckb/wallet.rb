@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "secp256k1"
-
 module CKB
   MIN_CELL_CAPACITY = 40 * (10**8)
 

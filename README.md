@@ -44,16 +44,11 @@ bundle install
 bundle exec bin/console
 ```
 
-It is also possible to install this gem into system:
+Or download a jar from releases page, which does not require libsecp256k1 and
+libsodium but only JRE to run the console:
 
 ```
-bundle exec rake install
-```
-
-Now you should be able to run a console using the command:
-
-```
-ckb-console
+java -jar ckb-console-VERSION.jar
 ```
 
 ## Usage
@@ -98,6 +93,8 @@ api.get_transaction(tx_hash)
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
+
+To create a jar using JRuby, run `bundle exec rake jar`.
 
 ## License
 

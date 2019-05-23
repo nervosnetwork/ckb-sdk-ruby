@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "ckb"
+puts "ckb-console #{CKB::VERSION}"
 
 begin
   require "pry"
+  Pry.config.windows_console_warning = false
   Pry.start
 rescue LoadError
   require "irb"

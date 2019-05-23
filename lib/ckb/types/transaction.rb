@@ -30,7 +30,7 @@ module CKB
       # @param key [CKB::Key]
       # @param tx_hash [String] 0x...
       def sign(key, tx_hash)
-        signature_hex_var = signature_hex(key, tx_hash)
+        signature_hex_var = key.sign(tx_hash)
         signature_size = Utils.hex_to_bin(signature_hex_var).size
         data = [key.pubkey, signature_hex_var, Utils.bin_to_hex([signature_size].pack("Q<"))]
         witnesses = inputs.size.times.map do
@@ -70,17 +70,6 @@ module CKB
           outputs: hash[:outputs].map { |output| Output.from_h(output) },
           witnesses: hash[:witnesses].map { |witness| Witness.from_h(witness) }
         )
-      end
-
-      private
-
-      def signature_hex(key, tx_hash)
-        privkey_bin = Utils.hex_to_bin(key.privkey)
-        secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-        signature_bin = secp_key.ecdsa_serialize(
-          secp_key.ecdsa_sign(Utils.hex_to_bin(tx_hash), raw: true)
-        )
-        Utils.bin_to_hex(signature_bin)
       end
     end
   end

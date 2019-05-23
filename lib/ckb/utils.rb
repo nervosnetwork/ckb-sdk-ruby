@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "secp256k1"
-
 module CKB
   module Utils
     def self.bin_to_hex(bin)
