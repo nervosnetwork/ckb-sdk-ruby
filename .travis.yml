@@ -18,3 +18,12 @@ install:
   - bundle install
 script:
   - bundle exec rake
+
+jobs:
+  include:
+    - rvm: jruby
+      before_install: 
+        - gem install bundler -v 2.0.1
+      install:
+        - bundle install
+        - jruby -rjars/installer -e 'Jars::Installer.vendor_jars!'
