@@ -14,7 +14,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y libsodium-dev
 install:
-  - cd ~ && git clone https://github.com/bitcoin-core/secp256k1.git && cd - && cd ~/secp256k1 && ./autogen.sh && ./configure --enable-module-recovery && make && sudo make install && cd -
+  - cd ~ && git clone https://github.com/bitcoin-core/secp256k1.git && cd - && cd ~/secp256k1 && ./autogen.sh && ./configure && make && sudo make install && cd -
   - bundle install
 script:
   - bundle exec rake
