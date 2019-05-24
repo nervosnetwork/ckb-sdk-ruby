@@ -41,7 +41,7 @@ Or if you just want to use it in a console:
 git clone https://github.com/nervosnetwork/ckb-sdk-ruby.git
 cd ckb-sdk-ruby
 bundle install
-bin/console
+bundle exec bin/console
 ```
 
 ## Usage
