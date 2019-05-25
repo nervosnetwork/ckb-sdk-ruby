@@ -19,4 +19,23 @@ RSpec.describe CKB::Types::Script do
       script.to_hash
     ).to eq code_hash
   end
+
+  context "calculate bytesize" do
+    let(:code_hash) { "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08" }
+    let(:args) { ["0x36c329ed630d6ce750712a477543672adab57f4c"] }
+
+    let(:lock_script) do
+      CKB::Types::Script.new(
+        code_hash: code_hash,
+        args: args
+      )
+    end
+    let(:min_capacity) { 52 }
+
+    it "success" do
+      expect(
+        lock_script.calculate_bytesize
+      ).to eq (min_capacity)
+    end
+  end
 end
