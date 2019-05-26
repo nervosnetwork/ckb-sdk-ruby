@@ -214,7 +214,7 @@ args = #{lock.args}
         input_capacities += cell.capacity.to_i
 
         diff = input_capacities - capacity
-        break if diff >= 0 && (diff >= min_charge_capacity || diff.zero?)
+        break if diff >= min_charge_capacity || diff.zero?
       end
 
       raise "Capacity not enough!" if input_capacities < capacity
