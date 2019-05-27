@@ -12,10 +12,11 @@ module CKB
         @args = args
       end
 
-      # @return [Integer]
+      # @return [Integer] Byte
       def calculate_bytesize
-        bytesize = (@args || []).map(&:bytesize).reduce(0, &:+)
-        bytesize += Utils.hex_to_bin(@code_hash).bytesize if @code_hash
+        bytesize = 0
+        bytesize = Utils.hex_to_bin(@code_hash).bytesize if @code_hash
+        (@args || []).map { |arg| Utils.hex_to_bin(arg).bytesize }.reduce(bytesize, &:+)
       end
 
       def to_h

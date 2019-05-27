@@ -3,8 +3,7 @@
 module CKB
   module Types
     class Output
-      attr_reader :data, :lock, :type, :out_point
-      attr_accessor :capacity
+      attr_reader :data, :lock, :type, :out_point, :capacity
 
       # @param capacity [String]
       # @param data: [String] 0x...
@@ -17,6 +16,10 @@ module CKB
         @lock = lock
         @type = type
         @out_point = out_point
+      end
+
+      def capacity=(value)
+        @capacity = value.to_s
       end
 
       def calculate_bytesize

@@ -3,8 +3,6 @@
 require "secp256k1"
 
 module CKB
-  MIN_CELL_CAPACITY = 40 * (10**8)
-
   DAO_CODE_HASH = "0x0000000000000000000000000000004e4552564f5344414f434f444530303031"
 
   DAO_ISSUING_OUT_POINT = Types::OutPoint.new(
@@ -50,25 +48,30 @@ module CKB
     end
 
     def generate_tx(target_address, capacity, data = "0x")
-      i = gather_inputs(capacity, MIN_CELL_CAPACITY)
+      output = Types::Output.new(
+        capacity: capacity,
+        data: data,
+        lock: Types::Script.generate_lock(
+          key.address.parse(target_address),
+          api.system_script_code_hash
+        )
+      )
+
+      charge_output = Types::Output.new(
+        capacity: 0,
+        lock: lock
+      )
+
+      i = gather_inputs(
+        capacity,
+        output.calculate_min_capacity,
+        charge_output.calculate_min_capacity
+      )
       input_capacities = i.capacities
 
-      outputs = [
-        Types::Output.new(
-          capacity: capacity,
-          data: data,
-          lock: Types::Script.generate_lock(
-            key.address.parse(target_address),
-            api.system_script_code_hash
-          )
-        )
-      ]
-      if input_capacities > capacity
-        outputs << Types::Output.new(
-          capacity: input_capacities - capacity,
-          lock: lock
-        )
-      end
+      outputs = [output]
+      charge_output.capacity = input_capacities - capacity
+      outputs << charge_output if charge_output.capacity.to_i > 0
 
       tx = Types::Transaction.new(
         version: 0,
@@ -90,21 +93,26 @@ module CKB
     end
 
     def deposit_to_dao(capacity)
-      i = gather_inputs(capacity, MIN_CELL_CAPACITY)
+      output = Types::Output.new(
+        capacity: capacity,
+        lock: Types::Script.generate_lock(@key.address.blake160, DAO_CODE_HASH)
+      )
+
+      charge_output = Types::Output.new(
+        capacity: 0,
+        lock: lock
+      )
+
+      i = gather_inputs(
+        capacity,
+        output.calculate_min_capacity,
+        charge_output.calculate_min_capacity
+      )
       input_capacities = i.capacities
 
-      outputs = [
-        Types::Output.new(
-          capacity: capacity,
-          lock: Types::Script.generate_lock(@key.address.blake160, DAO_CODE_HASH)
-        )
-      ]
-      if input_capacities > capacity
-        outputs << Types::Output.new(
-          capacity: input_capacities - capacity,
-          lock: lock
-        )
-      end
+      outputs = [output]
+      charge_output.capacity = input_capacities - capacity
+      outputs << charge_output if charge_output.capacity.to_i > 0
 
       tx = Types::Transaction.new(
         version: 0,
@@ -189,7 +197,7 @@ args = #{lock.args}
 
     # @param capacity [Integer]
     # @param min_capacity [Integer]
-    def gather_inputs(capacity, min_capacity)
+    def gather_inputs(capacity, min_capacity, min_charge_capacity)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
       input_capacities = 0
@@ -206,10 +214,10 @@ args = #{lock.args}
         input_capacities += cell.capacity.to_i
 
         diff = input_capacities - capacity
-        break if input_capacities >= capacity && (diff >= min_capacity || diff.zero?)
+        break if diff >= min_charge_capacity || diff.zero?
       end
 
-      raise "Not enough capacity!" if input_capacities < capacity
+      raise "Capacity not enough!" if input_capacities < capacity
 
       OpenStruct.new(inputs: inputs, capacities: input_capacities, pubkeys: pubkeys)
     end
