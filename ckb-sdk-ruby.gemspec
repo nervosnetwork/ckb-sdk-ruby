@@ -1,7 +1,8 @@
-
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "ckb/version"
+
+is_jruby = RUBY_PLATFORM == 'java'
 
 Gem::Specification.new do |spec|
   spec.name          = "ckb-sdk-ruby"
@@ -42,7 +43,14 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 0.69.0"
   spec.add_development_dependency "pry", "~> 0.12.2"
 
-  spec.add_dependency "rbnacl", "~> 6.0", ">= 6.0.1"
-  spec.add_dependency "bitcoin-secp256k1", "~> 0.5.0"
   spec.add_dependency "net-http-persistent", "~> 3.0.0"
+
+  if !is_jruby
+    spec.add_dependency "rbnacl", "~> 6.0", ">= 6.0.1"
+    spec.add_dependency "bitcoin-secp256k1", "~> 0.5.0"
+  else
+    spec.add_development_dependency "warbler", "~> 2.0"
+
+    spec.requirements << "jar org.bouncycastle, bcprov-jdk15on, 1.61"
+  end
 end

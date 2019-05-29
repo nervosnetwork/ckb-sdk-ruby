@@ -5,4 +5,6 @@ set -vx
 
 bundle install
 
-# Do any other automated setup that you need to do here
+if ruby --version 2> /dev/null | grep '^jruby' &> /dev/null; then
+  jruby -rjars/installer -e 'Jars::Installer.vendor_jars!'
+fi

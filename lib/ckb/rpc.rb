@@ -2,7 +2,21 @@
 
 # rubocop:disable Naming/AccessorMethodName
 
-require 'net/http/persistent'
+# hotfix for Windows
+if Gem.win_platform?
+  module Process
+    class << self
+      alias orig_getrlimit getrlimit
+      def getrlimit(resource)
+        return [1024] if resource == Process::RLIMIT_NOFILE
+
+        orig_getrlimit(resource)
+      end
+    end
+  end
+end
+
+require "net/http/persistent"
 require "json"
 require "uri"
 
