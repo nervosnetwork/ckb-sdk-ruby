@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "secp256k1"
-
 module CKB
   DAO_CODE_HASH = "0x0000000000000000000000000000004e4552564f5344414f434f444530303031"
 

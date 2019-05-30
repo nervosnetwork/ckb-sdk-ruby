@@ -18,3 +18,38 @@ install:
   - bundle install
 script:
   - bundle exec rake
+
+stages:
+  - test
+  - deploy
+jobs:
+  include:
+    - rvm: jruby
+      before_install: 
+        - gem install bundler -v 2.0.1
+      install:
+        - bundle install
+        - jruby -rjars/installer -e 'Jars::Installer.vendor_jars!'
+    - stage: deploy
+      if: 'tag IS present AND env(GITHUB_TOKEN) IS present'
+      rvm: jruby
+      before_install: 
+        - gem install bundler -v 2.0.1
+      install:
+        - bundle install
+        - jruby -rjars/installer -e 'Jars::Installer.vendor_jars!'
+      script:
+        - bundle exec rake jar
+        - export CKB_VERSION=$(bundle exec ruby -e 'require "ckb"; puts CKB::VERSION')
+        - echo "java -jar ckb-console-${CKB_VERSION}.jar" > ckb-console-${CKB_VERSION}.bat
+        - zip ckb-console-${CKB_VERSION}-jar.zip ckb-console-${CKB_VERSION}.jar ckb-console-${CKB_VERSION}.bat
+      deploy:
+        provider: releases
+        api_key: "$GITHUB_TOKEN"
+        file_glob: true
+        file: ckb-console-*-jar.zip
+        skip_cleanup: true
+        prerelease: true
+        on:
+          tags: true
+          condition: '"$GITHUB_TOKEN" != ""'
