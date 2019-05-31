@@ -12,7 +12,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 * add calculate_capacity for output and script ([841cfc2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/841cfc2))
+* add executable ckb-console ([80a915f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/80a915f))
 * add two attrs to `TxPoolInfo` ([e737235](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/e737235))
+* remove C extension dependencies for JRuby ([f015374](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/f015374))
+* support jruby and warbler ([c22486a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c22486a))
 
 
 # [v0.12.2](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.12.1...v0.12.2) (2019-05-21)
