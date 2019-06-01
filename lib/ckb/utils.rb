@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "secp256k1"
-
 module CKB
   module Utils
     def self.bin_to_hex(bin)
@@ -16,6 +14,13 @@ module CKB
       raise ArgumentError, "invalid hex string!" unless valid_hex_string?(hex)
 
       [hex[2..-1]].pack("H*")
+    end
+
+    # @param capacity [Integer] Byte
+    #
+    # @return [Integer] shannon
+    def self.byte_to_shannon(capacity)
+      capacity * (10**8)
     end
   end
 end

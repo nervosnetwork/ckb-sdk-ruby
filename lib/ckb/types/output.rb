@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Output
-      attr_reader :capacity, :data, :lock, :type, :out_point
+      attr_reader :data, :lock, :type, :out_point, :capacity
 
       # @param capacity [String]
       # @param data: [String] 0x...
@@ -16,6 +16,20 @@ module CKB
         @lock = lock
         @type = type
         @out_point = out_point
+      end
+
+      def capacity=(value)
+        @capacity = value.to_s
+      end
+
+      def calculate_bytesize
+        bytesize = 8 + Utils.hex_to_bin(@data).bytesize + @lock.calculate_bytesize
+        bytesize += @type.calculate_bytesize if @type
+        bytesize
+      end
+
+      def calculate_min_capacity
+        Utils.byte_to_shannon(calculate_bytesize)
       end
 
       def to_h(data = true)

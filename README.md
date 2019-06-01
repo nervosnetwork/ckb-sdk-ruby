@@ -8,13 +8,13 @@ Ruby SDK for CKB
 
 Require Ruby 2.4 and above.
 
-Please be noted that the SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem and the [rbnacl](https://github.com/crypto-rb/rbnacl) gem, which require manual install of secp256k1 and libsodium library. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) and [this](https://github.com/crypto-rb/rbnacl#installation) to install them locally. Following are examples of installing the dependencies in popular systems.
-
 ### Ubuntu
 
 ```bash
-sudo apt-get install libsecp256k1-dev libsodium-dev
+sudo apt install libsecp256k1-dev libsodium-dev
 ```
+
+This SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem. If you are using Ubuntu 16.04 or below, you might need to install libsecp256k1(on which bitcoin-secp256k1 depends) manually. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) to do so.
 
 ### macOS
 
@@ -35,13 +35,20 @@ And then execute:
 
     $ bundle install
 
-Or if you just want to use it in a console:
+If you just want to use it in a console:
 
 ```
 git clone https://github.com/nervosnetwork/ckb-sdk-ruby.git
 cd ckb-sdk-ruby
 bundle install
-bin/console
+bundle exec bin/console
+```
+
+Or download a jar from releases page, which does not require libsecp256k1 and
+libsodium but only JRE to run the console:
+
+```
+java -jar ckb-console-VERSION.jar
 ```
 
 ## Usage
@@ -86,6 +93,8 @@ api.get_transaction(tx_hash)
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
+
+To create a jar using JRuby, run `bundle exec rake jar`.
 
 ## License
 

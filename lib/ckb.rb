@@ -13,6 +13,8 @@ require "ckb/wallet"
 require "ckb/address"
 require "ckb/key"
 
+require "ckb-sdk-ruby_jars" if RUBY_PLATFORM == "java"
+
 module CKB
   class Error < StandardError; end
   # Your code goes here...
