@@ -34,8 +34,13 @@ module CKB
 
         signed_witnesses = witnesses.map do |witness|
           old_data = witness.data || []
-          signature_hex_var = signature_hex(key, [tx_hash] + old_data)
-          data = [key.pubkey, signature_hex_var] + old_data
+          blake2b = CKB::Blake2b.new
+          blake2b.update(Utils.hex_to_bin(tx_hash))
+          data.each do |datum|
+            blake2b.update(Utils.hex_to_bin(datum))
+          end
+          message = Utils.bin_to_hex(blake2b.digest)
+          data = [key.pubkey, key.sign(message)] + old_data
           Types::Witness.from_h(data: data)
         end
 
@@ -72,21 +77,6 @@ module CKB
           outputs: hash[:outputs].map { |output| Output.from_h(output) },
           witnesses: hash[:witnesses].map { |witness| Witness.from_h(witness) }
         )
-      end
-
-      private
-
-      def signature_hex(key, data)
-        blake2b = CKB::Blake2b.new
-        data.each do |datum|
-          blake2b.update(Utils.hex_to_bin(datum))
-        end
-        privkey_bin = Utils.hex_to_bin(key.privkey)
-        secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-        signature_bin = secp_key.ecdsa_serialize(
-          secp_key.ecdsa_sign(blake2b.digest, raw: true)
-        )
-        Utils.bin_to_hex(signature_bin)
       end
     end
   end
