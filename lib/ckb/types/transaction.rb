@@ -36,7 +36,7 @@ module CKB
           old_data = witness.data || []
           blake2b = CKB::Blake2b.new
           blake2b.update(Utils.hex_to_bin(tx_hash))
-          data.each do |datum|
+          old_data.each do |datum|
             blake2b.update(Utils.hex_to_bin(datum))
           end
           message = Utils.bin_to_hex(blake2b.digest)
