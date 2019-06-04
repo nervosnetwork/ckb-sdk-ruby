@@ -4,7 +4,7 @@ RSpec.describe CKB::RPC do
   end
 
   let(:rpc) { CKB::RPC.new }
-  let(:lock_hash) { "0x3dbdeb3538b7abe1b1f85a86b150805728c29b26faceb5051fb6c7f92c346ed8" }
+  let(:lock_hash) { "0x07bab3ada3cc0ff223b387d7f5038ef57b335aa1d8dadc418d5d8ad3b19aeadb" }
 
   it "genesis block" do
     result = rpc.genesis_block
