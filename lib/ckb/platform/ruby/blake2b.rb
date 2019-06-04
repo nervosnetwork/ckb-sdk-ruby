@@ -25,12 +25,22 @@ module CKB
       @blake2b.digest
     end
 
+    def hexdigest
+      Utils.bin_to_hex(digest)
+    end
+
     def self.generate
       ::RbNaCl::Hash::Blake2b.new(DEFAULT_OPTIONS.dup)
     end
 
     def self.digest(message)
       ::RbNaCl::Hash::Blake2b.digest(message, DEFAULT_OPTIONS.dup)
+    end
+
+    def self.hexdigest(message)
+      Utils.bin_to_hex(
+        self.digest(message)
+      )
     end
   end
 end
