@@ -48,7 +48,11 @@ RSpec.describe CKB::Types::Transaction do
           "data": "0x"
         }
       ],
-      "witnesses": []
+      "witnesses": [
+        {
+          data: []
+        }
+      ]
     }
   end
 
@@ -63,8 +67,7 @@ RSpec.describe CKB::Types::Transaction do
       {
         data: [
           "0x024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01",
-          "0x304402207c82346909c13b86a97c38a50b4868b52735ca2e7e59b14f99102159c12ff25f0220511ef5974060510e8cb363877843bd85550805f668676771bfc47e36bc5b8aa2",
-          "0x4600000000000000"
+          "0x304402202c643579e47045be050d3842ed9270151af8885e33954bddad0e53e81d1c2dbe02202dc637877a8302110846ebc6a16d9148c106e25f945063ad1c4d4db2b6952408"
         ]
       }
     ])
