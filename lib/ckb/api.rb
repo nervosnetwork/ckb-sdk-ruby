@@ -27,7 +27,7 @@ module CKB
           )
         )
         cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[1].data)
-        code_hash = CKB::Utils.bin_to_hex(CKB::Blake2b.digest(cell_data))
+        code_hash = CKB::Blake2b.hexdigest(cell_data)
 
         raise "System script code_hash error!" unless code_hash == expected_code_hash
 

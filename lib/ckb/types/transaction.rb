@@ -39,7 +39,7 @@ module CKB
           old_data.each do |datum|
             blake2b.update(Utils.hex_to_bin(datum))
           end
-          message = Utils.bin_to_hex(blake2b.digest)
+          message = blake2b.hexdigest
           data = [key.pubkey, key.sign(message)] + old_data
           Types::Witness.from_h(data: data)
         end

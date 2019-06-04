@@ -42,7 +42,7 @@ module CKB
         args.each do |arg|
           blake2b << Utils.hex_to_bin(arg)
         end
-        Utils.bin_to_hex(blake2b.digest)
+        blake2b.hexdigest
       end
 
       def self.generate_lock(target_pubkey_blake160, system_script_code_hash)
