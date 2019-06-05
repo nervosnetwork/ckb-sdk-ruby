@@ -8,7 +8,7 @@ RSpec.describe CKB::Address do
   let(:prefix) { "ckt" }
   let(:address) { "ckt1q9gry5zgxmpjnmtrp4kww5r39frh2sm89tdt2l6v234ygf" }
 
-  describe "from pubkey" do
+  context "from pubkey" do
     let(:addr) { CKB::Address.from_pubkey(pubkey) }
 
     it "pubkey blake160" do
@@ -32,7 +32,7 @@ RSpec.describe CKB::Address do
     end
   end
 
-  describe "from pubkey hash" do
+  context "from pubkey hash" do
     let(:addr) { CKB::Address.new(pubkey_blake160) }
 
     it "generate_address" do
@@ -45,6 +45,26 @@ RSpec.describe CKB::Address do
       expect(
         addr.parse(address)
       ).to eq pubkey_blake160
+    end
+  end
+
+  context "self.parse" do
+    it "success" do
+      expect(
+        CKB::Address.parse(address)
+      ).to eq pubkey_blake160
+    end
+
+    it "failed if mainnet mode" do
+      expect {
+        CKB::Address.parse(address, mode: CKB::MODE::MAINNET)
+      }.to raise_error(RuntimeError)
+    end
+
+    it "eq to parse" do
+      expect(
+        CKB::Address.parse(address)
+      ).to eq CKB::Address.new(pubkey_blake160).parse(address)
     end
   end
 end
