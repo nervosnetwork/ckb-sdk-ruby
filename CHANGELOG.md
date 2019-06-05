@@ -13,6 +13,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
+* add `self.parse` method to `Address` ([ca8b4bf](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ca8b4bf))
 * add hexdigest to blake2b ([d1fdd3f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/d1fdd3f))
 * Remove Input#block_number which was not used ([4716172](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4716172))
 * update SDK based on new verification model ([4cad0ab](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4cad0ab))
