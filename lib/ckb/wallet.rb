@@ -13,14 +13,24 @@ module CKB
 
   class Wallet
     attr_reader :api
-    # privkey is a bin string
     attr_reader :key
+    attr_reader :pubkey
+    attr_reader :addr
+    attr_reader :address
 
     # @param api [CKB::API]
-    # @param key [CKB::Key]
+    # @param key [CKB::Key | String] Key or pubkey
     def initialize(api, key)
       @api = api
-      @key = key
+      if key.is_a?(CKB::Key)
+        @key = key
+        @pubkey = @key.pubkey
+      else
+        @pubkey = key
+        @key = nil
+      end
+      @addr = Address.from_pubkey(@pubkey)
+      @address = @addr.to_s
     end
 
     def self.from_hex(api, privkey)
@@ -45,12 +55,18 @@ module CKB
       get_unspent_cells.map { |cell| cell.capacity.to_i }.reduce(0, &:+)
     end
 
-    def generate_tx(target_address, capacity, data = "0x")
+    # @param target_address [String]
+    # @param capacity [Integer]
+    # @param data [String ] "0x..."
+    # @param key [CKB::Key | String] Key or private key hex string
+    def generate_tx(target_address, capacity, data = "0x", key: nil)
+      key = get_key(key)
+
       output = Types::Output.new(
         capacity: capacity,
         data: data,
         lock: Types::Script.generate_lock(
-          key.address.parse(target_address),
+          addr.parse(target_address),
           api.system_script_code_hash
         )
       )
@@ -86,15 +102,22 @@ module CKB
     # @param target_address [String]
     # @param capacity [Integer]
     # @param data [String] "0x..."
-    def send_capacity(target_address, capacity, data = "0x")
-      tx = generate_tx(target_address, capacity, data)
+    # @param key [CKB::Key | String] Key or private key hex string
+    def send_capacity(target_address, capacity, data = "0x", key: nil)
+      tx = generate_tx(target_address, capacity, data, key: key)
       send_transaction(tx)
     end
 
-    def deposit_to_dao(capacity)
+    # @param capacity [Integer]
+    # @param key [CKB::Key | String] Key or private key hex string
+    #
+    # @return [CKB::Type::OutPoint]
+    def deposit_to_dao(capacity, key: nil)
+      key = get_key(key)
+
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(@key.address.blake160, DAO_CODE_HASH)
+        lock: Types::Script.generate_lock(addr.blake160, DAO_CODE_HASH)
       )
 
       charge_output = Types::Output.new(
@@ -126,7 +149,13 @@ module CKB
       Types::OutPoint.new(cell: Types::CellOutPoint.new(tx_hash: tx_hash, index: 0))
     end
 
-    def generate_withdraw_from_dao_transaction(cell_out_point)
+    # @param cell_out_point [CKB::Type::OutPoint]
+    # @param key [CKB::Key | String] Key or private key hex string
+    #
+    # @return [CKB::Type::Transaction]
+    def generate_withdraw_from_dao_transaction(cell_out_point, key: nil)
+      key = get_key(key)
+
       cell_status = api.get_live_cell(cell_out_point)
       unless cell_status.status == "live"
         raise "Cell is not yet live!"
@@ -188,10 +217,6 @@ args = #{lock.args}
      ).strip
     end
 
-    def address
-      @key.address.to_s
-    end
-
     private
 
     # @param transaction [CKB::Transaction]
@@ -225,10 +250,6 @@ args = #{lock.args}
       OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
     end
 
-    def pubkey
-      @key.pubkey
-    end
-
     def lock_hash
       @lock_hash ||= lock.to_hash
     end
@@ -236,9 +257,34 @@ args = #{lock.args}
     # @return [CKB::Types::Script]
     def lock
       Types::Script.generate_lock(
-        @key.address.blake160,
+        addr.blake160,
         api.system_script_code_hash
       )
+    end
+
+    # @param [CKB::Key | String | nil]
+    #
+    # @return [CKB::Key]
+    def get_key(key)
+      raise "Must provide a private key" unless @key || key
+
+      return @key if @key
+
+      the_key = convert_key(key)
+      raise "Key not match pubkey" unless the_key.pubkey == @pubkey
+
+      the_key
+    end
+
+    # @param key [CKB::Key | String] a Key or private key hex string
+    #
+    # @return [CKB::Key]
+    def convert_key(key)
+      return if key.nil?
+
+      return key if key.is_a?(CKB::Key)
+
+      CKB::Key.new(key)
     end
   end
 end
