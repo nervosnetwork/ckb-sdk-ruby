@@ -88,7 +88,7 @@ tx_hash = bob.send_capacity(alice.address, 1000 * 10**8)
 api.get_transaction(tx_hash)
 ```
 
-Provide wallet a public key
+Provide wallet with a public key
 
 ```ruby
 api = CKB::API.new
