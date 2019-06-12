@@ -35,4 +35,13 @@ RSpec.describe CKB::Key do
       expect(CKB::Key.random_private_key.to_i(16)).to eq(privkey.to_i(16) - 1)
     end
   end
+
+  context "sign" do
+    let(:msg) { "0x95e919c41e1ae7593730097e9bb1185787b046ae9f47b4a10ff4e22f9c3e3eab" }
+    let(:expect_result) { "0x1e94db61cff452639cf7dd991cf0c856923dcf74af24b6f575b91479ad2c8ef40769812d1cf1fd1a15d2f6cb9ef3d91260ef27e65e1f9be399887e9a5447786301" }
+
+    it "success" do
+      expect(key.sign(msg)).to eq expect_result
+    end
+  end
 end
