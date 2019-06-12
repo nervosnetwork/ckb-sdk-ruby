@@ -29,10 +29,10 @@ module CKB
     def sign(data)
       privkey_bin = Utils.hex_to_bin(privkey)
       secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-      signature_bin = secp_key.ecdsa_serialize(
-        secp_key.ecdsa_sign(Utils.hex_to_bin(data), raw: true)
+      signature_bin, recid = secp_key.ecdsa_recoverable_serialize(
+        secp_key.ecdsa_sign_recoverable(Utils.hex_to_bin(data), raw: true)
       )
-      Utils.bin_to_hex(signature_bin)
+      Utils.bin_to_hex(signature_bin + [recid].pack("C*"))
     end
 
     def self.random_private_key

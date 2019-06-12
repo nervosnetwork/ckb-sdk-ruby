@@ -6,7 +6,7 @@ RSpec.describe CKB::API do
   end
 
   let(:api) { CKB::API.new }
-  let(:lock_hash) { "0x07bab3ada3cc0ff223b387d7f5038ef57b335aa1d8dadc418d5d8ad3b19aeadb" }
+  let(:lock_hash) { "0xe94e4b509d5946c54ea9bc7500af12fd35eebe0d47a6b3e502127f94d34997ac" }
 
   it "genesis block" do
     expect(api.genesis_block).to be_a(Types::Block)
