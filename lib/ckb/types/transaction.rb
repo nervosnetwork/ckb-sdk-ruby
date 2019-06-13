@@ -40,7 +40,7 @@ module CKB
             blake2b.update(Utils.hex_to_bin(datum))
           end
           message = blake2b.hexdigest
-          data = [key.sign(message)] + old_data
+          data = [key.sign_recoverable(message)] + old_data
           Types::Witness.from_h(data: data)
         end
 
