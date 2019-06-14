@@ -44,13 +44,6 @@ bundle install
 bundle exec bin/console
 ```
 
-Or download a jar from releases page, which does not require libsecp256k1 and
-libsodium but only JRE to run the console:
-
-```
-java -jar ckb-console-VERSION.jar
-```
-
 ## Usage
 
 RPC interface returns parsed `JSON` object
@@ -106,8 +99,6 @@ tx_hash = bob.send_capacity(alice.address, 1000 * 10**8, key: bob_key)
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
-
-To create a jar using JRuby, run `bundle exec rake jar`.
 
 ## License
 

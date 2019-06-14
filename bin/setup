@@ -4,7 +4,3 @@ IFS=$'\n\t'
 set -vx
 
 bundle install
-
-if ruby --version 2> /dev/null | grep '^jruby' &> /dev/null; then
-  jruby -rjars/installer -e 'Jars::Installer.vendor_jars!'
-fi
