@@ -28,6 +28,10 @@ module CKB
       String.from_java_bytes(out)
     end
 
+    def hexdigest
+      Utils.bin_to_hex(digest)
+    end
+
     def self.generate(_opts = {})
       # Blake2bDigest(byte[] _key, int _digestLength, byte[] _salt, byte[] _personalization)
       Blake2bDigest.new(
@@ -42,6 +46,12 @@ module CKB
       blake2b = new
       blake2b.update(message)
       blake2b.digest
+    end
+
+    def self.hexdigest(message)
+      Utils.bin_to_hex(
+        self.digest(message)
+      )
     end
   end
 end

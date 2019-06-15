@@ -30,10 +30,17 @@ module CKB
       # @param key [CKB::Key]
       # @param tx_hash [String] 0x...
       def sign(key, tx_hash)
-        signature_hex_var = key.sign(tx_hash)
-        signature_size = Utils.hex_to_bin(signature_hex_var).size
-        data = [key.pubkey, signature_hex_var, Utils.bin_to_hex([signature_size].pack("Q<"))]
-        witnesses = inputs.size.times.map do
+        raise "Invalid number of witnesses!" if witnesses.length < inputs.length
+
+        signed_witnesses = witnesses.map do |witness|
+          old_data = witness.data || []
+          blake2b = CKB::Blake2b.new
+          blake2b.update(Utils.hex_to_bin(tx_hash))
+          old_data.each do |datum|
+            blake2b.update(Utils.hex_to_bin(datum))
+          end
+          message = blake2b.hexdigest
+          data = [key.pubkey, key.sign(message)] + old_data
           Types::Witness.from_h(data: data)
         end
 
@@ -43,7 +50,7 @@ module CKB
           deps: deps,
           inputs: inputs,
           outputs: outputs,
-          witnesses: witnesses
+          witnesses: signed_witnesses
         )
       end
 

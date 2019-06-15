@@ -8,13 +8,15 @@ module CKB
     PREFIX_MAINNET = "ckb"
     PREFIX_TESTNET = "ckt"
 
-    def initialize(blake160, mode: MODE::TESTNET)
+    DEFAULT_MODE = MODE::TESTNET
+
+    TYPE = "01"
+    BIN_IDX = "P2PH"
+
+    def initialize(blake160, mode: DEFAULT_MODE)
+      @mode = mode
       @blake160 = blake160
-      @prefix = if mode == MODE::TESTNET
-                  PREFIX_TESTNET
-                elsif mode == MODE::MAINNET
-                  PREFIX_MAINNET
-                end
+      @prefix = self.class.prefix(mode: mode)
     end
 
     # Generates address assuming default lock script is used
@@ -22,8 +24,8 @@ module CKB
     # see https://github.com/nervosnetwork/ckb/wiki/Common-Address-Format for more info.
     def generate
       blake160_bin = [blake160[2..-1]].pack("H*")
-      type = ["01"].pack("H*")
-      bin_idx = ["P2PH".each_char.map { |c| c.ord.to_s(16) }.join].pack("H*")
+      type = [TYPE].pack("H*")
+      bin_idx = [self.class.bin_idx_ord].pack("H*")
       payload = type + bin_idx + blake160_bin
       ConvertAddress.encode(@prefix, payload)
     end
@@ -32,10 +34,15 @@ module CKB
 
     # Parse address into lock assuming default lock script is used
     def parse(address)
-      decoded_prefix, data = ConvertAddress.decode(address)
-      raise "Invalid prefix" if decoded_prefix != @prefix
+      self.class.parse(address, mode: @mode)
+    end
 
-      raise "Invalid type/bin-idx" if data.slice(0..4) != ["0150325048"].pack("H*")
+    def self.parse(address, mode: DEFAULT_MODE)
+      decoded_prefix, data = ConvertAddress.decode(address)
+
+      raise "Invalid prefix" if decoded_prefix != prefix(mode: mode)
+
+      raise "Invalid type/bin-idx" if data.slice(0..4) != [TYPE + bin_idx_ord].pack("H*")
 
       CKB::Utils.bin_to_hex(data.slice(5..-1))
     end
@@ -46,8 +53,21 @@ module CKB
       Utils.bin_to_hex(hash_bin[0...20])
     end
 
-    def self.from_pubkey(pubkey, mode: MODE::TESTNET)
+    def self.from_pubkey(pubkey, mode: DEFAULT_MODE)
       new(blake160(pubkey), mode: mode)
+    end
+
+    def self.bin_idx_ord
+      BIN_IDX.each_char.map { |c| c.ord.to_s(16) }.join
+    end
+
+    def self.prefix(mode: DEFAULT_MODE)
+      case mode
+      when MODE::TESTNET
+        PREFIX_TESTNET
+      when MODE::MAINNET
+        PREFIX_MAINNET
+      end
     end
   end
 end

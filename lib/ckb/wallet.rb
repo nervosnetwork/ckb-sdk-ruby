@@ -75,7 +75,8 @@ module CKB
         version: 0,
         deps: [api.system_script_out_point],
         inputs: i.inputs,
-        outputs: outputs
+        outputs: outputs,
+        witnesses: i.witnesses
       )
       tx_hash = api.compute_transaction_hash(tx)
 
@@ -116,7 +117,8 @@ module CKB
         version: 0,
         deps: [api.system_script_out_point],
         inputs: i.inputs,
-        outputs: outputs
+        outputs: outputs,
+        witnesses: i.witnesses,
       )
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
@@ -156,11 +158,15 @@ module CKB
         version: 0,
         deps: [{block_hash: current_block.hash}],
         inputs: [
-          Types::Input.new(args: [current_block.hash], previous_output: new_cell_out_point, since: since),
-          Types::Input.new(args: [], previous_output: DAO_ISSUING_OUT_POINT)
+          Types::Input.new(previous_output: new_cell_out_point, since: since),
+          Types::Input.new(previous_output: DAO_ISSUING_OUT_POINT)
         ],
         outputs: [
           Types::Output.new(capacity: output_capacity, lock: lock)
+        ],
+        witnesses: [
+          Types::Witness.new(data: [current_block.hash]),
+          Types::Witness.new(data: []),
         ]
       )
       tx_hash = api.compute_transaction_hash(tx)
@@ -200,15 +206,14 @@ args = #{lock.args}
 
       input_capacities = 0
       inputs = []
-      pubkeys = []
+      witnesses = []
       get_unspent_cells.each do |cell|
         input = Types::Input.new(
           previous_output: cell.out_point,
-          args: [],
           since: "0"
         )
-        pubkeys << pubkey
         inputs << input
+        witnesses << Types::Witness.new(data: [])
         input_capacities += cell.capacity.to_i
 
         diff = input_capacities - capacity
@@ -217,7 +222,7 @@ args = #{lock.args}
 
       raise "Capacity not enough!" if input_capacities < capacity
 
-      OpenStruct.new(inputs: inputs, capacities: input_capacities, pubkeys: pubkeys)
+      OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
     end
 
     def pubkey

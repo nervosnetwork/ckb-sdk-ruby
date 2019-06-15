@@ -1,6 +1,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.14.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.13.0...v0.14.0) (2019-06-15)
+
+
+### Bug Fixes
+
+* one more test fix ([c675b3e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c675b3e))
+* test ([4be8ac8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4be8ac8))
+* unit test ([a16ab01](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a16ab01))
+
+
+### Features
+
+* add `self.parse` method to `Address` ([ca8b4bf](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ca8b4bf))
+* add hexdigest to blake2b ([d1fdd3f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/d1fdd3f))
+* Remove Input#block_number which was not used ([4716172](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4716172))
+* update SDK based on new verification model ([4cad0ab](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4cad0ab))
+* update system code hash ([6d18d5a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/6d18d5a))
+
+
 # [v0.13.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.12.2...v0.13.0) (2019-06-01)
 
 

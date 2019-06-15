@@ -3,20 +3,17 @@
 module CKB
   module Types
     class Input
-      attr_reader :args, :previous_output, :since
+      attr_reader :previous_output, :since
 
-      # @param args [String[]] ["0x..."]
       # @param previous_output [CKB::Types::OutPoint]
       # @param since [String]
-      def initialize(args:, previous_output:, since: "0")
-        @args = args
+      def initialize(previous_output:, since: "0")
         @previous_output = previous_output
         @since = since.to_s
       end
 
       def to_h
         {
-          args: @args,
           previous_output: @previous_output.to_h,
           since: since
         }
@@ -26,7 +23,6 @@ module CKB
         return if hash.nil?
 
         new(
-          args: hash[:args],
           previous_output: OutPoint.from_h(hash[:previous_output]),
           since: hash[:since]
         )
