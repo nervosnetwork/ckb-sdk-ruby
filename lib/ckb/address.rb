@@ -48,7 +48,8 @@ module CKB
     end
 
     def self.blake160(pubkey)
-      pubkey_bin = [pubkey[2..-1]].pack("H*")
+      pubkey = pubkey[2..-1] if pubkey.start_with?("0x")
+      pubkey_bin = [pubkey].pack("H*")
       hash_bin = CKB::Blake2b.digest(pubkey_bin)
       Utils.bin_to_hex(hash_bin[0...20])
     end
