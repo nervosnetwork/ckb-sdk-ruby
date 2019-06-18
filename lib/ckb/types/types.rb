@@ -21,6 +21,10 @@ require_relative "address_info"
 require_relative "peer"
 require_relative "tx_pool_info"
 require_relative "dry_run_result"
+require_relative "transaction_point"
+require_relative "lock_hash_index_state"
+require_relative "live_cell"
+require_relative "cell_transaction"
 
 module CKB
   module Types
