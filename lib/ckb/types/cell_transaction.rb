@@ -25,7 +25,7 @@ module CKB
         consumed_by = hash[:consumed_by]
 
         new(
-          created_by: TransactionPoint.from_h(cell[:created_by]),
+          created_by: TransactionPoint.from_h(hash[:created_by]),
           consumed_by: consumed_by ? TransactionPoint.from_h(consumed_by) : nil
         )
       end

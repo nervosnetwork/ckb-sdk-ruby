@@ -10,7 +10,7 @@ module CKB
       # @param block_hash [String]
       def initialize(lock_hash:, block_number:, block_hash:)
         @lock_hash = lock_hash
-        @block_number = block_number
+        @block_number = block_number.to_s
         @block_hash = block_hash
       end
 
@@ -27,7 +27,7 @@ module CKB
 
         new(
           lock_hash: hash[:lock_hash],
-          block_numebr: hash[:block_number],
+          block_number: hash[:block_number],
           block_hash: hash[:block_hash]
         )
       end
