@@ -9,9 +9,9 @@ module CKB
       # @param tx_hash [String]
       # @param index [String]
       def initialize(block_number:, tx_hash:, index:)
-        @block_number = block_number
+        @block_number = block_number.to_s
         @tx_hash = tx_hash
-        @index = index
+        @index = index.to_s
       end
 
       def to_h
