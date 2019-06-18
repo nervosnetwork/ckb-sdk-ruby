@@ -123,4 +123,31 @@ RSpec.describe CKB::API do
     expect(result).to be_a(Types::DryRunResult)
     expect(result.cycles.to_i >= 0).to be true
   end
+
+  context "indexer RPCs" do
+    it "index_lock_hash" do
+      result = api.index_lock_hash(lock_hash)
+      expect(result).not_to be nil
+    end
+
+    it "deindex_lock_hash" do
+      result = api.deindex_lock_hash(lock_hash)
+      expect(result).to be nil
+    end
+
+    it "get_lock_hash_index_states" do
+      result = api.get_lock_hash_index_states
+      expect(result).not_to be nil
+    end
+
+    it "get_live_cells_by_lock_hash" do
+      result = api.get_live_cells_by_lock_hash(lock_hash, 0, 10)
+      expect(result).not_to be nil
+    end
+
+    it "get_transactions_by_lock_hash" do
+      result = api.get_transactions_by_lock_hash(lock_hash, 0, 10)
+      expect(result).not_to be nil
+    end
+  end
 end
