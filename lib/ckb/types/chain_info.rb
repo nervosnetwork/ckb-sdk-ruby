@@ -3,28 +3,28 @@
 module CKB
   module Types
     class ChainInfo
-      attr_reader :is_initial_block_download, :epoch, :difficulty, :median_time, :chain, :warnings
+      attr_reader :is_initial_block_download, :epoch, :difficulty, :median_time, :chain, :alerts
 
       # @param is_initialize_block_download [Boolean]
       # @param epoch [String] number
       # @param difficulty [String] 0x...
       # @param median_time [String] timestamp
       # @param chain [String]
-      # @param warnings [String]
+      # @param alerts [Types::AlertMessage]
       def initialize(
         is_initial_block_download:,
         epoch:,
         difficulty:,
         median_time:,
         chain:,
-        warnings:
+        alerts:
       )
         @is_initial_block_download = is_initial_block_download
         @epoch = epoch
         @difficulty = difficulty
         @median_time = median_time
         @chain = chain
-        @warnings = warnings
+        @alerts = alerts
       end
 
       def to_h
@@ -34,7 +34,7 @@ module CKB
           difficulty: @difficulty,
           median_time: @median_time,
           chain: @chain,
-          warnings: @warnings
+          alerts: @alerts
         }
       end
 
@@ -47,7 +47,7 @@ module CKB
           difficulty: hash[:difficulty],
           median_time: hash[:median_time],
           chain: hash[:chain],
-          warnings: hash[:warnings]
+          alerts: hash[:alerts]&.map { |alert| Types::AlertMessage.from_h(alert) }
         )
       end
     end
