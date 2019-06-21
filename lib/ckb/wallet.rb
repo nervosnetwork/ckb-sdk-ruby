@@ -41,7 +41,7 @@ module CKB
     def get_unspent_cells
       to = api.get_tip_block_number.to_i
       results = []
-      current_from = 1
+      current_from = 0
       while current_from <= to
         current_to = [current_from + 100, to].min
         cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
