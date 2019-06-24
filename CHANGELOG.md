@@ -1,6 +1,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.15.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.14.0...v0.15.0) (2019-06-29)
+
+
+### Bug Fixes
+
+* `get_unspent_cells` should return cells of genesis block ([a9dee82](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a9dee82))
+
+
+### Features
+
+* accept pubkey in `Wallet.new` ([c175710](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c175710))
+* add alert message and update chain info ([d9580e6](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/d9580e6))
+* add indexer RPCs ([0fcb2d2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/0fcb2d2))
+* add indexer RPCs to API ([a868af0](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a868af0))
+* add indexer types ([fedf9dc](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/fedf9dc))
+* add sign_recoverable and use in default ([e96a680](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/e96a680))
+* remove jruby support ([f42e369](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/f42e369))
+* use recoverable signature ([bb2838c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/bb2838c))
+
+
+### BREAKING CHANGES
+
+* remove jruby support
+
+
 # [v0.14.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.13.0...v0.14.0) (2019-06-15)
 
 
