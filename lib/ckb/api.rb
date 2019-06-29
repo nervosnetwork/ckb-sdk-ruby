@@ -16,7 +16,7 @@ module CKB
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd"
+        expected_code_hash = "0x94334bdda40b69bae067d84937aa6bbccf8acd0df6626d4b9ac70d4612a11933"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -185,6 +185,50 @@ module CKB
     # @return [String]
     def calculate_dao_maximum_withdraw(out_point, hash)
       rpc.calculate_dao_maximum_withdraw(out_point.to_h, hash)
+    end
+
+    # Indexer
+
+    # @param lock_hash [String]
+    def deindex_lock_hash(lock_hash)
+      rpc.deindex_lock_hash(lock_hash)
+    end
+
+    # @param lock_hash [String]
+    # @param page [String]
+    # @param per [String]
+    # @param reverse_order [Boolean]
+    #
+    # @return [Types::LiveCell[]]
+    def get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: false)
+      result = rpc.get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: reverse_order)
+      result.map { |live_cell| Types::LiveCell.from_h(live_cell) }
+    end
+
+    # @return [Types::LockHashIndexState[]]
+    def get_lock_hash_index_states
+      result = rpc.get_lock_hash_index_states
+      result.map { |state| Types::LockHashIndexState.from_h(state) }
+    end
+
+    # @param lock_hash [String]
+    # @param page [String]
+    # @param per [String]
+    # @param reverse_order [Boolean]
+    #
+    # @return [Types::CellTransaction[]]
+    def get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: false)
+      result = rpc.get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: reverse_order)
+      result.map { |cell_tx| Types::CellTransaction.from_h(cell_tx) }
+    end
+
+    # @param lock_hash [String]
+    # @param index_from [String]
+    #
+    # @return [Types::LockHashIndexState]
+    def index_lock_hash(lock_hash, index_from: "0")
+      state = rpc.index_lock_hash(lock_hash, index_from: index_from)
+      Types::LockHashIndexState.from_h(state)
     end
 
     def inspect

@@ -14,7 +14,7 @@ Require Ruby 2.4 and above.
 sudo apt install libsecp256k1-dev libsodium-dev
 ```
 
-This SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem. If you are using Ubuntu 16.04 or below, you might need to install libsecp256k1(on which bitcoin-secp256k1 depends) manually. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) to do so.
+This SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem. If you are using Ubuntu 16.04 or below, you might need to install libsecp256k1 with `--enable-module-recovery` (on which bitcoin-secp256k1 depends) manually. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) to do so.
 
 ### macOS
 
@@ -42,13 +42,6 @@ git clone https://github.com/nervosnetwork/ckb-sdk-ruby.git
 cd ckb-sdk-ruby
 bundle install
 bundle exec bin/console
-```
-
-Or download a jar from releases page, which does not require libsecp256k1 and
-libsodium but only JRE to run the console:
-
-```
-java -jar ckb-console-VERSION.jar
 ```
 
 ## Usage
@@ -88,13 +81,24 @@ tx_hash = bob.send_capacity(alice.address, 1000 * 10**8)
 api.get_transaction(tx_hash)
 ```
 
+Provide wallet with a public key
+
+```ruby
+api = CKB::API.new
+
+bob = CKB::Wallet.new(api, "0x024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01")
+alice = CKB::Wallet.new(api, "0x0257623ec521657a27204c5590384cd59d9267c06d75ab308070be692251b67c57")
+
+bob_key = "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3"
+
+tx_hash = bob.send_capacity(alice.address, 1000 * 10**8, key: bob_key)
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
-
-To create a jar using JRuby, run `bundle exec rake jar`.
 
 ## License
 

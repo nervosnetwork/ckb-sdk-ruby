@@ -6,7 +6,7 @@ RSpec.describe CKB::API do
   end
 
   let(:api) { CKB::API.new }
-  let(:lock_hash) { "0x07bab3ada3cc0ff223b387d7f5038ef57b335aa1d8dadc418d5d8ad3b19aeadb" }
+  let(:lock_hash) { "0xe94e4b509d5946c54ea9bc7500af12fd35eebe0d47a6b3e502127f94d34997ac" }
 
   it "genesis block" do
     expect(api.genesis_block).to be_a(Types::Block)
@@ -122,5 +122,32 @@ RSpec.describe CKB::API do
     result = api.dry_run_transaction(tx)
     expect(result).to be_a(Types::DryRunResult)
     expect(result.cycles.to_i >= 0).to be true
+  end
+
+  context "indexer RPCs" do
+    it "index_lock_hash" do
+      result = api.index_lock_hash(lock_hash)
+      expect(result).not_to be nil
+    end
+
+    it "deindex_lock_hash" do
+      result = api.deindex_lock_hash(lock_hash)
+      expect(result).to be nil
+    end
+
+    it "get_lock_hash_index_states" do
+      result = api.get_lock_hash_index_states
+      expect(result).not_to be nil
+    end
+
+    it "get_live_cells_by_lock_hash" do
+      result = api.get_live_cells_by_lock_hash(lock_hash, 0, 10)
+      expect(result).not_to be nil
+    end
+
+    it "get_transactions_by_lock_hash" do
+      result = api.get_transactions_by_lock_hash(lock_hash, 0, 10)
+      expect(result).not_to be nil
+    end
   end
 end

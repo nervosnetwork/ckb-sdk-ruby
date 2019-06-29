@@ -120,6 +120,29 @@ module CKB
       rpc_request("calculate_dao_maximum_withdraw", params: [out_point, hash])
     end
 
+    # Indexer
+
+    # @param lock_hash [String]
+    def deindex_lock_hash(lock_hash)
+      rpc_request("deindex_lock_hash", params: [lock_hash])
+    end
+
+    def get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: false)
+      rpc_request("get_live_cells_by_lock_hash", params: [lock_hash, page.to_s, per.to_s, reverse_order])
+    end
+
+    def get_lock_hash_index_states
+      rpc_request("get_lock_hash_index_states")
+    end
+
+    def get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: false)
+      rpc_request("get_transactions_by_lock_hash", params: [lock_hash, page.to_s, per.to_s, reverse_order])
+    end
+
+    def index_lock_hash(lock_hash, index_from: '0')
+      rpc_request("index_lock_hash", params: [lock_hash, index_from.to_s])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
