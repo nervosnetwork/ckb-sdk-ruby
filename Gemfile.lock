@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     ckb-sdk-ruby (0.15.0)
-      bitcoin-secp256k1 (~> 0.5.0)
+      bitcoin-secp256k1 (~> 0.5.2)
       net-http-persistent (~> 3.0.0)
       rbnacl (~> 6.0, >= 6.0.1)
 
@@ -10,7 +10,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.0)
-    bitcoin-secp256k1 (0.5.1)
+    bitcoin-secp256k1 (0.5.2)
       ffi (>= 1.9.25)
     coderay (1.1.2)
     connection_pool (2.2.2)
