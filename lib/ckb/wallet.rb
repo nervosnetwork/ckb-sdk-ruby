@@ -59,7 +59,8 @@ module CKB
     # @param capacity [Integer]
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
-    def generate_tx(target_address, capacity, data = "0x", key: nil)
+    # @param fee [Integer] transaction fee, in shannon
+    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0)
       key = get_key(key)
 
       output = Types::Output.new(
@@ -79,12 +80,13 @@ module CKB
       i = gather_inputs(
         capacity,
         output.calculate_min_capacity,
-        charge_output.calculate_min_capacity
+        charge_output.calculate_min_capacity,
+        fee
       )
       input_capacities = i.capacities
 
       outputs = [output]
-      charge_output.capacity = input_capacities - capacity
+      charge_output.capacity = input_capacities - (capacity + fee)
       outputs << charge_output if charge_output.capacity.to_i > 0
 
       tx = Types::Transaction.new(
@@ -103,8 +105,9 @@ module CKB
     # @param capacity [Integer]
     # @param data [String] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
-    def send_capacity(target_address, capacity, data = "0x", key: nil)
-      tx = generate_tx(target_address, capacity, data, key: key)
+    # @param fee [Integer] transaction fee, in shannon
+    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0)
+      tx = generate_tx(target_address, capacity, data, key: key, fee: fee)
       send_transaction(tx)
     end
 
@@ -141,7 +144,7 @@ module CKB
         deps: [api.system_script_out_point],
         inputs: i.inputs,
         outputs: outputs,
-        witnesses: i.witnesses,
+        witnesses: i.witnesses
       )
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
@@ -230,9 +233,12 @@ args = #{lock.args}
 
     # @param capacity [Integer]
     # @param min_capacity [Integer]
-    def gather_inputs(capacity, min_capacity, min_charge_capacity)
+    # @param min_charge_capacity [Integer]
+    # @param fee [Integer]
+    def gather_inputs(capacity, min_capacity, min_charge_capacity, fee)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
+      total_capacities = capacity + fee
       input_capacities = 0
       inputs = []
       witnesses = []
@@ -245,11 +251,11 @@ args = #{lock.args}
         witnesses << Types::Witness.new(data: [])
         input_capacities += cell.capacity.to_i
 
-        diff = input_capacities - capacity
+        diff = input_capacities - total_capacities
         break if diff >= min_charge_capacity || diff.zero?
       end
 
-      raise "Capacity not enough!" if input_capacities < capacity
+      raise "Capacity not enough!" if input_capacities < total_capacities
 
       OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
     end
