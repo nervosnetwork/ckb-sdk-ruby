@@ -217,6 +217,10 @@ args = #{lock.args}
      ).strip
     end
 
+    def lock_hash
+      @lock_hash ||= lock.to_hash
+    end
+
     private
 
     # @param transaction [CKB::Transaction]
@@ -248,10 +252,6 @@ args = #{lock.args}
       raise "Capacity not enough!" if input_capacities < capacity
 
       OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
-    end
-
-    def lock_hash
-      @lock_hash ||= lock.to_hash
     end
 
     # @return [CKB::Types::Script]
