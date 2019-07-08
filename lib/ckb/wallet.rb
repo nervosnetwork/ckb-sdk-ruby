@@ -72,7 +72,7 @@ module CKB
         )
       )
 
-      charge_output = Types::Output.new(
+      change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
@@ -80,14 +80,14 @@ module CKB
       i = gather_inputs(
         capacity,
         output.calculate_min_capacity,
-        charge_output.calculate_min_capacity,
+        change_output.calculate_min_capacity,
         fee
       )
       input_capacities = i.capacities
 
       outputs = [output]
-      charge_output.capacity = input_capacities - (capacity + fee)
-      outputs << charge_output if charge_output.capacity.to_i > 0
+      change_output.capacity = input_capacities - (capacity + fee)
+      outputs << change_output if change_output.capacity.to_i > 0
 
       tx = Types::Transaction.new(
         version: 0,
@@ -123,7 +123,7 @@ module CKB
         lock: Types::Script.generate_lock(addr.blake160, DAO_CODE_HASH)
       )
 
-      charge_output = Types::Output.new(
+      change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
@@ -131,13 +131,13 @@ module CKB
       i = gather_inputs(
         capacity,
         output.calculate_min_capacity,
-        charge_output.calculate_min_capacity
+        change_output.calculate_min_capacity
       )
       input_capacities = i.capacities
 
       outputs = [output]
-      charge_output.capacity = input_capacities - capacity
-      outputs << charge_output if charge_output.capacity.to_i > 0
+      change_output.capacity = input_capacities - capacity
+      outputs << change_output if change_output.capacity.to_i > 0
 
       tx = Types::Transaction.new(
         version: 0,
@@ -233,9 +233,9 @@ args = #{lock.args}
 
     # @param capacity [Integer]
     # @param min_capacity [Integer]
-    # @param min_charge_capacity [Integer]
+    # @param min_change_capacity [Integer]
     # @param fee [Integer]
-    def gather_inputs(capacity, min_capacity, min_charge_capacity, fee)
+    def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
       total_capacities = capacity + fee
@@ -252,7 +252,7 @@ args = #{lock.args}
         input_capacities += cell.capacity.to_i
 
         diff = input_capacities - total_capacities
-        break if diff >= min_charge_capacity || diff.zero?
+        break if diff >= min_change_capacity || diff.zero?
       end
 
       raise "Capacity not enough!" if input_capacities < total_capacities
