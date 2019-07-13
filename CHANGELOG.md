@@ -1,6 +1,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.16.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.15.0...v0.16.0) (2019-07-13)
+
+
+### Bug Fixes
+
+* charge => change ([7c85390](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/7c85390))
+
+### Features
+
+* support `fee` in `send_capacity` ([a1d48cd](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a1d48cd))
+
 # [v0.15.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.14.0...v0.15.0) (2019-06-29)
 
 
