@@ -11,7 +11,7 @@ RSpec.describe CKB::Types::Script do
     )
   end
 
-  let(:code_hash) { "0x86f4f705a8e85905b1c73b84b1f3a3cf6dbfdd7eb8e47bfd1c489681ee2762cb" }
+  let(:code_hash) { "0xc00073200d2b2f4ad816a8d04bb2431ce0d3ebd49141b086eda4ab4e06bc3a21" }
 
   it "to_hash" do
     expect(
