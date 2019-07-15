@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Script
-      attr_reader :code_hash, :args, :hash_type
+      attr_accessor :code_hash, :args, :hash_type
 
       # @param code_hash [String]
       # @param args [String[]]

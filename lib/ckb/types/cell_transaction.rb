@@ -3,7 +3,7 @@
 module CKB
   module Types
     class CellTransaction
-      attr_reader :created_by, :consumed_by
+      attr_accessor :created_by, :consumed_by
 
       # @param created_by [Types::TransactionPoint]
       # @param consumed_by [Types::TransactionPoint | nil]

@@ -3,7 +3,7 @@
 module CKB
   module Types
     class TransactionPoint
-      attr_reader :block_number, :tx_hash, :index
+      attr_accessor :block_number, :tx_hash, :index
 
       # @param block_number [String]
       # @param tx_hash [String]

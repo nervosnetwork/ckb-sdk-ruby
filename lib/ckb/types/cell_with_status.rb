@@ -3,7 +3,7 @@
 module CKB
   module Types
     class CellWithStatus
-      attr_reader :cell, :status
+      attr_accessor :cell, :status
 
       # @param cell [CKB::Types::Output]
       # @param status [String]

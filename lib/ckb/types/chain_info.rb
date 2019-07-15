@@ -3,7 +3,7 @@
 module CKB
   module Types
     class ChainInfo
-      attr_reader :is_initial_block_download, :epoch, :difficulty, :median_time, :chain, :alerts
+      attr_accessor :is_initial_block_download, :epoch, :difficulty, :median_time, :chain, :alerts
 
       # @param is_initialize_block_download [Boolean]
       # @param epoch [String] number

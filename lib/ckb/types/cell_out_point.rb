@@ -3,7 +3,7 @@
 module CKB
   module Types
     class CellOutPoint
-      attr_reader :tx_hash, :index
+      attr_accessor :tx_hash, :index
 
       # @param tx_hash [String] 0x...
       # @param index [String] number

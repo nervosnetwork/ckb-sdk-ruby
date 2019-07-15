@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Peer
-      attr_reader :addresses, :is_outbound, :node_id, :version
+      attr_accessor :addresses, :is_outbound, :node_id, :version
 
       # @param addresses [AddressInfo[]]
       # @param is_outbound [Boolean]
