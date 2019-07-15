@@ -3,7 +3,7 @@
 module CKB
   module Types
     class LiveCell
-      attr_reader :cell_output, :created_by
+      attr_accessor :cell_output, :created_by
 
       # @param cell_output [Types::Output]
       # @param created_by [Types::TransactionPoint]

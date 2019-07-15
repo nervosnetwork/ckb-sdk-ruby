@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Transaction
-      attr_reader :version, :deps, :inputs, :outputs, :witnesses, :hash
+      attr_accessor :version, :deps, :inputs, :outputs, :witnesses, :hash
 
       # @param hash [String | nil] 0x...
       # @param version [String]

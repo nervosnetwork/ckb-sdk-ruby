@@ -3,7 +3,7 @@
 module CKB
   module Types
     class DryRunResult
-      attr_reader :cycles
+      attr_accessor :cycles
 
       # @param cycles [String] number
       def initialize(cycles:)

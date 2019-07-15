@@ -3,7 +3,7 @@
 module CKB
   module Types
     class BlockHeader
-      attr_reader :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_hash, \
+      attr_accessor :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_hash, \
                   :uncles_count, :uncles_hash, :version, :witnesses_root, :epoch
 
       # @param difficulty [String] 0x...

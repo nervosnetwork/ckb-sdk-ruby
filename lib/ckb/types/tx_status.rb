@@ -3,7 +3,7 @@
 module CKB
   module Types
     class TxStatus
-      attr_reader :status, :block_hash
+      attr_accessor :status, :block_hash
 
       # @param status [String] "proposed", "pending", "committed"
       # @param block_hash [String | nil] "0x..."

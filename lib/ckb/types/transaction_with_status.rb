@@ -3,7 +3,7 @@
 module CKB
   module Types
     class TransactionWithStatus
-      attr_reader :transaction, :tx_status
+      attr_accessor :transaction, :tx_status
 
       # @param transaction [CKB::Types::Transaction]
       # @param tx_status [CKB::Types::TxStatus]

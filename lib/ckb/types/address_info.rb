@@ -3,7 +3,7 @@
 module CKB
   module Types
     class AddressInfo
-      attr_reader :address, :score
+      attr_accessor :address, :score
 
       # @param address [String]
       # @param score [String] number

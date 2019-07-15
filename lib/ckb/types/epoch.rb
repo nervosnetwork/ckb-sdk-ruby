@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Epoch
-      attr_reader :epoch_reward, :difficulty, :length, :number, :start_number
+      attr_accessor :epoch_reward, :difficulty, :length, :number, :start_number
 
       # @param epoch_reward [String] number
       # @param difficulty [String] 0x...

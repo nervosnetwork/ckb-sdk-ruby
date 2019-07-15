@@ -3,7 +3,7 @@
 module CKB
   module Types
     class LockHashIndexState
-      attr_reader :lock_hash, :block_number, :block_hash
+      attr_accessor :lock_hash, :block_number, :block_hash
 
       # @param lock_hash [String]
       # @param block_number [String] number

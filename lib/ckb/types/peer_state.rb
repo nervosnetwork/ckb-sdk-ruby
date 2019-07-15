@@ -3,7 +3,7 @@
 module CKB
   module Types
     class PeerState
-      attr_reader :last_updated, :blocks_in_flight, :peer
+      attr_accessor :last_updated, :blocks_in_flight, :peer
 
       # @param last_updated [String]
       # @param block_in_flight [String] number

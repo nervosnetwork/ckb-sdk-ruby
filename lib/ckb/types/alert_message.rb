@@ -3,7 +3,7 @@
 module CKB
   module Types
     class AlertMessage
-      attr_reader :id, :priority, :notice_until, :message
+      attr_accessor :id, :priority, :notice_until, :message
 
       # @param id [String]
       # @param priority [String]

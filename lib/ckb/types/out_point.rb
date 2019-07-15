@@ -3,7 +3,7 @@
 module CKB
   module Types
     class OutPoint
-      attr_reader :block_hash, :cell
+      attr_accessor :block_hash, :cell
 
       # @param block_hash [String | nil] 0x...
       # @param cell [CKB::Types::CellOutPoint | nil]

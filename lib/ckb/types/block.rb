@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Block
-      attr_reader :uncles, :proposals, :transactions, :header
+      attr_accessor :uncles, :proposals, :transactions, :header
 
       # @param uncles [CKB::Types::Uncle[]]
       # @param proposals [String[]] 0x...

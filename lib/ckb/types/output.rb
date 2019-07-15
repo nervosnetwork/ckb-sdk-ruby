@@ -3,7 +3,8 @@
 module CKB
   module Types
     class Output
-      attr_reader :data, :lock, :type, :out_point, :capacity
+      attr_accessor :data, :lock, :type, :out_point
+      attr_reader :capacity
 
       # @param capacity [String]
       # @param data: [String] 0x...
