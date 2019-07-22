@@ -53,8 +53,8 @@ RSpec.describe CKB::API do
   end
 
   it "get live cell" do
-    cells = api.get_cells_by_lock_hash(lock_hash, 0, 100)
-    result = api.get_live_cell(cells[0].out_point)
+    out_point = Types::OutPoint.new(block_hash: nil, cell: Types::CellOutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: "0"))
+    result = api.get_live_cell(out_point)
     expect(result).not_to be nil
   end
 
