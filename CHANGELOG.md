@@ -1,6 +1,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.17.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.16.0...v0.17.0) (2019-07-27)
+
+
+### Features
+
+* Add hash type per CKB changes ([aa88f93](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/aa88f93))
+* using attr_accessor ([8d835e3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8d835e3))
+
+
 # [v0.16.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.15.0...v0.16.0) (2019-07-13)
 
 
