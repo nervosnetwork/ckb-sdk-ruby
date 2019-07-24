@@ -6,7 +6,7 @@ RSpec.describe CKB::Address do
   let(:pubkey_blake160) { "0x36c329ed630d6ce750712a477543672adab57f4c" }
   let(:pubkey_blake160_bin) { Utils.hex_to_bin(pubkey_blake160) }
   let(:prefix) { "ckt" }
-  let(:address) { "ckt1q9gry5zgxmpjnmtrp4kww5r39frh2sm89tdt2l6v234ygf" }
+  let(:address) { "ckt1qyqrdsefa43s6m882pcj53m4gdnj4k440axqswmu83" }
 
   context "from pubkey" do
     let(:addr) { CKB::Address.from_pubkey(pubkey) }
