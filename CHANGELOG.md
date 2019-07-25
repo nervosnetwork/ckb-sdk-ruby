@@ -6,8 +6,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
+* add dao to block header ([1340fb9](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/1340fb9))
 * Add hash type per CKB changes ([aa88f93](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/aa88f93))
+* Update address generator as per recent RFC 21 change ([2ccf2f4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2ccf2f4))
 * using attr_accessor ([8d835e3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8d835e3))
+
+
+### BREAKING CHANGES
+
+* A public key will derive different address from previous implementation.
+As the code hash index has been changed from 4 bytes to 1 byte, the first several fixed
+characters will become ckt1qyq from ckb1q9gry5zg and be shorter.
 
 
 # [v0.16.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.15.0...v0.16.0) (2019-07-13)
