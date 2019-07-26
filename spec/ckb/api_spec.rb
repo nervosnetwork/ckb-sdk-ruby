@@ -170,4 +170,16 @@ RSpec.describe CKB::API do
     result = api.get_cellbase_output_capacity_details(block_hash)
     expect(result).to be_a(Types::BlockReward)
   end
+
+  it "set ban" do
+    params = ["192.168.0.2", "insert", "1840546800000", true, "test set_ban rpc"]
+    result = api.set_ban(*params)
+    expect(result).to be nil
+  end
+
+  it "get banned addresses" do
+    result = api.get_banned_addresses
+    expect(result).not_to be nil
+    expect(result).to all(be_a(Types::BannedAddress))
+  end
 end

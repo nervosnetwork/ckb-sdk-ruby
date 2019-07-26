@@ -137,4 +137,15 @@ RSpec.describe CKB::RPC do
     result = rpc.get_cellbase_output_capacity_details(block_hash)
     expect(result).not_to be nil
   end
+
+  it "set ban" do
+    params = ["192.168.0.2", "insert", "1840546800000", true, "test set_ban rpc"]
+    result = rpc.set_ban(*params)
+    expect(result).to be nil
+  end
+
+  it "get banned addresses" do
+    result = rpc.get_banned_addresses
+    expect(result).not_to be nil
+  end
 end
