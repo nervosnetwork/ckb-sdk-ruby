@@ -6,8 +6,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
+* add block reward type ([32ee77e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/32ee77e))
 * add dao to block header ([1340fb9](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/1340fb9))
 * Add hash type per CKB changes ([aa88f93](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/aa88f93))
+* add new apis ([75d7a81](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/75d7a81))
 * Update address generator as per recent RFC 21 change ([2ccf2f4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2ccf2f4))
 * using attr_accessor ([8d835e3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8d835e3))
 
