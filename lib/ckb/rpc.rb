@@ -143,6 +143,18 @@ module CKB
       rpc_request("index_lock_hash", params: [lock_hash, index_from.to_s])
     end
 
+    def get_header(block_hash)
+      rpc_request("get_header", params: [block_hash])
+    end
+
+    def get_header_by_number(block_number)
+      rpc_request("get_header_by_number", params: [block_number.to_s])
+    end
+
+    def get_cellbase_output_capacity_details(block_hash)
+      rpc_request("get_cellbase_output_capacity_details", params: [block_hash])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
