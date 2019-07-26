@@ -150,4 +150,24 @@ RSpec.describe CKB::API do
       expect(result).not_to be nil
     end
   end
+
+  it "get block header" do
+    block_hash = api.get_block_hash("1")
+    result = api.get_header(block_hash)
+    expect(result).to be_a(Types::BlockHeader)
+    expect(result.number.to_i > 0).to be true
+  end
+
+  it "get block header by number" do
+    block_number = "1"
+    result = api.get_header_by_number(block_number)
+    expect(result).to be_a(Types::BlockHeader)
+    expect(result.number).to eq block_number
+  end
+
+  it "get block reward by block hash" do
+    block_hash = api.get_block_hash("1")
+    result = api.get_cellbase_output_capacity_details(block_hash)
+    expect(result).to be_a(Types::BlockReward)
+  end
 end
