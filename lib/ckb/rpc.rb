@@ -155,6 +155,19 @@ module CKB
       rpc_request("get_cellbase_output_capacity_details", params: [block_hash])
     end
 
+    # @param address [String]
+    # @param command [String]
+    # @param ban_time [String | nil] timestamp
+    # @param absolute [Boolean | nil]
+    # @param reason [String | nil]
+    def set_ban(address, command, ban_time = nil, absolute = nil, reason = nil)
+      rpc_request("set_ban", params: [address, command, ban_time, absolute, reason])
+    end
+
+    def get_banned_addresses
+      rpc_request("get_banned_addresses")
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end

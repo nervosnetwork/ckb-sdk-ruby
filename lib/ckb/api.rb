@@ -255,6 +255,21 @@ module CKB
       Types::BlockReward.from_h(block_reward_h)
     end
 
+    # @param address [String]
+    # @param command [String]
+    # @param ban_time [String | nil] timestamp
+    # @param absolute [Boolean | nil]
+    # @param reason [String | nil]
+    def set_ban(address, command, ban_time = nil, absolute = nil, reason = nil)
+      rpc.set_ban(address, command, ban_time, absolute, reason)
+    end
+
+    # @return [CKB::Types::BannedAddress[]]
+    def get_banned_addresses
+      result = rpc.get_banned_addresses
+      result.map { |addr| Types::BannedAddress.from_h(addr) }
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
