@@ -231,6 +231,30 @@ module CKB
       Types::LockHashIndexState.from_h(state)
     end
 
+    # @param block_hash [String] 0x...
+    #
+    # @return [CKB::Types::BlockHeader]
+    def get_header(block_hash)
+      block_header_h = rpc.get_header(block_hash)
+      Types::BlockHeader.from_h(block_header_h)
+    end
+
+    # @param block_number [String | Integer]
+    #
+    # @return [CKB::Types::BlockHeader]
+    def get_header_by_number(block_number)
+      block_header_h = rpc.get_header_by_number(block_number.to_s)
+      Types::BlockHeader.from_h(block_header_h)
+    end
+
+    # @param block_hash [String] 0x...
+    #
+    # @return [CKB::Types::BlockReward]
+    def get_cellbase_output_capacity_details(block_hash)
+      block_reward_h = rpc.get_cellbase_output_capacity_details(block_hash)
+      Types::BlockReward.from_h(block_reward_h)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end

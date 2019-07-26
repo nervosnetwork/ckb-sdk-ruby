@@ -119,4 +119,22 @@ RSpec.describe CKB::RPC do
       expect(result).not_to be nil
     end
   end
+
+  it "get block header" do
+    block_hash = rpc.get_block_hash("1")
+    result = rpc.get_header(block_hash)
+    expect(result[:number].to_i > 0).to be true
+  end
+
+  it "get block header by number" do
+    block_number = "1"
+    result = rpc.get_header_by_number(block_number)
+    expect(result[:number]).to eq block_number
+  end
+
+  it "get block reward by block hash" do
+    block_hash = rpc.get_block_hash("1")
+    result = rpc.get_cellbase_output_capacity_details(block_hash)
+    expect(result).not_to be nil
+  end
 end
