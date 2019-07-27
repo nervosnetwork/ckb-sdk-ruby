@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Seal
-      attr_reader :nonce, :proof
+      attr_accessor :nonce, :proof
 
       # @param nonce [String] decimal number
       # @param proof [String] 0x...

@@ -3,7 +3,7 @@
 module CKB
   module Types
     class Input
-      attr_reader :previous_output, :since
+      attr_accessor :previous_output, :since
 
       # @param previous_output [CKB::Types::OutPoint]
       # @param since [String]

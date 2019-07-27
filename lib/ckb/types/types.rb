@@ -26,6 +26,8 @@ require_relative "transaction_point"
 require_relative "lock_hash_index_state"
 require_relative "live_cell"
 require_relative "cell_transaction"
+require_relative "block_reward"
+require_relative "banned_address"
 
 module CKB
   module Types

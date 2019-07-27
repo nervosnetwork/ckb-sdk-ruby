@@ -3,7 +3,7 @@
 module CKB
   module Types
     class TxPoolInfo
-      attr_reader :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at
+      attr_accessor :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at
 
       # @param pending [String] number
       # @param proposed [String] number

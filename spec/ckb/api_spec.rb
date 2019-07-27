@@ -53,8 +53,8 @@ RSpec.describe CKB::API do
   end
 
   it "get live cell" do
-    cells = api.get_cells_by_lock_hash(lock_hash, 0, 100)
-    result = api.get_live_cell(cells[0].out_point)
+    out_point = Types::OutPoint.new(block_hash: nil, cell: Types::CellOutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: "0"))
+    result = api.get_live_cell(out_point)
     expect(result).not_to be nil
   end
 
@@ -149,5 +149,37 @@ RSpec.describe CKB::API do
       result = api.get_transactions_by_lock_hash(lock_hash, 0, 10)
       expect(result).not_to be nil
     end
+  end
+
+  it "get block header" do
+    block_hash = api.get_block_hash("1")
+    result = api.get_header(block_hash)
+    expect(result).to be_a(Types::BlockHeader)
+    expect(result.number.to_i > 0).to be true
+  end
+
+  it "get block header by number" do
+    block_number = "1"
+    result = api.get_header_by_number(block_number)
+    expect(result).to be_a(Types::BlockHeader)
+    expect(result.number).to eq block_number
+  end
+
+  it "get block reward by block hash" do
+    block_hash = api.get_block_hash("1")
+    result = api.get_cellbase_output_capacity_details(block_hash)
+    expect(result).to be_a(Types::BlockReward)
+  end
+
+  it "set ban" do
+    params = ["192.168.0.2", "insert", "1840546800000", true, "test set_ban rpc"]
+    result = api.set_ban(*params)
+    expect(result).to be nil
+  end
+
+  it "get banned addresses" do
+    result = api.get_banned_addresses
+    expect(result).not_to be nil
+    expect(result).to all(be_a(Types::BannedAddress))
   end
 end

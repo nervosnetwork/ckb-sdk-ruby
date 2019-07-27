@@ -16,7 +16,7 @@ module CKB
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0x94334bdda40b69bae067d84937aa6bbccf8acd0df6626d4b9ac70d4612a11933"
+        expected_code_hash = "0x54811ce986d5c3e57eaafab22cdd080e32209e39590e204a99b32935f835a13c"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -229,6 +229,45 @@ module CKB
     def index_lock_hash(lock_hash, index_from: "0")
       state = rpc.index_lock_hash(lock_hash, index_from: index_from)
       Types::LockHashIndexState.from_h(state)
+    end
+
+    # @param block_hash [String] 0x...
+    #
+    # @return [CKB::Types::BlockHeader]
+    def get_header(block_hash)
+      block_header_h = rpc.get_header(block_hash)
+      Types::BlockHeader.from_h(block_header_h)
+    end
+
+    # @param block_number [String | Integer]
+    #
+    # @return [CKB::Types::BlockHeader]
+    def get_header_by_number(block_number)
+      block_header_h = rpc.get_header_by_number(block_number.to_s)
+      Types::BlockHeader.from_h(block_header_h)
+    end
+
+    # @param block_hash [String] 0x...
+    #
+    # @return [CKB::Types::BlockReward]
+    def get_cellbase_output_capacity_details(block_hash)
+      block_reward_h = rpc.get_cellbase_output_capacity_details(block_hash)
+      Types::BlockReward.from_h(block_reward_h)
+    end
+
+    # @param address [String]
+    # @param command [String]
+    # @param ban_time [String | nil] timestamp
+    # @param absolute [Boolean | nil]
+    # @param reason [String | nil]
+    def set_ban(address, command, ban_time = nil, absolute = nil, reason = nil)
+      rpc.set_ban(address, command, ban_time, absolute, reason)
+    end
+
+    # @return [CKB::Types::BannedAddress[]]
+    def get_banned_addresses
+      result = rpc.get_banned_addresses
+      result.map { |addr| Types::BannedAddress.from_h(addr) }
     end
 
     def inspect

@@ -11,7 +11,7 @@ module CKB
     DEFAULT_MODE = MODE::TESTNET
 
     TYPE = "01"
-    BIN_IDX = "P2PH"
+    CODE_HASH_INDEX = "00"
 
     def initialize(blake160, mode: DEFAULT_MODE)
       @mode = mode
@@ -20,13 +20,13 @@ module CKB
     end
 
     # Generates address assuming default lock script is used
-    # payload = type(01) | bin-idx("P2PH" => "50/32/50/48") | pubkey blake160
+    # payload = type(01) | code hash index(00) | pubkey blake160
     # see https://github.com/nervosnetwork/ckb/wiki/Common-Address-Format for more info.
     def generate
       blake160_bin = [blake160[2..-1]].pack("H*")
       type = [TYPE].pack("H*")
-      bin_idx = [self.class.bin_idx_ord].pack("H*")
-      payload = type + bin_idx + blake160_bin
+      code_hash_index = [CODE_HASH_INDEX].pack("H*")
+      payload = type + code_hash_index + blake160_bin
       ConvertAddress.encode(@prefix, payload)
     end
 
@@ -42,9 +42,9 @@ module CKB
 
       raise "Invalid prefix" if decoded_prefix != prefix(mode: mode)
 
-      raise "Invalid type/bin-idx" if data.slice(0..4) != [TYPE + bin_idx_ord].pack("H*")
+      raise "Invalid type/code hash index" if data.slice(0..1) != [TYPE + CODE_HASH_INDEX].pack("H*")
 
-      CKB::Utils.bin_to_hex(data.slice(5..-1))
+      CKB::Utils.bin_to_hex(data.slice(2..-1))
     end
 
     def self.blake160(pubkey)
@@ -56,10 +56,6 @@ module CKB
 
     def self.from_pubkey(pubkey, mode: DEFAULT_MODE)
       new(blake160(pubkey), mode: mode)
-    end
-
-    def self.bin_idx_ord
-      BIN_IDX.each_char.map { |c| c.ord.to_s(16) }.join
     end
 
     def self.prefix(mode: DEFAULT_MODE)
