@@ -114,7 +114,11 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, api.dao_code_hash)
+        lock: Types::Script.generate_lock(addr.blake160, api.system_script_code_hash),
+        type: CKB::Types::Script.new(
+          code_hash: api.dao_code_hash,
+          args: []
+        )
       )
 
       change_output = Types::Output.new(
@@ -136,7 +140,10 @@ module CKB
 
       tx = Types::Transaction.new(
         version: 0,
-        deps: [api.system_script_out_point],
+        deps: [
+          api.system_script_out_point,
+          api.dao_issuing_out_point
+        ],
         inputs: i.inputs,
         outputs: outputs,
         outputs_data: outputs.map(&:data),
@@ -188,16 +195,18 @@ module CKB
       ]
       tx = Types::Transaction.new(
         version: 0,
-        deps: [{block_hash: current_block.hash}],
+        deps: [
+          CKB::Types::OutPoint.new(block_hash: current_block.hash),
+          api.dao_issuing_out_point,
+          api.system_script_out_point,
+        ],
         inputs: [
-          Types::Input.new(previous_output: new_cell_out_point, since: since),
-          Types::Input.new(previous_output: api.dao_issuing_out_point)
+          Types::Input.new(previous_output: new_cell_out_point, since: since)
         ],
         outputs: outputs,
         outputs_data: outputs.map(&:data),
         witnesses: [
-          Types::Witness.new(data: [current_block.hash]),
-          Types::Witness.new(data: []),
+          Types::Witness.new(data: ["0x0000000000000000"]),
         ]
       )
       tx_hash = api.compute_transaction_hash(tx)
