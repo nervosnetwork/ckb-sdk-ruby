@@ -132,7 +132,8 @@ module CKB
       i = gather_inputs(
         capacity,
         output.calculate_min_capacity,
-        change_output.calculate_min_capacity
+        change_output.calculate_min_capacity,
+        0
       )
       input_capacities = i.capacities
 
@@ -145,6 +146,7 @@ module CKB
         deps: [api.system_script_out_point],
         inputs: i.inputs,
         outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
       tx_hash = api.compute_transaction_hash(tx)
@@ -187,6 +189,10 @@ module CKB
         block_hash: deposit_block.hash,
         cell: cell_out_point.cell.dup
       )
+
+      outputs = [
+        Types::Output.new(capacity: output_capacity, lock: lock)
+      ]
       tx = Types::Transaction.new(
         version: 0,
         deps: [{block_hash: current_block.hash}],
@@ -194,9 +200,8 @@ module CKB
           Types::Input.new(previous_output: new_cell_out_point, since: since),
           Types::Input.new(previous_output: DAO_ISSUING_OUT_POINT)
         ],
-        outputs: [
-          Types::Output.new(capacity: output_capacity, lock: lock)
-        ],
+        outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: [
           Types::Witness.new(data: [current_block.hash]),
           Types::Witness.new(data: []),
