@@ -3,13 +3,14 @@
 module CKB
   module Types
     class Transaction
-      attr_accessor :version, :deps, :inputs, :outputs, :witnesses, :hash
+      attr_accessor :version, :deps, :inputs, :outputs, :outputs_data, :witnesses, :hash
 
       # @param hash [String | nil] 0x...
       # @param version [String]
       # @param deps [CKB::Types::OutPoint[]]
       # @param inputs [CKB::Types::Input[]]
       # @param outputs [CKB::Types::Output[]]
+      # @param outputs_data [String[]]
       # @param witnesses [CKB::Types::Witness[]]
       def initialize(
         hash: nil,
@@ -17,6 +18,7 @@ module CKB
         deps: [],
         inputs: [],
         outputs: [],
+        outputs_data: [],
         witnesses: []
       )
         @hash = hash
@@ -24,6 +26,7 @@ module CKB
         @deps = deps
         @inputs = inputs
         @outputs = outputs
+        @outputs_data = outputs_data
         @witnesses = witnesses
       end
 
@@ -50,6 +53,7 @@ module CKB
           deps: deps,
           inputs: inputs,
           outputs: outputs,
+          outputs_data: outputs_data,
           witnesses: signed_witnesses
         )
       end
@@ -60,6 +64,7 @@ module CKB
           deps: @deps.map(&:to_h),
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
+          outputs_data: @outputs_data,
           witnesses: @witnesses.map(&:to_h)
         }
         hash[:hash] = @hash if @hash
@@ -75,6 +80,7 @@ module CKB
           deps: hash[:deps]&.map { |dep| OutPoint.from_h(dep) },
           inputs: hash[:inputs].map { |input| Input.from_h(input) },
           outputs: hash[:outputs].map { |output| Output.from_h(output) },
+          outputs_data: hash[:outputs_data],
           witnesses: hash[:witnesses].map { |witness| Witness.from_h(witness) }
         )
       end

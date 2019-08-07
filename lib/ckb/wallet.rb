@@ -94,6 +94,7 @@ module CKB
         deps: [api.system_script_out_point],
         inputs: i.inputs,
         outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
       tx_hash = api.compute_transaction_hash(tx)
