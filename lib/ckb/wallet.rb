@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
 module CKB
-  DAO_CODE_HASH = "0x0000000000000000000000000000004e4552564f5344414f434f444530303031"
-
-  DAO_ISSUING_OUT_POINT = Types::OutPoint.new(
-    cell: Types::CellOutPoint.new(
-      tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031",
-      index: 0))
-
   DAO_LOCK_PERIOD_BLOCKS = 10
   DAO_MATURITY_BLOCKS = 5
 
@@ -121,7 +114,7 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, DAO_CODE_HASH)
+        lock: Types::Script.generate_lock(addr.blake160, api.dao_code_hash)
       )
 
       change_output = Types::Output.new(
@@ -198,7 +191,7 @@ module CKB
         deps: [{block_hash: current_block.hash}],
         inputs: [
           Types::Input.new(previous_output: new_cell_out_point, since: since),
-          Types::Input.new(previous_output: DAO_ISSUING_OUT_POINT)
+          Types::Input.new(previous_output: api.dao_issuing_out_point)
         ],
         outputs: outputs,
         outputs_data: outputs.map(&:data),
