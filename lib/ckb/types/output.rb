@@ -34,7 +34,8 @@ module CKB
       end
 
       def calculate_bytesize
-        bytesize = 8 + Utils.hex_to_bin(@data_hash).bytesize + @lock.calculate_bytesize
+        raise "Don't know data" if @data.nil?
+        bytesize = 8 + Utils.hex_to_bin(@data).bytesize + @lock.calculate_bytesize
         bytesize += @type.calculate_bytesize if @type
         bytesize
       end
