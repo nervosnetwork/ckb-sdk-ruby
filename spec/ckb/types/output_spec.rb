@@ -13,14 +13,14 @@ RSpec.describe CKB::Types::Output do
     it "default" do
       expect(
         output.calculate_bytesize
-      ).to eq 60
+      ).to eq 93
     end
 
     it "with data" do
       output.instance_variable_set(:@data, "0x1234")
       expect(
         output.calculate_bytesize
-      ).to eq 62
+      ).to eq 93
     end
 
     it "with type script" do
@@ -32,13 +32,13 @@ RSpec.describe CKB::Types::Output do
 
       expect(
         output.calculate_bytesize
-      ).to eq 92
+      ).to eq (93 + 33)
     end
   end
 
   it "calculate min capacity" do
     expect(
       output.calculate_min_capacity
-    ).to eq CKB::Utils.byte_to_shannon(60)
+    ).to eq CKB::Utils.byte_to_shannon(93)
   end
 end
