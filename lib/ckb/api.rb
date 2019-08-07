@@ -11,7 +11,7 @@ module CKB
     attr_reader :rpc
     attr_reader :system_script_out_point
     attr_reader :system_script_code_hash
-    attr_reader :dao_issuing_out_point
+    attr_reader :dao_out_point
     attr_reader :dao_code_hash
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
@@ -55,7 +55,7 @@ module CKB
     end
 
     def set_dao_cell(out_point, code_hash)
-      @dao_issuing_out_point = out_point
+      @dao_out_point = out_point
       @dao_code_hash = code_hash
     end
 

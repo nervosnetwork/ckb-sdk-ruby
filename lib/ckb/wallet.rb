@@ -142,7 +142,7 @@ module CKB
         version: 0,
         deps: [
           api.system_script_out_point,
-          api.dao_issuing_out_point
+          api.dao_out_point
         ],
         inputs: i.inputs,
         outputs: outputs,
@@ -197,8 +197,8 @@ module CKB
         version: 0,
         deps: [
           CKB::Types::OutPoint.new(block_hash: current_block.hash),
-          api.dao_issuing_out_point,
-          api.system_script_out_point,
+          api.dao_out_point,
+          api.system_script_out_point
         ],
         inputs: [
           Types::Input.new(previous_output: new_cell_out_point, since: since)
