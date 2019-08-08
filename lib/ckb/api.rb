@@ -11,6 +11,8 @@ module CKB
     attr_reader :rpc
     attr_reader :system_script_out_point
     attr_reader :system_script_code_hash
+    attr_reader :dao_out_point
+    attr_reader :dao_code_hash
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
@@ -32,6 +34,17 @@ module CKB
         raise "System script code_hash error!" unless code_hash == expected_code_hash
 
         set_system_script_cell(out_point, code_hash)
+
+        dao_out_point = Types::OutPoint.new(
+          cell: Types::CellOutPoint.new(
+            tx_hash: system_cell_transaction.hash,
+            index: "2"
+          )
+        )
+        dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs[2].data)
+        dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
+
+        set_dao_cell(dao_out_point, dao_code_hash)
       end
     end
 
@@ -40,6 +53,11 @@ module CKB
     def set_system_script_cell(out_point, code_hash)
       @system_script_out_point = out_point
       @system_script_code_hash = code_hash
+    end
+
+    def set_dao_cell(out_point, code_hash)
+      @dao_out_point = out_point
+      @dao_code_hash = code_hash
     end
 
     def system_script_cell
