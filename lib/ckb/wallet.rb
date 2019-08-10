@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
 module CKB
-  DAO_CODE_HASH = "0x0000000000000000000000000000004e4552564f5344414f434f444530303031"
-
-  DAO_ISSUING_OUT_POINT = Types::OutPoint.new(
-    cell: Types::CellOutPoint.new(
-      tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031",
-      index: 0))
-
   DAO_LOCK_PERIOD_BLOCKS = 10
   DAO_MATURITY_BLOCKS = 5
 
@@ -120,7 +113,11 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, DAO_CODE_HASH)
+        lock: Types::Script.generate_lock(addr.blake160, api.system_script_code_hash),
+        type: Types::Script.new(
+          code_hash: api.dao_code_hash,
+          args: []
+        )
       )
 
       change_output = Types::Output.new(
@@ -131,7 +128,8 @@ module CKB
       i = gather_inputs(
         capacity,
         output.calculate_min_capacity,
-        change_output.calculate_min_capacity
+        change_output.calculate_min_capacity,
+        0
       )
       input_capacities = i.capacities
 
@@ -141,7 +139,10 @@ module CKB
 
       tx = Types::Transaction.new(
         version: 0,
-        deps: [api.system_script_out_point],
+        deps: [
+          api.system_script_out_point,
+          api.dao_out_point
+        ],
         inputs: i.inputs,
         outputs: outputs,
         witnesses: i.witnesses
@@ -188,21 +189,23 @@ module CKB
       )
       tx = Types::Transaction.new(
         version: 0,
-        deps: [{block_hash: current_block.hash}],
+        deps: [
+          CKB::Types::OutPoint.new(block_hash: current_block.hash),
+          api.dao_out_point,
+          api.system_script_out_point
+        ],
         inputs: [
           Types::Input.new(previous_output: new_cell_out_point, since: since),
-          Types::Input.new(previous_output: DAO_ISSUING_OUT_POINT)
         ],
         outputs: [
           Types::Output.new(capacity: output_capacity, lock: lock)
         ],
         witnesses: [
-          Types::Witness.new(data: [current_block.hash]),
-          Types::Witness.new(data: []),
+          Types::Witness.new(data: ["0x0000000000000000"])
         ]
       )
       tx_hash = api.compute_transaction_hash(tx)
-      tx = tx.sign(key, tx_hash)
+      tx.sign(key, tx_hash)
     end
 
     # @param hash_hex [String] "0x..."
