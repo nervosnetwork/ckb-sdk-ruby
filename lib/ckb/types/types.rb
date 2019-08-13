@@ -28,6 +28,7 @@ require_relative "live_cell"
 require_relative "cell_transaction"
 require_relative "block_reward"
 require_relative "banned_address"
+require_relative "cell_dep"
 
 module CKB
   module Types
