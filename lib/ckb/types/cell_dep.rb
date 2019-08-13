@@ -7,7 +7,7 @@ module CKB
 
       # @param out_point [CKB::Types::CellOutPoint | nil]
       # @param is_group [Boolean]
-      def initialize(out_point: nil, is_group:)
+      def initialize(out_point: nil, is_group: false)
         @out_point = out_point
         @is_group = is_group
       end
