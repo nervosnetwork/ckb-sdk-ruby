@@ -3,11 +3,12 @@
 module CKB
   module Types
     class Transaction
-      attr_accessor :version, :deps, :inputs, :outputs, :outputs_data, :witnesses, :hash
+      attr_accessor :version, :cell_deps, :header_deps, :inputs, :outputs, :outputs_data, :witnesses, :hash
 
       # @param hash [String | nil] 0x...
       # @param version [String]
-      # @param deps [CKB::Types::OutPoint[]]
+      # @param cell_deps [CKB::Types::CellDep[]]
+      # @param header_deps [String[]]
       # @param inputs [CKB::Types::Input[]]
       # @param outputs [CKB::Types::Output[]]
       # @param outputs_data [String[]]
@@ -15,7 +16,8 @@ module CKB
       def initialize(
         hash: nil,
         version: 0,
-        deps: [],
+        cell_deps: [],
+        header_deps: [],
         inputs: [],
         outputs: [],
         outputs_data: [],
@@ -23,7 +25,8 @@ module CKB
       )
         @hash = hash
         @version = version.to_s
-        @deps = deps
+        @cell_deps = cell_deps
+        @header_deps = header_deps
         @inputs = inputs
         @outputs = outputs
         @outputs_data = outputs_data
@@ -50,7 +53,8 @@ module CKB
         self.class.new(
           hash: tx_hash, # using real tx_hash instead
           version: version,
-          deps: deps,
+          cell_deps: cell_deps,
+          header_deps: header_deps,
           inputs: inputs,
           outputs: outputs,
           outputs_data: outputs_data,
@@ -61,7 +65,8 @@ module CKB
       def to_h
         hash = {
           version: @version,
-          deps: @deps.map(&:to_h),
+          cell_deps: @cell_deps.map(&:to_h),
+          header_deps: @header_deps,
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
           outputs_data: @outputs_data,
@@ -77,7 +82,8 @@ module CKB
         new(
           hash: hash[:hash],
           version: hash[:version],
-          deps: hash[:deps]&.map { |dep| OutPoint.from_h(dep) },
+          header_deps: hash[:header_deps],
+          cell_deps: hash[:cell_deps].map { |dep| CellDep.from_h(dep) },
           inputs: hash[:inputs].map { |input| Input.from_h(input) },
           outputs: hash[:outputs].map { |output| Output.from_h(output) },
           outputs_data: hash[:outputs_data],
