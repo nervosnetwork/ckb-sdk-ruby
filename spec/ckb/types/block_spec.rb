@@ -15,7 +15,6 @@ RSpec.describe CKB::Types::Block do
           }],
           "outputs":[{
             "capacity":"131540290464",
-            "data_hash":"0x0000000000000000000000000000000000000000000000000000000000000000",
             "lock":{
               "args":["0x3954acece65096bfa81258983ddb83915fc56bd8"],
               "code_hash":"0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55",

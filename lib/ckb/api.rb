@@ -26,7 +26,8 @@ module CKB
           tx_hash: system_cell_transaction.hash,
           index: "1"
         )
-        code_hash = system_cell_transaction.outputs[1].data_hash
+        cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[1])
+        code_hash = CKB::Blake2b.hexdigest(cell_data)
 
         raise "System script code_hash error!" unless code_hash == expected_code_hash
 
@@ -36,7 +37,8 @@ module CKB
           tx_hash: system_cell_transaction.hash,
           index: "2"
         )
-        dao_code_hash = system_cell_transaction.outputs[2].data_hash
+        dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[2])
+        dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
 
         set_dao_cell(dao_out_point, dao_code_hash)
       end
