@@ -87,6 +87,7 @@ module CKB
         deps: [api.system_script_out_point],
         inputs: i.inputs,
         outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
       tx_hash = api.compute_transaction_hash(tx)
@@ -145,6 +146,7 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
       tx_hash = api.compute_transaction_hash(tx)
@@ -187,6 +189,10 @@ module CKB
         block_hash: deposit_block.hash,
         cell: cell_out_point.cell.dup
       )
+
+      outputs = [
+        Types::Output.new(capacity: output_capacity, lock: lock)
+      ]
       tx = Types::Transaction.new(
         version: 0,
         deps: [
@@ -195,11 +201,10 @@ module CKB
           api.system_script_out_point
         ],
         inputs: [
-          Types::Input.new(previous_output: new_cell_out_point, since: since),
+          Types::Input.new(previous_output: new_cell_out_point, since: since)
         ],
-        outputs: [
-          Types::Output.new(capacity: output_capacity, lock: lock)
-        ],
+        outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: [
           Types::Witness.new(data: ["0x0000000000000000"])
         ]
