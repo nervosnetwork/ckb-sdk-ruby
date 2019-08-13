@@ -40,7 +40,6 @@ module CKB
             index: "2"
           )
         )
-
         dao_code_hash = system_cell_transaction.outputs[2].data_hash
 
         set_dao_cell(dao_out_point, dao_code_hash)

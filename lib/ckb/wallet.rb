@@ -115,7 +115,7 @@ module CKB
       output = Types::Output.new(
         capacity: capacity,
         lock: Types::Script.generate_lock(addr.blake160, api.system_script_code_hash),
-        type: CKB::Types::Script.new(
+        type: Types::Script.new(
           code_hash: api.dao_code_hash,
           args: []
         )
@@ -206,11 +206,11 @@ module CKB
         outputs: outputs,
         outputs_data: outputs.map(&:data),
         witnesses: [
-          Types::Witness.new(data: ["0x0000000000000000"]),
+          Types::Witness.new(data: ["0x0000000000000000"])
         ]
       )
       tx_hash = api.compute_transaction_hash(tx)
-      tx = tx.sign(key, tx_hash)
+      tx.sign(key, tx_hash)
     end
 
     # @param hash_hex [String] "0x..."

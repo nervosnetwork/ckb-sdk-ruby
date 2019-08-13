@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.18.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.17.0...v0.18.0) (2019-08-10)
+
+
+### Bug Fixes
+
+* dao as a script ([cbb83ea](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/cbb83ea))
+
+
 # [v0.17.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.16.0...v0.17.0) (2019-07-27)
 
 
