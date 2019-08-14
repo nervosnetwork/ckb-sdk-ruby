@@ -69,7 +69,7 @@ RSpec.describe CKB::RPC do
   it "send empty transaction" do
     tx = {
       version: 0,
-      deps: [],
+      cell_deps: [],
       inputs: [],
       outputs: []
     }
