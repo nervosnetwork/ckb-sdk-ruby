@@ -152,7 +152,7 @@ module CKB
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
 
-      Types::OutPoint.new(cell: Types::CellOutPoint.new(tx_hash: tx_hash, index: 0))
+      Types::OutPoint.new(tx_hash: tx_hash, index: 0)
     end
 
     # @param cell_out_point [CKB::Type::OutPoint]
@@ -185,9 +185,10 @@ module CKB
 
       output_capacity = api.calculate_dao_maximum_withdraw(cell_out_point, current_block.hash).to_i
 
+      dup_cell_out_point = cell_out_point.dup
       new_cell_out_point = Types::OutPoint.new(
-        block_hash: deposit_block.hash,
-        cell: cell_out_point.cell.dup
+        tx_hash: dup_cell_out_point.tx_hash,
+        index: dup_cell_out_point.index
       )
 
       outputs = [
