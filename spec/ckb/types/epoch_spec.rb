@@ -2,7 +2,6 @@ RSpec.describe CKB::Types::Epoch do
   let(:epoch_h) do
     {
       "difficulty": "0x3e8",
-      "epoch_reward": "125000000000000",
       "length": "1250",
       "number": "0",
       "start_number": "0"
