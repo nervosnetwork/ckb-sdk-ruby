@@ -3,29 +3,28 @@
 module CKB
   module Types
     class OutPoint
-      attr_accessor :block_hash, :cell
+      attr_accessor :tx_hash, :index
 
-      # @param block_hash [String | nil] 0x...
-      # @param cell [CKB::Types::CellOutPoint | nil]
-      def initialize(block_hash: nil, cell: nil)
-        @block_hash = block_hash
-        @cell = cell
+      # @param tx_hash [String] 0x...
+      # @param index [String] number
+      def initialize(tx_hash:, index:)
+        @tx_hash = tx_hash
+        @index = index
       end
 
       def to_h
         {
-          block_hash: @block_hash,
-          cell: @cell&.to_h
+          tx_hash: tx_hash,
+          index: index
         }
       end
 
       def self.from_h(hash)
         return if hash.nil?
 
-        cell = CellOutPoint.from_h(hash[:cell]) if hash[:cell]
         new(
-          block_hash: hash[:block_hash],
-          cell: cell
+          tx_hash: hash[:tx_hash],
+          index: hash[:index]
         )
       end
     end

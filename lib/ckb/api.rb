@@ -23,10 +23,8 @@ module CKB
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
         out_point = Types::OutPoint.new(
-          cell: Types::CellOutPoint.new(
-            tx_hash: system_cell_transaction.hash,
-            index: "1"
-          )
+          tx_hash: system_cell_transaction.hash,
+          index: "1"
         )
         code_hash = system_cell_transaction.outputs[1].data_hash
 
@@ -35,10 +33,8 @@ module CKB
         set_system_script_cell(out_point, code_hash)
 
         dao_out_point = Types::OutPoint.new(
-          cell: Types::CellOutPoint.new(
-            tx_hash: system_cell_transaction.hash,
-            index: "2"
-          )
+          tx_hash: system_cell_transaction.hash,
+          index: "2"
         )
         dao_code_hash = system_cell_transaction.outputs[2].data_hash
 
