@@ -11,9 +11,11 @@ module CKB
     attr_reader :addr
     attr_reader :address
 
+    attr_accessor :skip_data_and_type
+
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
-    def initialize(api, key)
+    def initialize(api, key, skip_data_and_type: true)
       @api = api
       if key.is_a?(CKB::Key)
         @key = key
@@ -24,6 +26,7 @@ module CKB
       end
       @addr = Address.from_pubkey(@pubkey)
       @address = @addr.to_s
+      @skip_data_and_type = skip_data_and_type
     end
 
     def self.from_hex(api, privkey)
@@ -38,7 +41,14 @@ module CKB
       while current_from <= to
         current_to = [current_from + 100, to].min
         cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
-        results.concat(cells)
+        if skip_data_and_type
+          cells.each do |cell|
+            output = api.get_live_cell(cell.out_point).cell
+            results << cell if (output.data.nil? || output.data == "0x") && output.type.nil?
+          end
+        else
+          results.concat(cells)
+        end
         current_from = current_to + 1
       end
       results
