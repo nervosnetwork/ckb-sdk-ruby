@@ -10,6 +10,7 @@ module CKB
   class API
     attr_reader :rpc
     attr_reader :system_script_out_point
+    attr_reader :system_script_group_out_point
     attr_reader :system_script_code_hash
     attr_reader :dao_out_point
     attr_reader :dao_code_hash
@@ -18,10 +19,12 @@ module CKB
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55"
+        expected_code_hash = "0x664b03c55410dd7d694a73779fa86edd7f069ee17fd79b0fef4c4fec0377b9a6"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
+
+        system_scipt_group_transaction = genesis_block.transactions[1]
         out_point = Types::OutPoint.new(
           tx_hash: system_cell_transaction.hash,
           index: "1"
@@ -32,6 +35,11 @@ module CKB
         raise "System script code_hash error!" unless code_hash == expected_code_hash
 
         set_system_script_cell(out_point, code_hash)
+        group_out_point = Types::OutPoint.new(
+          tx_hash: system_scipt_group_transaction.hash,
+          index: "0"
+        )
+        set_system_script_group_cell(group_out_point)
 
         dao_out_point = Types::OutPoint.new(
           tx_hash: system_cell_transaction.hash,
@@ -49,6 +57,11 @@ module CKB
     def set_system_script_cell(out_point, code_hash)
       @system_script_out_point = out_point
       @system_script_code_hash = code_hash
+    end
+
+    # @param out_point [CKB::Types::OutPoint]
+    def set_system_script_group_cell(out_point)
+      @system_script_group_out_point = out_point
     end
 
     def set_dao_cell(out_point, code_hash)
@@ -138,6 +151,10 @@ module CKB
 
     def compute_transaction_hash(transaction)
       rpc.compute_transaction_hash(transaction.to_h)
+    end
+
+    def compute_script_hash(script_h)
+      rpc.compute_script_hash(script_h)
     end
 
     # @return [CKB::Type::Peer]

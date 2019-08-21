@@ -95,7 +95,7 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
-          Types::CellDep.new(out_point: api.system_script_out_point)
+          Types::CellDep.new(out_point: api.system_script_group_out_point, is_dep_group: true)
         ],
         inputs: i.inputs,
         outputs: outputs,
@@ -154,7 +154,7 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
-          Types::CellDep.new(out_point: api.system_script_out_point),
+          Types::CellDep.new(out_point: api.system_script_group_out_point, is_dep_group: true),
           Types::CellDep.new(out_point: api.dao_out_point)
         ],
         inputs: i.inputs,
@@ -162,6 +162,7 @@ module CKB
         outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
+
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
 
@@ -211,7 +212,7 @@ module CKB
         version: 0,
         cell_deps: [
           Types::CellDep.new(out_point: api.dao_out_point),
-          Types::CellDep.new(out_point: api.system_script_out_point)
+          Types::CellDep.new(out_point: api.system_script_group_out_point, is_dep_group: true)
         ],
         header_deps: [
           current_block.hash,
@@ -246,7 +247,7 @@ args = #{lock.args}
     end
 
     def lock_hash
-      @lock_hash ||= lock.to_hash
+      @lock_hash ||= lock.to_hash(api)
     end
 
     private
