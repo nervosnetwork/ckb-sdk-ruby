@@ -38,22 +38,8 @@ module CKB
         )
       end
 
-      def to_hash
-        blake2b = CKB::Blake2b.new
-        blake2b << Utils.hex_to_bin(@code_hash) if @code_hash
-        blake2b << case @hash_type
-                   when "Data"
-                     "\x0"
-                   when "Type"
-                     "\x1"
-                   else
-                     raise "Invalid hash type!"
-                   end
-        args = @args || []
-        args.each do |arg|
-          blake2b << Utils.hex_to_bin(arg)
-        end
-        blake2b.hexdigest
+      def to_hash(api)
+        api.compute_script_hash(to_h)
       end
 
       def self.generate_lock(target_pubkey_blake160, system_script_code_hash)
