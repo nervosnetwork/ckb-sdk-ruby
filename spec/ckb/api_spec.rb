@@ -61,7 +61,7 @@ RSpec.describe CKB::API do
   it "send empty transaction" do
     tx = Types::Transaction.new(
       version: 0,
-      deps: [],
+      cell_deps: [],
       inputs: [],
       outputs: []
     )
@@ -114,7 +114,7 @@ RSpec.describe CKB::API do
   it "dry run transaction" do
     tx = Types::Transaction.new(
       version: 0,
-      deps: [],
+      cell_deps: [],
       inputs: [],
       outputs: []
     )
