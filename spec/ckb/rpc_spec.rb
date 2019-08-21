@@ -4,7 +4,7 @@ RSpec.describe CKB::RPC do
   end
 
   let(:rpc) { CKB::RPC.new }
-  let(:lock_hash) { "0xe94e4b509d5946c54ea9bc7500af12fd35eebe0d47a6b3e502127f94d34997ac" }
+  let(:lock_hash) { "0xd0e22f863da970a3ff51a937ae78ba490bbdcede7272d658a053b9f80e30305d" }
 
   it "genesis block" do
     result = rpc.genesis_block
@@ -56,11 +56,8 @@ RSpec.describe CKB::RPC do
 
   it "get live cell" do
     out_point = {
-      block_hash: nil,
-      cell: {
-        tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a",
-        index: "0"
-      }
+      tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a",
+      index: "0"
     }
     result = rpc.get_live_cell(out_point)
     expect(result).not_to be nil

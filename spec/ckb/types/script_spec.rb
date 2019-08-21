@@ -14,9 +14,12 @@ RSpec.describe CKB::Types::Script do
   let(:code_hash) { "0xc00073200d2b2f4ad816a8d04bb2431ce0d3ebd49141b086eda4ab4e06bc3a21" }
 
   it "to_hash" do
+    skip if ENV["SKIP_RPC_TESTS"]
+
+    api = CKB::API.new
     expect(
-      script.to_hash
-    ).to eq code_hash
+      script.to_hash(api)
+    ).to eq "0xd0e22f863da970a3ff51a937ae78ba490bbdcede7272d658a053b9f80e30305d"
   end
 
   context "calculate bytesize" do
