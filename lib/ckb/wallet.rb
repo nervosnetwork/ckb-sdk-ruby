@@ -71,7 +71,7 @@ module CKB
         data: data,
         lock: Types::Script.generate_lock(
           addr.parse(target_address),
-          api.system_script_code_hash
+          api.secp_cell_type_hash
         )
       )
 
@@ -127,7 +127,7 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, api.system_script_code_hash),
+        lock: Types::Script.generate_lock(addr.blake160, api.secp_cell_type_hash),
         type: Types::Script.new(
           code_hash: api.dao_code_hash,
           args: []
@@ -290,7 +290,7 @@ args = #{lock.args}
     def lock
       Types::Script.generate_lock(
         addr.blake160,
-        api.system_script_code_hash
+        api.secp_cell_type_hash
       )
     end
 
