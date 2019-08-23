@@ -12,10 +12,11 @@ module CKB
     attr_reader :address
 
     attr_accessor :skip_data_and_type
+    attr_accessor :hash_type
 
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
-    def initialize(api, key, skip_data_and_type: true)
+    def initialize(api, key, skip_data_and_type: true, hash_type: "Type")
       @api = api
       if key.is_a?(CKB::Key)
         @key = key
@@ -27,10 +28,13 @@ module CKB
       @addr = Address.from_pubkey(@pubkey)
       @address = @addr.to_s
       @skip_data_and_type = skip_data_and_type
+      raise "Wrong hash_type, hash_type should be Data or Type" if !%w(Data Type).include?(hash_type)
+
+      @hash_type = hash_type
     end
 
-    def self.from_hex(api, privkey)
-      new(api, Key.new(privkey))
+    def self.from_hex(api, privkey, hash_type = "Type")
+      new(api, Key.new(privkey), hash_type: hash_type)
     end
 
     # @return [CKB::Types::Output[]]
@@ -71,7 +75,8 @@ module CKB
         data: data,
         lock: Types::Script.generate_lock(
           addr.parse(target_address),
-          api.secp_cell_type_hash
+          api.secp_cell_type_hash,
+          "Type"
         )
       )
 
@@ -95,7 +100,7 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
-          Types::CellDep.new(out_point: api.system_script_group_out_point, is_dep_group: true)
+          Types::CellDep.new(out_point: api.secp_group_out_point, is_dep_group: true)
         ],
         inputs: i.inputs,
         outputs: outputs,
@@ -127,7 +132,7 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, api.secp_cell_type_hash),
+        lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
         type: Types::Script.new(
           code_hash: api.dao_code_hash,
           args: []
@@ -154,7 +159,7 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
-          Types::CellDep.new(out_point: api.system_script_group_out_point, is_dep_group: true),
+          Types::CellDep.new(out_point: api.secp_group_out_point, is_dep_group: true),
           Types::CellDep.new(out_point: api.dao_out_point)
         ],
         inputs: i.inputs,
@@ -212,7 +217,7 @@ module CKB
         version: 0,
         cell_deps: [
           Types::CellDep.new(out_point: api.dao_out_point),
-          Types::CellDep.new(out_point: api.system_script_group_out_point, is_dep_group: true)
+          Types::CellDep.new(out_point: api.secp_group_out_point, is_dep_group: true)
         ],
         header_deps: [
           current_block.hash,
@@ -290,8 +295,13 @@ args = #{lock.args}
     def lock
       Types::Script.generate_lock(
         addr.blake160,
-        api.secp_cell_type_hash
+        code_hash,
+        hash_type
       )
+    end
+
+    def code_hash
+      hash_type == "Data" ? api.secp_cell_code_hash : api.secp_cell_type_hash
     end
 
     # @param [CKB::Key | String | nil]

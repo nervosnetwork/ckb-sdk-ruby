@@ -42,12 +42,13 @@ module CKB
         api.compute_script_hash(to_h)
       end
 
-      def self.generate_lock(target_pubkey_blake160, system_script_code_hash)
+      def self.generate_lock(target_pubkey_blake160, secp_cell_type_hash, hash_type = "Type")
         new(
-          code_hash: system_script_code_hash,
+          code_hash: secp_cell_type_hash,
           args: [
             target_pubkey_blake160
-          ]
+          ],
+          hash_type: hash_type
         )
       end
     end
