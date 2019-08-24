@@ -139,8 +139,8 @@ module CKB
       rpc.compute_transaction_hash(transaction.to_h)
     end
 
-    def compute_script_hash(script_h)
-      rpc.compute_script_hash(script_h)
+    def compute_script_hash(script)
+      rpc.compute_script_hash(script.to_h)
     end
 
     # @return [CKB::Type::Peer]

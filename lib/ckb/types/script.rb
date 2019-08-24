@@ -39,7 +39,7 @@ module CKB
       end
 
       def to_hash(api)
-        api.compute_script_hash(to_h)
+        api.compute_script_hash(self)
       end
 
       def self.generate_lock(target_pubkey_blake160, secp_cell_type_hash, hash_type = "type")
