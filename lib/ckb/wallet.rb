@@ -10,9 +10,9 @@ module CKB
     attr_reader :pubkey
     attr_reader :addr
     attr_reader :address
+    attr_reader :hash_type
 
     attr_accessor :skip_data_and_type
-    attr_accessor :hash_type
 
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
@@ -35,6 +35,11 @@ module CKB
 
     def self.from_hex(api, privkey, hash_type: "type")
       new(api, Key.new(privkey), hash_type: hash_type)
+    end
+
+    def hash_type=(hash_type)
+      @lock_hash = nil
+      @hash_type = hash_type
     end
 
     # @return [CKB::Types::Output[]]
@@ -255,6 +260,15 @@ args = #{lock.args}
       @lock_hash ||= lock.to_hash(api)
     end
 
+    # @return [CKB::Types::Script]
+    def lock
+      Types::Script.generate_lock(
+        addr.blake160,
+        code_hash,
+        hash_type
+      )
+    end
+
     private
 
     # @param transaction [CKB::Transaction]
@@ -289,15 +303,6 @@ args = #{lock.args}
       raise "Capacity not enough!" if input_capacities < total_capacities
 
       OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
-    end
-
-    # @return [CKB::Types::Script]
-    def lock
-      Types::Script.generate_lock(
-        addr.blake160,
-        code_hash,
-        hash_type
-      )
     end
 
     def code_hash
