@@ -28,12 +28,12 @@ module CKB
       @addr = Address.from_pubkey(@pubkey)
       @address = @addr.to_s
       @skip_data_and_type = skip_data_and_type
-      raise "Wrong hash_type, hash_type should be Data or Type" if !%w(data type).include?(hash_type)
+      raise "Wrong hash_type, hash_type should be `data` or `type`" unless %w(data type).include?(hash_type)
 
       @hash_type = hash_type
     end
 
-    def self.from_hex(api, privkey, hash_type = "type")
+    def self.from_hex(api, privkey, hash_type: "type")
       new(api, Key.new(privkey), hash_type: hash_type)
     end
 
