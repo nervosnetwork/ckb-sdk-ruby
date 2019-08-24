@@ -100,7 +100,7 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
-          Types::CellDep.new(out_point: api.secp_group_out_point, is_dep_group: true)
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
         ],
         inputs: i.inputs,
         outputs: outputs,
@@ -159,7 +159,7 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
-          Types::CellDep.new(out_point: api.secp_group_out_point, is_dep_group: true),
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group"),
           Types::CellDep.new(out_point: api.dao_out_point)
         ],
         inputs: i.inputs,
@@ -217,7 +217,7 @@ module CKB
         version: 0,
         cell_deps: [
           Types::CellDep.new(out_point: api.dao_out_point),
-          Types::CellDep.new(out_point: api.secp_group_out_point, is_dep_group: true)
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
         ],
         header_deps: [
           current_block.hash,
