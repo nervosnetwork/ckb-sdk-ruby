@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "seal"
 require_relative "block_header"
 require_relative "block"
 require_relative "uncle"

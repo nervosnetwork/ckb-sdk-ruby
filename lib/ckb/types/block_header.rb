@@ -3,14 +3,15 @@
 module CKB
   module Types
     class BlockHeader
-      attr_accessor :difficulty, :hash, :number, :parent_hash, :seal, :timestamp, :transactions_root, :proposals_hash, \
+      attr_accessor :difficulty, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
                   :uncles_count, :uncles_hash, :version, :witnesses_root, :epoch, :dao
 
       # @param difficulty [String] 0x...
       # @param hash [String] 0x...
       # @param number [String] number
       # @param parent_hash [String] 0x...
-      # @param seal [CKB::Types::Seal]
+      # @param parent_hash [String] 0x...
+      # @param nonce [String] decimal number
       # @param timestamp [String]
       # @param transactions_root [String] 0x...
       # @param proposals_root [String] 0x...
@@ -25,7 +26,7 @@ module CKB
         hash:,
         number:,
         parent_hash:,
-        seal:,
+        nonce:,
         timestamp:,
         transactions_root:,
         proposals_hash:,
@@ -40,7 +41,7 @@ module CKB
         @hash = hash
         @number = number.to_s
         @parent_hash = parent_hash
-        @seal = seal
+        @nonce = nonce
         @timestamp = timestamp.to_s
         @transactions_root = transactions_root
         @proposals_hash = proposals_hash
@@ -58,7 +59,7 @@ module CKB
           hash: @hash,
           number: @number,
           parent_hash: parent_hash,
-          seal: @seal.to_h,
+          nonce: nonce,
           timestamp: @timestamp,
           transactions_root: @transactions_root,
           proposals_hash: @proposals_hash,
@@ -79,7 +80,7 @@ module CKB
           hash: hash[:hash],
           number: hash[:number],
           parent_hash: hash[:parent_hash],
-          seal: Seal.from_h(hash[:seal]),
+          nonce: hash[:nonce],
           timestamp: hash[:timestamp],
           transactions_root: hash[:transactions_root],
           proposals_hash: hash[:proposals_hash],
