@@ -16,7 +16,7 @@ module CKB
 
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
-    def initialize(api, key, skip_data_and_type: true, hash_type: "Type")
+    def initialize(api, key, skip_data_and_type: true, hash_type: "type")
       @api = api
       if key.is_a?(CKB::Key)
         @key = key
@@ -28,12 +28,12 @@ module CKB
       @addr = Address.from_pubkey(@pubkey)
       @address = @addr.to_s
       @skip_data_and_type = skip_data_and_type
-      raise "Wrong hash_type, hash_type should be Data or Type" if !%w(Data Type).include?(hash_type)
+      raise "Wrong hash_type, hash_type should be Data or Type" if !%w(data type).include?(hash_type)
 
       @hash_type = hash_type
     end
 
-    def self.from_hex(api, privkey, hash_type = "Type")
+    def self.from_hex(api, privkey, hash_type = "type")
       new(api, Key.new(privkey), hash_type: hash_type)
     end
 
@@ -76,7 +76,7 @@ module CKB
         lock: Types::Script.generate_lock(
           addr.parse(target_address),
           api.secp_cell_type_hash,
-          "Type"
+          "type"
         )
       )
 
@@ -301,7 +301,7 @@ args = #{lock.args}
     end
 
     def code_hash
-      hash_type == "Data" ? api.secp_cell_code_hash : api.secp_cell_type_hash
+      hash_type == "data" ? api.secp_cell_code_hash : api.secp_cell_type_hash
     end
 
     # @param [CKB::Key | String | nil]

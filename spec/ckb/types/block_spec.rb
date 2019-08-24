@@ -18,7 +18,7 @@ RSpec.describe CKB::Types::Block do
             "lock":{
               "args":["0x3954acece65096bfa81258983ddb83915fc56bd8"],
               "code_hash":"0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55",
-              "hash_type":"Data"
+              "hash_type":"data"
             },
             "type":nil
           }],

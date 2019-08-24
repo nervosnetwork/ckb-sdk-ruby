@@ -7,7 +7,7 @@ module CKB
 
       # @param code_hash [String]
       # @param args [String[]]
-      def initialize(code_hash:, args:, hash_type: "Data")
+      def initialize(code_hash:, args:, hash_type: "data")
         @code_hash = code_hash
         @args = args
         @hash_type = hash_type
@@ -42,7 +42,7 @@ module CKB
         api.compute_script_hash(to_h)
       end
 
-      def self.generate_lock(target_pubkey_blake160, secp_cell_type_hash, hash_type = "Type")
+      def self.generate_lock(target_pubkey_blake160, secp_cell_type_hash, hash_type = "type")
         new(
           code_hash: secp_cell_type_hash,
           args: [
