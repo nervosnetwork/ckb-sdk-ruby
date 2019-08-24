@@ -18,7 +18,7 @@ RSpec.describe CKB::Types::Block do
             "lock":{
               "args":["0x3954acece65096bfa81258983ddb83915fc56bd8"],
               "code_hash":"0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55",
-              "hash_type":"Data"
+              "hash_type":"data"
             },
             "type":nil
           }],
@@ -39,10 +39,7 @@ RSpec.describe CKB::Types::Block do
         "number":"15",
         "parent_hash":"0xe1a4178bc36e6abb4d3a5f00b9bac8b6e8e1e2f9b46b160e1d55b480e6247a1a",
         "proposals_hash":"0x0000000000000000000000000000000000000000000000000000000000000000",
-        "seal":{
-          "nonce":"2058764368806501667",
-          "proof":"0x"
-        },
+        "nonce":"2058764368806501667",
         "timestamp":"1565665851354",
         "transactions_root":"0xde27dcbd81dd174ede0749df02a883d78215b2f20d7ec8ff395ed220872b764c",
         "uncles_count":"0",

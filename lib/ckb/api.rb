@@ -9,8 +9,9 @@ require "uri"
 module CKB
   class API
     attr_reader :rpc
-    attr_reader :system_script_out_point
-    attr_reader :system_script_code_hash
+    attr_reader :secp_group_out_point
+    attr_reader :secp_cell_type_hash
+    attr_reader :secp_cell_code_hash
     attr_reader :dao_out_point
     attr_reader :dao_code_hash
 
@@ -18,20 +19,25 @@ module CKB
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55"
+        expected_code_hash = "0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
-        out_point = Types::OutPoint.new(
-          tx_hash: system_cell_transaction.hash,
-          index: "1"
-        )
         cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[1])
         code_hash = CKB::Blake2b.hexdigest(cell_data)
 
         raise "System script code_hash error!" unless code_hash == expected_code_hash
 
-        set_system_script_cell(out_point, code_hash)
+        @secp_cell_code_hash = code_hash
+
+        secp_group_cell_transaction = genesis_block.transactions[1]
+        secp_group_out_point = Types::OutPoint.new(
+          tx_hash: secp_group_cell_transaction.hash,
+          index: "0"
+        )
+
+        secp_cell_type_hash = rpc.compute_script_hash(system_cell_transaction.outputs[1].type.to_h)
+        set_secp_group_dep(secp_group_out_point, secp_cell_type_hash)
 
         dao_out_point = Types::OutPoint.new(
           tx_hash: system_cell_transaction.hash,
@@ -40,27 +46,20 @@ module CKB
         dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[2])
         dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
 
-        set_dao_cell(dao_out_point, dao_code_hash)
+        set_dao_dep(dao_out_point, dao_code_hash)
       end
     end
 
     # @param out_point [CKB::Types::OutPoint]
-    # @param code_hash [String] "0x..."
-    def set_system_script_cell(out_point, code_hash)
-      @system_script_out_point = out_point
-      @system_script_code_hash = code_hash
+    # @param secp_cell_type_hash [String] 0x...
+    def set_secp_group_dep(out_point, secp_cell_type_hash)
+      @secp_group_out_point = out_point
+      @secp_cell_type_hash = secp_cell_type_hash
     end
 
-    def set_dao_cell(out_point, code_hash)
+    def set_dao_dep(out_point, code_hash)
       @dao_out_point = out_point
       @dao_code_hash = code_hash
-    end
-
-    def system_script_cell
-      {
-        out_point: system_script_out_point,
-        code_hash: system_script_code_hash
-      }
     end
 
     def genesis_block
@@ -138,6 +137,10 @@ module CKB
 
     def compute_transaction_hash(transaction)
       rpc.compute_transaction_hash(transaction.to_h)
+    end
+
+    def compute_script_hash(script)
+      rpc.compute_script_hash(script.to_h)
     end
 
     # @return [CKB::Type::Peer]

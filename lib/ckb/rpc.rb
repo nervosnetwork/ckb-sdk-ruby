@@ -111,6 +111,10 @@ module CKB
       rpc_request("_compute_transaction_hash", params: [transaction])
     end
 
+    def compute_script_hash(script_h)
+      rpc_request("_compute_script_hash", params: [script_h])
+    end
+
     # @param transaction [Hash]
     def dry_run_transaction(transaction)
       rpc_request("dry_run_transaction", params: [transaction])

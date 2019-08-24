@@ -3,19 +3,19 @@
 module CKB
   module Types
     class CellDep
-      attr_accessor :out_point, :is_dep_group
+      attr_accessor :out_point, :dep_type
 
       # @param out_point [CKB::Types::OutPoint | nil]
-      # @param is_dep_group [Boolean]
-      def initialize(out_point: nil, is_dep_group: false)
+      # @param dep_type [String]
+      def initialize(out_point: nil, dep_type: "code")
         @out_point = out_point
-        @is_dep_group = is_dep_group
+        @dep_type = dep_type
       end
 
       def to_h
         {
           out_point: out_point.to_h,
-          is_dep_group: is_dep_group,
+          dep_type: dep_type,
         }
       end
 
@@ -25,7 +25,7 @@ module CKB
         out_point = OutPoint.from_h(hash[:out_point])
         new(
           out_point: out_point,
-          is_dep_group: hash[:is_dep_group]
+          dep_type: hash[:dep_type]
         )
       end
     end
