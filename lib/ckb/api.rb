@@ -19,7 +19,8 @@ module CKB
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88"
+        expected_code_hash = "0x1d107ddec56ec77b79c41cd10b35a3b47434c93a604ecb8e8e73e7372fe1a794"
+        expected_type_hash = "0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -37,6 +38,7 @@ module CKB
         )
 
         secp_cell_type_hash = rpc.compute_script_hash(system_cell_transaction.outputs[1].type.to_h)
+        raise "System script type_hash error!" unless secp_cell_type_hash == expected_type_hash
         set_secp_group_dep(secp_group_out_point, secp_cell_type_hash)
 
         dao_out_point = Types::OutPoint.new(
