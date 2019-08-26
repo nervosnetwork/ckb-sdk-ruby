@@ -12,6 +12,7 @@ require "ckb/utils"
 require "ckb/wallet"
 require "ckb/address"
 require "ckb/key"
+require "ckb/serializers/serializers"
 
 module CKB
   class Error < StandardError; end

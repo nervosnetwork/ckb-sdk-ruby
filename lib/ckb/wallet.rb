@@ -257,7 +257,7 @@ args = #{lock.args}
     end
 
     def lock_hash
-      @lock_hash ||= lock.to_hash(api)
+      @lock_hash ||= lock.to_hash
     end
 
     # @return [CKB::Types::Script]
