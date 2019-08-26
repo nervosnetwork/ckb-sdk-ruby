@@ -18,9 +18,9 @@ RSpec.describe CKB::Types::Script do
     it "should build corret hash when args is empty " do
       skip if ENV["SKIP_RPC_TESTS"]
 
-      api = CKB::API.new(host: "http://18.162.86.199:8144")
+      api = CKB::API.new
       expect(
-        script.to_hash(api)
+        script.to_hash
       ).to eq api.compute_script_hash(script)
     end
 
@@ -31,9 +31,9 @@ RSpec.describe CKB::Types::Script do
         code_hash: code_hash,
         args: ["0x3954acece65096bfa81258983ddb83915fc56bd8",  "0x3954acece65096bfa81258983ddb83915fc56bd83232323"]
       )
-      api = CKB::API.new(host: "http://18.162.86.199:8144")
+      api = CKB::API.new
       expect(
-        script.to_hash(api)
+        script.to_hash
       ).to eq api.compute_script_hash(script)
     end
   end
