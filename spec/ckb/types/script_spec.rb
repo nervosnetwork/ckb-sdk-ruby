@@ -1,3 +1,4 @@
+require 'pry'
 RSpec.describe CKB::Types::Script do
   let(:script) do
     code_hash = CKB::Blake2b.hexdigest(
@@ -13,13 +14,28 @@ RSpec.describe CKB::Types::Script do
 
   let(:code_hash) { "0xc00073200d2b2f4ad816a8d04bb2431ce0d3ebd49141b086eda4ab4e06bc3a21" }
 
-  it "to_hash" do
-    skip if ENV["SKIP_RPC_TESTS"]
+  context "to_hash" do
+    it "should build corret hash when args is empty " do
+      skip if ENV["SKIP_RPC_TESTS"]
 
-    api = CKB::API.new
-    expect(
-      script.to_hash(api)
-    ).to eq "0xd0e22f863da970a3ff51a937ae78ba490bbdcede7272d658a053b9f80e30305d"
+      api = CKB::API.new(host: "http://18.162.86.199:8144")
+      expect(
+        script.to_hash(api)
+      ).to eq api.compute_script_hash(script)
+    end
+
+    it "should build corret hash when args more than one" do
+      skip if ENV["SKIP_RPC_TESTS"]
+
+      CKB::Types::Script.new(
+        code_hash: code_hash,
+        args: ["0x3954acece65096bfa81258983ddb83915fc56bd8",  "0x3954acece65096bfa81258983ddb83915fc56bd83232323"]
+      )
+      api = CKB::API.new(host: "http://18.162.86.199:8144")
+      expect(
+        script.to_hash(api)
+      ).to eq api.compute_script_hash(script)
+    end
   end
 
   context "calculate bytesize" do
