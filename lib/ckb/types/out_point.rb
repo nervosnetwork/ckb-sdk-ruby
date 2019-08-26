@@ -9,7 +9,7 @@ module CKB
       # @param index [String] number
       def initialize(tx_hash:, index:)
         @tx_hash = tx_hash
-        @index = index
+        @index = index.to_s
       end
 
       def to_h

@@ -176,7 +176,7 @@ module CKB
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
 
-      Types::OutPoint.new(tx_hash: tx_hash, index: 0)
+      Types::OutPoint.new(tx_hash: tx_hash, index: "0")
     end
 
     # @param out_point [CKB::Type::OutPoint]
