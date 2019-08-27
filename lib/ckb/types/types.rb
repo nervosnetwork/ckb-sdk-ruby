@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "seal"
 require_relative "block_header"
 require_relative "block"
 require_relative "uncle"
 require_relative "input"
-require_relative "cell_out_point"
 require_relative "out_point"
 require_relative "output"
 require_relative "cell_with_status"
@@ -28,6 +26,7 @@ require_relative "live_cell"
 require_relative "cell_transaction"
 require_relative "block_reward"
 require_relative "banned_address"
+require_relative "cell_dep"
 
 module CKB
   module Types

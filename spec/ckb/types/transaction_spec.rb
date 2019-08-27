@@ -2,15 +2,8 @@ RSpec.describe CKB::Types::Transaction do
   let(:tx_to_sign_hash) do
     {
       "version": "0",
-      "deps": [
-        {
-          "block_hash": nil,
-          "cell": {
-            "tx_hash": "0xbffab7ee0a050e2cb882de066d3dbf3afdd8932d6a26eda44f06e4b23f0f4b5a",
-            "index": "1"
-          }
-        }
-      ],
+      "cell_deps":[],
+      "header_deps":[],
       "inputs": [
         {
           "args": [],
@@ -76,12 +69,9 @@ RSpec.describe CKB::Types::Transaction do
     let(:tx_to_sign_hash) do
       {
         version: "0",
-           deps: [
-        {
-          block_hash: "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb"
-        }
-      ],
-         inputs: [
+        cell_deps:[],
+        header_deps:[],
+        inputs: [
         {
           previous_output: {
             block_hash: "0x23abf65800d048ed9e3eb67e0258e0d616148e9cb1116ceee532a202b4c30e09",
@@ -103,18 +93,18 @@ RSpec.describe CKB::Types::Transaction do
                     since: "0"
         }
       ],
-        outputs: [
-        {
-          capacity: "10000009045634",
-              lock: {
-            code_hash: "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd",
-                 args: [
-              "0x36c329ed630d6ce750712a477543672adab57f4c"
-            ]
-          },
-              type: nil,
-              data: "0x"
-        }
+      outputs: [
+      {
+        capacity: "10000009045634",
+            lock: {
+          code_hash: "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd",
+               args: [
+            "0x36c329ed630d6ce750712a477543672adab57f4c"
+          ]
+        },
+            type: nil,
+            data: "0x"
+      }
       ],
       witnesses: [
         {

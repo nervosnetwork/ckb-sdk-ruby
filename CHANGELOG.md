@@ -1,6 +1,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.19.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.18.0...v0.19.0) (2019-08-27)
+
+
+### Bug Fixes
+
+* dao ([06f2b16](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/06f2b16))
+* fix expected_code_hash and add expected_type_hash ([bd5af2f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/bd5af2f))
+* update dao code_hash and out_point ([3b20b9d](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3b20b9d))
+* using data to calculate capacity ([9a9751a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/9a9751a))
+
+
+### Features
+
+* add CellDep type ([56c1412](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/56c1412))
+* add compute_script_hash rpc ([573c07b](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/573c07b))
+* add outputs_data to dao ([6ade1f8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/6ade1f8))
+* extract data ([01b02aa](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/01b02aa))
+* set hash_type manually ([07f34f9](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/07f34f9))
+* skip data and type in wallet when get unspent cells ([733e692](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/733e692))
+* update calculate min capacity ([1945c43](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/1945c43))
+* update OutPoint structure ([8698259](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8698259))
+* use dep group ([32429fa](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/32429fa))
+* use type hash ([5fa7967](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5fa7967))
+
+
 # [v0.18.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.17.0...v0.18.0) (2019-08-10)
 
 

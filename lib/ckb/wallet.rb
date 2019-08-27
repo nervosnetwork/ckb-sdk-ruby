@@ -10,10 +10,13 @@ module CKB
     attr_reader :pubkey
     attr_reader :addr
     attr_reader :address
+    attr_reader :hash_type
+
+    attr_accessor :skip_data_and_type
 
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
-    def initialize(api, key)
+    def initialize(api, key, skip_data_and_type: true, hash_type: "type")
       @api = api
       if key.is_a?(CKB::Key)
         @key = key
@@ -24,10 +27,19 @@ module CKB
       end
       @addr = Address.from_pubkey(@pubkey)
       @address = @addr.to_s
+      @skip_data_and_type = skip_data_and_type
+      raise "Wrong hash_type, hash_type should be `data` or `type`" unless %w(data type).include?(hash_type)
+
+      @hash_type = hash_type
     end
 
-    def self.from_hex(api, privkey)
-      new(api, Key.new(privkey))
+    def self.from_hex(api, privkey, hash_type: "type")
+      new(api, Key.new(privkey), hash_type: hash_type)
+    end
+
+    def hash_type=(hash_type)
+      @lock_hash = nil
+      @hash_type = hash_type
     end
 
     # @return [CKB::Types::Output[]]
@@ -38,7 +50,14 @@ module CKB
       while current_from <= to
         current_to = [current_from + 100, to].min
         cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
-        results.concat(cells)
+        if skip_data_and_type
+          cells.each do |cell|
+            output = api.get_live_cell(cell.out_point).cell
+            results << cell if (output.data.nil? || output.data == "0x") && output.type.nil?
+          end
+        else
+          results.concat(cells)
+        end
         current_from = current_to + 1
       end
       results
@@ -61,7 +80,8 @@ module CKB
         data: data,
         lock: Types::Script.generate_lock(
           addr.parse(target_address),
-          api.system_script_code_hash
+          api.secp_cell_type_hash,
+          "type"
         )
       )
 
@@ -84,11 +104,15 @@ module CKB
 
       tx = Types::Transaction.new(
         version: 0,
-        deps: [api.system_script_out_point],
+        cell_deps: [
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
+        ],
         inputs: i.inputs,
         outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
+
       tx_hash = api.compute_transaction_hash(tx)
 
       tx.sign(key, tx_hash)
@@ -113,7 +137,7 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, api.system_script_code_hash),
+        lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
         type: Types::Script.new(
           code_hash: api.dao_code_hash,
           args: []
@@ -139,32 +163,34 @@ module CKB
 
       tx = Types::Transaction.new(
         version: 0,
-        deps: [
-          api.system_script_out_point,
-          api.dao_out_point
+        cell_deps: [
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group"),
+          Types::CellDep.new(out_point: api.dao_out_point)
         ],
         inputs: i.inputs,
         outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
+
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
 
-      Types::OutPoint.new(cell: Types::CellOutPoint.new(tx_hash: tx_hash, index: 0))
+      Types::OutPoint.new(tx_hash: tx_hash, index: "0")
     end
 
-    # @param cell_out_point [CKB::Type::OutPoint]
+    # @param out_point [CKB::Type::OutPoint]
     # @param key [CKB::Key | String] Key or private key hex string
     #
     # @return [CKB::Type::Transaction]
-    def generate_withdraw_from_dao_transaction(cell_out_point, key: nil)
+    def generate_withdraw_from_dao_transaction(out_point, key: nil)
       key = get_key(key)
 
-      cell_status = api.get_live_cell(cell_out_point)
+      cell_status = api.get_live_cell(out_point)
       unless cell_status.status == "live"
         raise "Cell is not yet live!"
       end
-      tx = api.get_transaction(cell_out_point.cell.tx_hash)
+      tx = api.get_transaction(out_point.tx_hash)
       unless tx.tx_status.status == "committed"
         raise "Transaction is not commtted yet!"
       end
@@ -181,25 +207,32 @@ module CKB
       windowleft = DAO_MATURITY_BLOCKS if windowleft < DAO_MATURITY_BLOCKS
       since = current_block_number + windowleft + 1
 
-      output_capacity = api.calculate_dao_maximum_withdraw(cell_out_point, current_block.hash).to_i
+      output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash).to_i
 
-      new_cell_out_point = Types::OutPoint.new(
-        block_hash: deposit_block.hash,
-        cell: cell_out_point.cell.dup
+      dup_out_point = out_point.dup
+      new_out_point = Types::OutPoint.new(
+        tx_hash: dup_out_point.tx_hash,
+        index: dup_out_point.index
       )
+
+      outputs = [
+        Types::Output.new(capacity: output_capacity, lock: lock)
+      ]
       tx = Types::Transaction.new(
         version: 0,
-        deps: [
-          CKB::Types::OutPoint.new(block_hash: current_block.hash),
-          api.dao_out_point,
-          api.system_script_out_point
+        cell_deps: [
+          Types::CellDep.new(out_point: api.dao_out_point),
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
+        ],
+        header_deps: [
+          current_block.hash,
+          deposit_block.hash
         ],
         inputs: [
-          Types::Input.new(previous_output: new_cell_out_point, since: since),
+          Types::Input.new(previous_output: new_out_point, since: since)
         ],
-        outputs: [
-          Types::Output.new(capacity: output_capacity, lock: lock)
-        ],
+        outputs: outputs,
+        outputs_data: outputs.map(&:data),
         witnesses: [
           Types::Witness.new(data: ["0x0000000000000000"])
         ]
@@ -224,7 +257,16 @@ args = #{lock.args}
     end
 
     def lock_hash
-      @lock_hash ||= lock.to_hash
+      @lock_hash ||= lock.to_hash(api)
+    end
+
+    # @return [CKB::Types::Script]
+    def lock
+      Types::Script.generate_lock(
+        addr.blake160,
+        code_hash,
+        hash_type
+      )
     end
 
     private
@@ -263,12 +305,8 @@ args = #{lock.args}
       OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
     end
 
-    # @return [CKB::Types::Script]
-    def lock
-      Types::Script.generate_lock(
-        addr.blake160,
-        api.system_script_code_hash
-      )
+    def code_hash
+      hash_type == "data" ? api.secp_cell_code_hash : api.secp_cell_type_hash
     end
 
     # @param [CKB::Key | String | nil]
