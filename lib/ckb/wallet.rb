@@ -109,9 +109,8 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
-      )
+      ).map_outputs_data!
 
       tx_hash = api.compute_transaction_hash(tx)
 
@@ -169,9 +168,8 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
-      )
+      ).map_outputs_data!
 
       tx_hash = api.compute_transaction_hash(tx)
       send_transaction(tx.sign(key, tx_hash))
@@ -232,11 +230,10 @@ module CKB
           Types::Input.new(previous_output: new_out_point, since: since)
         ],
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
         witnesses: [
           Types::Witness.new(data: ["0x0000000000000000"])
         ]
-      )
+      ).map_outputs_data!
       tx_hash = api.compute_transaction_hash(tx)
       tx.sign(key, tx_hash)
     end

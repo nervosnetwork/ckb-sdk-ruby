@@ -33,6 +33,21 @@ module CKB
         @witnesses = witnesses
       end
 
+      # map output.data to outputs_data
+      def map_outputs_data!
+        @outputs_data = @outputs.map(&:data)
+        self
+      end
+
+      def map_data_to_outputs!
+        raise "outputs_data.size != outputs.size" if outputs.size != outputs_data.size
+        @outputs = @outputs.zip(@outputs_data).map do |output, data|
+          output.data = data
+          output
+        end
+        self
+      end
+
       # @param key [CKB::Key]
       # @param tx_hash [String] 0x...
       def sign(key, tx_hash)
