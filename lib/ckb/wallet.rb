@@ -52,8 +52,10 @@ module CKB
         cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
         if skip_data_and_type
           cells.each do |cell|
-            output = api.get_live_cell(cell.out_point).cell
-            results << cell if output.type.nil?
+            tx = api.get_transaction(cell.out_point.tx_hash).transaction
+            output = tx.outputs[cell.out_point.index.to_i]
+            output_data = tx.outputs_data[cell.out_point.index.to_i]
+            results << cell if (output_data.nil? || output_data == "0x") && output.type.nil?
           end
         else
           results.concat(cells)
