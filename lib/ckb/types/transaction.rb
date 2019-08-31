@@ -94,7 +94,7 @@ module CKB
       def self.from_h(hash)
         return if hash.nil?
 
-        new(
+        tx = new(
           hash: hash[:hash],
           version: hash[:version],
           header_deps: hash[:header_deps],
@@ -104,6 +104,7 @@ module CKB
           outputs_data: hash[:outputs_data],
           witnesses: hash[:witnesses].map { |witness| Witness.from_h(witness) }
         )
+        tx.map_data_to_outputs!
       end
     end
   end
