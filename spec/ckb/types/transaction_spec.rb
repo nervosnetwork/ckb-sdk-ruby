@@ -81,9 +81,16 @@ RSpec.describe CKB::Types::Transaction do
 
   it "map_data_to_outputs!" do
     tx = CKB::Types::Transaction.from_h(tx_to_sign_hash)
+    tx.outputs[0].data = "0x"
+    tx.outputs[1].data = "0x"
     expect(tx.outputs.map(&:data)).to eq ["0x", "0x"]
     tx.map_data_to_outputs!
     expect(tx.outputs.map(&:data)).to eq ["0x1234", "0x"]
+    expect(tx.outputs.map(&:data)).to eq tx.outputs_data
+  end
+
+  it "auto run map_data_to_outputs! when from_h" do
+    tx = CKB::Types::Transaction.from_h(tx_to_sign_hash)
     expect(tx.outputs.map(&:data)).to eq tx.outputs_data
   end
 
@@ -125,9 +132,9 @@ RSpec.describe CKB::Types::Transaction do
           ]
         },
             type: nil,
-            data: "0x"
       }
       ],
+      outputs_data: ["0x"],
       witnesses: [
         {
           data: [
