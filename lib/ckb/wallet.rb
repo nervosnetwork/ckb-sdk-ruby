@@ -53,7 +53,7 @@ module CKB
         if skip_data_and_type
           cells.each do |cell|
             output = api.get_live_cell(cell.out_point).cell
-            results << cell if (output.data.nil? || output.data == "0x") && output.type.nil?
+            results << cell if output.type.nil?
           end
         else
           results.concat(cells)
@@ -77,30 +77,35 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        data: data,
         lock: Types::Script.generate_lock(
           addr.parse(target_address),
           api.secp_cell_type_hash,
           "type"
         )
       )
+      output_data = data
 
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
+      change_output_data = "0x"
 
       i = gather_inputs(
         capacity,
-        output.calculate_min_capacity,
-        change_output.calculate_min_capacity,
+        output.calculate_min_capacity(output_data),
+        change_output.calculate_min_capacity(change_output_data),
         fee
       )
       input_capacities = i.capacities
 
       outputs = [output]
+      outputs_data = [output_data]
       change_output.capacity = input_capacities - (capacity + fee)
-      outputs << change_output if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i > 0
+        outputs << change_output
+        outputs_data << change_output_data
+      end
 
       tx = Types::Transaction.new(
         version: 0,
@@ -109,7 +114,7 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
+        outputs_data: outputs_data,
         witnesses: i.witnesses
       )
 
@@ -143,23 +148,29 @@ module CKB
           args: []
         )
       )
+      output_data = "0x"
 
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
+      change_output_data = "0x"
 
       i = gather_inputs(
         capacity,
-        output.calculate_min_capacity,
-        change_output.calculate_min_capacity,
+        output.calculate_min_capacity(output_data),
+        change_output.calculate_min_capacity(change_output_data),
         0
       )
       input_capacities = i.capacities
 
       outputs = [output]
+      outputs_data = [output_data]
       change_output.capacity = input_capacities - capacity
-      outputs << change_output if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i > 0
+        outputs << change_output
+        outputs_data << change_output_data
+      end
 
       tx = Types::Transaction.new(
         version: 0,
@@ -169,7 +180,7 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
+        outputs_data: outputs_data,
         witnesses: i.witnesses
       )
 
@@ -218,6 +229,7 @@ module CKB
       outputs = [
         Types::Output.new(capacity: output_capacity, lock: lock)
       ]
+      outputs_data = ["0x"]
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
@@ -232,7 +244,7 @@ module CKB
           Types::Input.new(previous_output: new_out_point, since: since)
         ],
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
+        outputs_data: outputs_data,
         witnesses: [
           Types::Witness.new(data: ["0x0000000000000000"])
         ]

@@ -3,19 +3,17 @@
 module CKB
   module Types
     class Output
-      attr_accessor :lock, :type, :out_point, :data
+      attr_accessor :lock, :type, :out_point
       attr_reader :capacity
 
       # @param capacity [String]
-      # @param data: [String] 0x...
       # @param lock [CKB::Types::Script]
       # @param type [CKB::Types::Script | nil]
       # @param out_point [CKB::Types::OutPoint | nil]
-      def initialize(capacity:, lock:, type: nil, out_point: nil, data: "0x")
+      def initialize(capacity:, lock:, type: nil, out_point: nil)
         @capacity = capacity.to_s
         @lock = lock
         @type = type
-        @data = data
         @out_point = out_point
       end
 
@@ -23,15 +21,16 @@ module CKB
         @capacity = value.to_s
       end
 
-      def calculate_bytesize
-        raise "Don't know data" if @data.nil?
-        bytesize = 8 + Utils.hex_to_bin(@data).bytesize + @lock.calculate_bytesize
+      # @param data [String] 0x...
+      def calculate_bytesize(data)
+        raise "Please provide a valid data" if data.nil?
+        bytesize = 8 + Utils.hex_to_bin(data).bytesize + @lock.calculate_bytesize
         bytesize += @type.calculate_bytesize if @type
         bytesize
       end
 
-      def calculate_min_capacity
-        Utils.byte_to_shannon(calculate_bytesize)
+      def calculate_min_capacity(data)
+        Utils.byte_to_shannon(calculate_bytesize(data))
       end
 
       def to_h
