@@ -143,5 +143,20 @@ RSpec.describe CKB::Types::Transaction do
         }
       ])
     end
+
+    it "should build correct hash when args is empty " do
+      skip if ENV["SKIP_RPC_TESTS"]
+      api = CKB::API.new
+      block = api.get_block_by_number(1000)
+      tx = block.transactions.first
+      tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
+      blake2b = CKB::Blake2b.new
+      blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
+      expected_tx_hash = blake2b.hexdigest
+
+      expect(
+        expected_tx_hash
+      ).to eq tx.hash
+    end
   end
 end
