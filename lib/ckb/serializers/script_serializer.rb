@@ -8,7 +8,6 @@ module CKB
         @code_hash_serializer = CodeHashSerializer.new(script.code_hash)
         @hash_type_serializer = HashTypeSerializer.new(script.hash_type)
         @args_serializer = ArgsSerializer.new(script.args)
-        @hash_type = script.hash_type
         @items_count = 3
       end
 
@@ -22,7 +21,7 @@ module CKB
 
       private
 
-      attr_reader :code_hash, :args, :hash_type, :items_count, :args_serializer, :code_hash_serializer, :hash_type_serializer
+      attr_reader :code_hash_serializer, :hash_type_serializer, :args_serializer, :items_count
 
       def layout
         header + body

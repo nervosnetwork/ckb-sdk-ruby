@@ -33,10 +33,6 @@ module CKB
         header_dep_layouts
       end
 
-      def out_point_layout
-        out_point_serializer.serialize
-      end
-
       def body_capacity
         [header_dep_layouts].pack("H*").bytesize
       end

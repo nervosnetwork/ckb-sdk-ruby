@@ -38,10 +38,6 @@ module CKB
         arg_layouts
       end
 
-      def out_point_layout
-        out_point_serializer.serialize
-      end
-
       def offsets
         offset0 = (items_count + 1) * uint32_capacity
         offsets = [offset0]

@@ -38,7 +38,7 @@ module CKB
       end
 
       def full_length_hex
-        full_length = (items_count + 1) * uint32_capacity + outputs_body_capacity
+        full_length = (items_count + 1) * uint32_capacity + body_capacity
         [full_length].pack("V").unpack1("H*")
       end
 
@@ -46,7 +46,7 @@ module CKB
         offsets.map {|offset| [offset].pack("V").unpack1("H*")}.join("")
       end
 
-      def outputs_body_capacity
+      def body_capacity
         [output_layouts].pack("H*").bytesize
       end
 
