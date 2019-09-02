@@ -1,4 +1,3 @@
-require 'pry'
 RSpec.describe CKB::Types::Script do
   let(:script) do
     code_hash = CKB::Blake2b.hexdigest(
