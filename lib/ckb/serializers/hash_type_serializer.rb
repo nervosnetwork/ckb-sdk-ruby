@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class HashTypeSerializer
+      include BaseSerializer
+
       # @param hash_type [String]
       def initialize(hash_type)
         @hash_type = hash_type
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class HeaderDepSerializer
+      include BaseSerializer
+
       # @param header_dep [String]
       def initialize(header_dep)
         @byte32_serializer = Byte32Serializer.new(header_dep)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

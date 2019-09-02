@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class OutputDataSerializer
+      include BaseSerializer
+
       # @param output_data [String]
       def initialize(output_data)
         @bytes_serializer = BytesSerializer.new(output_data)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

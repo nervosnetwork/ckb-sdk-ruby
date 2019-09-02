@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require_relative "base_serializer"
+require_relative "fix_vec_serializer"
+require_relative "dyn_vec_serializer"
+require_relative "table_serializer"
 require_relative "uint32_serializer"
 require_relative "uint64_serializer"
 require_relative "byte32_serializer"

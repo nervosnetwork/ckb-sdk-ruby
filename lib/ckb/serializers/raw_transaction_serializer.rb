@@ -3,6 +3,8 @@
 module CKB
   module Serializers
     class RawTransactionSerializer
+      include TableSerializer
+
       # @param transaction [CKB::Types::Transaction]
       def initialize(transaction)
         @version_serializer = VersionSerializer.new(transaction.version)
@@ -14,38 +16,17 @@ module CKB
         @items_count = 6
       end
 
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
-      end
-
       private
 
       attr_reader :version_serializer, :cell_deps_serializer, :header_deps_serializer, :inputs_serializer, :outputs_serializer, :outputs_data_serializer, :items_count
-
-      def layout
-        header + body
-      end
-
-      def header
-        offsets_hex = offsets.map {|offset| [offset].pack("V").unpack1("H*")}.join("")
-        full_length_hex + offsets_hex
-      end
 
       def body
         version_layout + cell_deps_layout + header_deps_layout + inputs_layout + outputs_layout + outputs_data_layout
       end
 
-      def version_layout
-        version_serializer.serialize
-      end
-
       def offsets
-        offset0 = (items_count + 1) * uint32_capacity
-        offset1 = offset0 + uint32_capacity
+        offset0 = (items_count + 1) * UINT32_CAPACITY
+        offset1 = offset0 + UINT32_CAPACITY
         offset2 = offset1 + cell_deps_capacity
         offset3 = offset2 + header_deps_capacity
         offset4 = offset3 + inputs_capacity
@@ -54,13 +35,8 @@ module CKB
         [offset0, offset1, offset2, offset3, offset4, offset5]
       end
 
-      def full_length_hex
-        full_length = (items_count + 1) * uint32_capacity + body_capacity
-        [full_length].pack("V").unpack1("H*")
-      end
-
-      def body_capacity
-        [body].pack("H*").bytesize
+      def version_layout
+        version_serializer.serialize
       end
 
       def cell_deps_layout
@@ -97,10 +73,6 @@ module CKB
 
       def outputs_data_layout
         outputs_data_serializer.serialize
-      end
-
-      def uint32_capacity
-        4
       end
     end
   end

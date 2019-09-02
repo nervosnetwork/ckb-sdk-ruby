@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class OutPointTxHashSerializer
+      include BaseSerializer
+
       # @param tx_hash [String]
       def initialize(tx_hash)
         @byte32_serializer = Byte32Serializer.new(tx_hash)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

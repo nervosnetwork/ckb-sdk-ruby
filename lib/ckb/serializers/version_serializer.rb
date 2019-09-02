@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class VersionSerializer
+      include BaseSerializer
+
       # @param version [String]
       def initialize(version)
         @uint32_serializer = Uint32Serializer.new(version)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

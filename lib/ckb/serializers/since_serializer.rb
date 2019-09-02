@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class SinceSerializer
+      include BaseSerializer
+
       # @param since [String]
       def initialize(since)
         @uint64_serializer = Uint64Serializer.new(since)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

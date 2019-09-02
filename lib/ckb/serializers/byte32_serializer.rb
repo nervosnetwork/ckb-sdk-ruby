@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class Byte32Serializer
+      include BaseSerializer
+
       # @param value [String]
       def initialize(value)
         @value = value.delete_prefix("0x")
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

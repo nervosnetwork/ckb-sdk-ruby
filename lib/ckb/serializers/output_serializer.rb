@@ -3,6 +3,8 @@
 module CKB
   module Serializers
     class OutputSerializer
+      include TableSerializer
+
       # @param output [CKB::Types::Output]
       def initialize(output)
         @capacity_serializer = CapacitySerializer.new(output.capacity)
@@ -11,25 +13,12 @@ module CKB
         @items_count = 3
       end
 
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
-      end
-
       private
 
       attr_reader :capacity_serializer, :lock_script_serializer, :type_script_serializer, :items_count
 
       def layout
         header + body
-      end
-
-      def header
-        offsets_hex = offsets.map {|offset| [offset].pack("V").unpack1("H*")}.join("")
-        full_length_hex + offsets_hex
       end
 
       def body
@@ -52,28 +41,11 @@ module CKB
       end
 
       def offsets
-        offset0 = (items_count + 1) * uint32_capacity
-        offset1 = offset0 + uint64_capacity
+        offset0 = (items_count + 1) * UINT32_CAPACITY
+        offset1 = offset0 + UINT64_CAPACITY
         offset2 = offset1 + lock_script_serializer.capacity
 
         [offset0, offset1, offset2]
-      end
-
-      def full_length_hex
-        full_length = (items_count + 1) * uint32_capacity + body_capacity
-        [full_length].pack("V").unpack1("H*")
-      end
-
-      def body_capacity
-        [body].pack("H*").bytesize
-      end
-
-      def uint32_capacity
-        4
-      end
-
-      def uint64_capacity
-        8
       end
     end
   end

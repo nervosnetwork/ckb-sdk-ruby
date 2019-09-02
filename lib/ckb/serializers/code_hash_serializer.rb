@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class CodeHashSerializer
+      include BaseSerializer
+
       # @param code_hash [String]
       def initialize(code_hash)
         @byte32_serializer = Byte32Serializer.new(code_hash)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

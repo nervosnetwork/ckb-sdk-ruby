@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class OutPointIndexSerializer
+      include BaseSerializer
+
       # @param index [String] number
       def initialize(index)
         @uint32_serializer = Uint32Serializer.new(index)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private

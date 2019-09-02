@@ -3,17 +3,11 @@
 module CKB
   module Serializers
     class CapacitySerializer
+      include BaseSerializer
+
       # @param capacity [String]
       def initialize(capacity)
         @uint64_serializer = Uint64Serializer.new(capacity)
-      end
-
-      def serialize
-        layout
-      end
-
-      def capacity
-        [layout].pack("H*").bytesize
       end
 
       private
