@@ -5,8 +5,9 @@ module CKB
     class ScriptSerializer
       # @param script [CKB::Types::Script]
       def initialize(script)
+        @code_hash_serializer = CodeHashSerializer.new(script.code_hash)
+        @hash_type_serializer = HashTypeSerializer.new(script.hash_type)
         @args_serializer = ArgsSerializer.new(script.args)
-        @code_hash = script.code_hash
         @hash_type = script.hash_type
         @items_count = 3
       end
@@ -21,7 +22,7 @@ module CKB
 
       private
 
-      attr_reader :code_hash, :args, :hash_type, :items_count, :args_serializer
+      attr_reader :code_hash, :args, :hash_type, :items_count, :args_serializer, :code_hash_serializer, :hash_type_serializer
 
       def layout
         header + body
@@ -33,7 +34,7 @@ module CKB
       end
 
       def body
-        code_hash.delete_prefix("0x") + (hash_type == "data" ? "00" : "01") + args_serializer.serialize
+        code_hash_layout + hash_type_layout + args_layout
       end
 
       def offsets
@@ -51,6 +52,18 @@ module CKB
 
       def body_capacity
         [body].pack("H*").bytesize
+      end
+
+      def code_hash_layout
+        code_hash_serializer.serialize
+      end
+
+      def hash_type_layout
+        hash_type_serializer.serialize
+      end
+
+      def args_layout
+        args_serializer.serialize
       end
 
       def byte32_capacity

@@ -6,7 +6,7 @@ module CKB
       # @param input [CKB::Types::Input]
       def initialize(input)
         @out_point_serializer = OutPointSerializer.new(input.previous_output)
-        @since = input.since
+        @since_serializer = SinceSerializer.new(input.since)
         @items_count = 2
       end
 
@@ -20,7 +20,7 @@ module CKB
 
       private
 
-      attr_reader :since, :out_point_serializer, :items_count
+      attr_reader :out_point_serializer, :since_serializer, :items_count
 
       def layout
         header + body
@@ -32,7 +32,11 @@ module CKB
       end
 
       def body
-        out_point_layout + [since.to_i].pack("Q<").unpack1("H*")
+        out_point_layout + since_layout
+      end
+
+      def since_layout
+        since_serializer.serialize
       end
 
       def out_point_layout

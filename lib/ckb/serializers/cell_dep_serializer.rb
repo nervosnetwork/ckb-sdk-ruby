@@ -5,7 +5,7 @@ module CKB
     class CellDepSerializer
       # @param cell_dep [CKB::Types::CellDep]
       def initialize(cell_dep)
-        @dep_type = cell_dep.dep_type
+        @dep_type_serializer = DepTypeSerializer.new(cell_dep.dep_type)
         @out_point_serializer = OutPointSerializer.new(cell_dep.out_point)
         @items_count = 2
       end
@@ -20,7 +20,7 @@ module CKB
 
       private
 
-      attr_reader :out_point, :dep_type, :out_point_serializer, :items_count
+      attr_reader :dep_type_serializer, :out_point_serializer, :items_count
 
       def layout
         header + body
@@ -56,7 +56,7 @@ module CKB
       end
 
       def dep_type_layout
-        dep_type == "code" ? "00" : "01"
+        dep_type_serializer.serialize
       end
 
       def uint32_capacity

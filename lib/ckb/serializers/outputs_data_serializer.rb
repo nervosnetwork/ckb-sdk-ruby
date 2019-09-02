@@ -5,7 +5,7 @@ module CKB
     class OutputsDataSerializer
       # @param outputs_data [String[]]
       def initialize(outputs_data)
-        @outputs_data = outputs_data.map { |output_data| output_data.delete_prefix("0x") }
+        @outputs_data = outputs_data
         @items_count =  @outputs_data.count
       end
 

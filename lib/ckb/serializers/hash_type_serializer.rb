@@ -2,10 +2,10 @@
 
 module CKB
   module Serializers
-    class OutputDataSerializer
-      # @param output_data [String]
-      def initialize(output_data)
-        @bytes_serializer = BytesSerializer.new(output_data)
+    class HashTypeSerializer
+      # @param hash_type [String]
+      def initialize(hash_type)
+        @hash_type = hash_type
       end
 
       def serialize
@@ -18,10 +18,14 @@ module CKB
 
       private
 
-      attr_reader :bytes_serializer
+      attr_reader :hash_type
 
       def layout
-        bytes_serializer.serialize
+        body
+      end
+
+      def body
+        hash_type == "data" ? "00" : "01"
       end
     end
   end

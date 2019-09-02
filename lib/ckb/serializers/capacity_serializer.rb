@@ -2,10 +2,10 @@
 
 module CKB
   module Serializers
-    class HeaderDepSerializer
-      # @param header_dep [String]
-      def initialize(header_dep)
-        @byte32_serializer = Byte32Serializer.new(header_dep)
+    class CapacitySerializer
+      # @param capacity [String]
+      def initialize(capacity)
+        @uint64_serializer = Uint64Serializer.new(capacity)
       end
 
       def serialize
@@ -18,14 +18,14 @@ module CKB
 
       private
 
-      attr_reader :byte32_serializer
+      attr_reader :uint64_serializer
 
       def layout
         body
       end
 
       def body
-        byte32_serializer.serialize
+        uint64_serializer.serialize
       end
     end
   end

@@ -2,10 +2,10 @@
 
 module CKB
   module Serializers
-    class HeaderDepSerializer
-      # @param header_dep [String]
-      def initialize(header_dep)
-        @byte32_serializer = Byte32Serializer.new(header_dep)
+    class OutPointIndexSerializer
+      # @param index [String] number
+      def initialize(index)
+        @uint32_serializer = Uint32Serializer.new(index)
       end
 
       def serialize
@@ -18,14 +18,14 @@ module CKB
 
       private
 
-      attr_reader :byte32_serializer
+      attr_reader :uint32_serializer
 
       def layout
         body
       end
 
       def body
-        byte32_serializer.serialize
+        uint32_serializer.serialize
       end
     end
   end

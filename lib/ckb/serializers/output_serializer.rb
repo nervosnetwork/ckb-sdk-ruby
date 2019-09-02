@@ -5,7 +5,7 @@ module CKB
     class OutputSerializer
       # @param output [CKB::Types::Output]
       def initialize(output)
-        @output_capacity = output.capacity
+        @capacity_serializer = CapacitySerializer.new(output.capacity)
         @lock_script_serializer = ScriptSerializer.new(output.lock)
         @type_script_serializer = ScriptSerializer.new(output.type) if output.type
         @items_count = 3
@@ -21,7 +21,7 @@ module CKB
 
       private
 
-      attr_reader :output_capacity, :lock_script_serializer, :type_script_serializer, :items_count
+      attr_reader :capacity_serializer, :lock_script_serializer, :type_script_serializer, :items_count
 
       def layout
         header + body
@@ -33,10 +33,22 @@ module CKB
       end
 
       def body
-        result = [output_capacity.to_i].pack("Q<").unpack1("H*") + lock_script_serializer.serialize
-        result + type_script_serializer.serialize if type_script_serializer
+        result = capacity_layout + lock_script_layout
+        result + type_script_layout if type_script_serializer
 
         result
+      end
+
+      def type_script_layout
+        type_script_serializer.serialize
+      end
+
+      def lock_script_layout
+        lock_script_serializer.serialize
+      end
+
+      def capacity_layout
+        capacity_serializer.serialize
       end
 
       def offsets

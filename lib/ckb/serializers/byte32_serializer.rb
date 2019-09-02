@@ -2,10 +2,10 @@
 
 module CKB
   module Serializers
-    class OutputDataSerializer
-      # @param output_data [String]
-      def initialize(output_data)
-        @bytes_serializer = BytesSerializer.new(output_data)
+    class Byte32Serializer
+      # @param value [String]
+      def initialize(value)
+        @value = value.delete_prefix("0x")
       end
 
       def serialize
@@ -18,10 +18,14 @@ module CKB
 
       private
 
-      attr_reader :bytes_serializer
+      attr_reader :value
 
       def layout
-        bytes_serializer.serialize
+        body
+      end
+
+      def body
+        value
       end
     end
   end

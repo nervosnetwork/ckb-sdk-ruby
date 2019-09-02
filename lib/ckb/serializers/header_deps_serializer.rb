@@ -5,8 +5,8 @@ module CKB
     class HeaderDepsSerializer
       # @param header_deps [String[]]
       def initialize(header_deps)
-        @header_deps = header_deps.map { |arg| arg.delete_prefix("0x") }
-        @items_count = @header_deps.count
+        @header_deps = header_deps
+        @items_count = header_deps.count
       end
 
       def serialize

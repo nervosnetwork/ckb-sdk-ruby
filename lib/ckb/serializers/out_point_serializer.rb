@@ -5,8 +5,8 @@ module CKB
     class OutPointSerializer
       # @param out_point [CKB::Types::OutPoint]
       def initialize(out_point)
-        @tx_hash = out_point.tx_hash.delete_prefix("0x")
-        @index = out_point.index
+        @tx_hash_serializer = OutPointTxHashSerializer.new(out_point.tx_hash)
+        @index_serializer = OutPointIndexSerializer.new(out_point.index)
         @items_count = 2
       end
 
@@ -20,7 +20,7 @@ module CKB
 
       private
 
-      attr_reader :tx_hash, :index, :items_count
+      attr_reader :tx_hash_serializer, :index_serializer, :items_count
 
       def layout
         header + body
@@ -32,7 +32,15 @@ module CKB
       end
 
       def body
-        tx_hash + [index.to_i].pack("V").unpack1("H*")
+        tx_hash_layout + index_layout
+      end
+
+      def index_layout
+        index_serializer.serialize
+      end
+
+      def tx_hash_layout
+        tx_hash_serializer.serialize
       end
 
       def offsets

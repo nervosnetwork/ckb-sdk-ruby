@@ -5,7 +5,7 @@ module CKB
     class RawTransactionSerializer
       # @param transaction [CKB::Types::Transaction]
       def initialize(transaction)
-        @version = transaction.version
+        @version_serializer = VersionSerializer.new(transaction.version)
         @cell_deps_serializer = CellDepsSerializer.new(transaction.cell_deps)
         @header_deps_serializer = HeaderDepsSerializer.new(transaction.header_deps)
         @header_deps = transaction.header_deps
@@ -25,7 +25,7 @@ module CKB
 
       private
 
-      attr_reader :version, :cell_deps_serializer, :header_deps_serializer, :header_deps, :inputs_serializer, :outputs_serializer, :outputs_data_serializer, :items_count
+      attr_reader :version_serializer, :cell_deps_serializer, :header_deps_serializer, :header_deps, :inputs_serializer, :outputs_serializer, :outputs_data_serializer, :items_count
 
       def layout
         header + body
@@ -37,7 +37,11 @@ module CKB
       end
 
       def body
-        [version.to_i].pack("V").unpack1("H*") + cell_deps_layout + header_deps_layout + inputs_layout + outputs_layout + outputs_data_layout
+        version_layout + cell_deps_layout + header_deps_layout + inputs_layout + outputs_layout + outputs_data_layout
+      end
+
+      def version_layout
+        version_serializer.serialize
       end
 
       def offsets

@@ -5,7 +5,7 @@ module CKB
     class ArgSerializer
       # @param arg [String]
       def initialize(arg)
-        @arg = arg
+        @bytes_serializer = BytesSerializer.new(arg)
       end
 
       def serialize
@@ -18,21 +18,10 @@ module CKB
 
       private
 
-      attr_reader :arg
+      attr_reader :bytes_serializer
 
       def layout
-        return "" if arg.nil?
-
-        header + body
-      end
-
-      def header
-        items_count = [body].pack("H*").bytesize
-        [items_count].pack("V").unpack1("H*")
-      end
-
-      def body
-        arg
+        bytes_serializer.serialize
       end
     end
   end

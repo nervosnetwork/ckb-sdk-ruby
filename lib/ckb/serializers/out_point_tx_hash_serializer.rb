@@ -2,10 +2,10 @@
 
 module CKB
   module Serializers
-    class HeaderDepSerializer
-      # @param header_dep [String]
-      def initialize(header_dep)
-        @byte32_serializer = Byte32Serializer.new(header_dep)
+    class OutPointTxHashSerializer
+      # @param tx_hash [String]
+      def initialize(tx_hash)
+        @byte32_serializer = Byte32Serializer.new(tx_hash)
       end
 
       def serialize

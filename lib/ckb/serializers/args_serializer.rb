@@ -5,8 +5,8 @@ module CKB
     class ArgsSerializer
       # @param args [String[]]
       def initialize(args)
-        @args = args.map { |arg| arg.delete_prefix("0x") }
-        @items_count = @args.count
+        @args = args
+        @items_count = args.count
       end
 
       def serialize
