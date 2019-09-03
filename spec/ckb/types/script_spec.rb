@@ -23,6 +23,19 @@ RSpec.describe CKB::Types::Script do
       ).to eq api.compute_script_hash(script)
     end
 
+    it "should build correct hash when there is only one arg" do
+      skip if ENV["SKIP_RPC_TESTS"]
+
+      CKB::Types::Script.new(
+        code_hash: code_hash,
+        args: ["0x3954acece65096bfa81258983ddb83915fc56bd8"]
+      )
+      api = CKB::API.new
+      expect(
+        script.to_hash
+      ).to eq api.compute_script_hash(script)
+    end
+
     it "should build correct hash when args more than one" do
       skip if ENV["SKIP_RPC_TESTS"]
 
