@@ -7,7 +7,8 @@ module CKB
 
       # @param output_data [String]
       def initialize(output_data)
-        @bytes_serializer = BytesSerializer.new(output_data)
+        items = output_data.delete_prefix("0x").scan(/../)
+        @bytes_serializer = FixVecSerializer.new(items, ByteSerializer)
       end
 
       private

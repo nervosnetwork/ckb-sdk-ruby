@@ -19,7 +19,8 @@ module CKB
       end
 
       def body
-        value
+        items = value.delete_prefix("0x").scan(/../)
+        items.map { |item| ByteSerializer.new(item).serialize }.join("")
       end
     end
   end

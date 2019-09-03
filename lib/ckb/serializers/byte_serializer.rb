@@ -2,8 +2,8 @@
 
 module CKB
   module Serializers
-    class BytesSerializer
-      include FixVecSerializer
+    class ByteSerializer
+      include BaseSerializer
 
       # @param value [String]
       def initialize(value)
@@ -13,11 +13,13 @@ module CKB
 
       private
 
-      attr_reader :value, :items_count
+      attr_reader :value
 
-      def item_layouts
-        return "" if value.nil?
+      def layout
+        body
+      end
 
+      def body
         value
       end
     end

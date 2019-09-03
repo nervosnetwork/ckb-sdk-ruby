@@ -1,9 +1,17 @@
 module CKB
   module Serializers
-    module FixVecSerializer
+    class FixVecSerializer
       include BaseSerializer
 
+      def initialize(items, item_serializer)
+        @items = items
+        @items_count = items.count
+        @item_serializer = item_serializer
+      end
+
       private
+
+      attr_reader :items, :items_count, :item_serializer
 
       def layout
         header + body
@@ -19,6 +27,12 @@ module CKB
 
       def body_capacity
         [body].pack("H*").bytesize
+      end
+
+      def item_layouts
+        return "" if items_count == 0
+
+        items.map { |item| item_serializer.new(item).serialize }.join("")
       end
     end
   end
