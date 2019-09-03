@@ -7,8 +7,7 @@ module CKB
 
       # @param value [String]
       def initialize(value)
-        @value = value.delete_prefix("0x")
-        @items_count = [body].pack("H*").bytesize
+        @value = value || ""
       end
 
       private

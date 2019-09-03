@@ -7,7 +7,11 @@ module CKB
 
       # @param value [String]
       def initialize(value)
-        @value = value.delete_prefix("0x")
+        if value
+          @value = value.start_with?("0x") ? value[2..-1] : value
+        else
+          @value = ""
+        end
       end
 
       private
@@ -19,7 +23,7 @@ module CKB
       end
 
       def body
-        items = value.delete_prefix("0x").scan(/../)
+        items = value.scan(/../)
         items.map { |item| ByteSerializer.new(item).serialize }.join("")
       end
     end

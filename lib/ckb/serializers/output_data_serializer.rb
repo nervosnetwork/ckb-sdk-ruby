@@ -7,7 +7,12 @@ module CKB
 
       # @param output_data [String]
       def initialize(output_data)
-        items = output_data.delete_prefix("0x").scan(/../)
+        if output_data
+          output_data = output_data.start_with?("0x") ? output_data[2..-1] : output_data
+        else
+          output_data = ""
+        end
+        items = output_data.scan(/../)
         @bytes_serializer = FixVecSerializer.new(items, ByteSerializer)
       end
 
