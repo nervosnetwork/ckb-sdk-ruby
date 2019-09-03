@@ -19,7 +19,7 @@ module CKB
       end
 
       def body
-        dep_type == "data" ? "00" : "01"
+        dep_type == "code" ? "00" : "01"
       end
     end
   end
