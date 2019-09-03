@@ -23,7 +23,7 @@ module CKB
 
       def body
         result = capacity_layout + lock_script_layout
-        result + type_script_layout if type_script_serializer
+        result += type_script_layout if type_script_serializer
 
         result
       end
