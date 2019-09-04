@@ -304,125 +304,88 @@ RSpec.describe CKB::Types::Transaction do
 
     it "should build correct hash for specific transaction" do
       tx = CKB::Types::Transaction.from_h(specific_tx_h)
-      tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-      blake2b = CKB::Blake2b.new
-      blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-      expected_tx_hash = blake2b.hexdigest
 
       expect(
-        expected_tx_hash
+        tx.compute_hash
       ).to eq tx.hash
     end
 
     it "should build correct hash when tx has one cell_deps" do
       tx = CKB::Types::Transaction.from_h(one_cell_dep_tx_h)
-      tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-      blake2b = CKB::Blake2b.new
-      blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-      expected_tx_hash = blake2b.hexdigest
 
       expect(
-        expected_tx_hash
+        tx.compute_hash
       ).to eq tx.hash
     end
 
     it "should build correct hash when tx has multiple cell_deps" do
       tx = CKB::Types::Transaction.from_h(multiple_cell_dep_tx_h)
-      tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-      blake2b = CKB::Blake2b.new
-      blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-      expected_tx_hash = blake2b.hexdigest
 
       expect(
-        expected_tx_hash
+        tx.compute_hash
       ).to eq tx.hash
     end
 
     it "should build correct hash when has dep_type is code cell_dep" do
       tx = CKB::Types::Transaction.from_h(code_dep_type_tx_h)
-      tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-      blake2b = CKB::Blake2b.new
-      blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-      expected_tx_hash = blake2b.hexdigest
 
       expect(
-        expected_tx_hash
+        tx.compute_hash
       ).to eq tx.hash
     end
 
     it "should build correct hash when has type script" do
       tx = CKB::Types::Transaction.from_h(has_type_script_tx_h)
-      tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-      blake2b = CKB::Blake2b.new
-      blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-      expected_tx_hash = blake2b.hexdigest
 
       expect(
-        expected_tx_hash
+        tx.compute_hash
       ).to eq tx.hash
     end
 
     context "compared with rpc result" do
-      skip if ENV["SKIP_RPC_TESTS"]
-      api = CKB::API.new
+      before do
+        skip "not call rpc" if ENV["SKIP_RPC_TESTS"]
+      end
+
+      let(:api) { CKB::API.new }
 
       it "should build correct hash for specific transaction" do
         tx = CKB::Types::Transaction.from_h(specific_tx_h)
-        tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-        blake2b = CKB::Blake2b.new
-        blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-        expected_tx_hash = blake2b.hexdigest
 
         expect(
-          expected_tx_hash
+          tx.compute_hash
         ).to eq api.compute_transaction_hash(tx)
       end
 
       it "should build correct hash when tx has one cell_deps" do
         tx = CKB::Types::Transaction.from_h(one_cell_dep_tx_h)
-        tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-        blake2b = CKB::Blake2b.new
-        blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-        expected_tx_hash = blake2b.hexdigest
 
         expect(
-          expected_tx_hash
+          tx.compute_hash
         ).to eq api.compute_transaction_hash(tx)
       end
 
       it "should build correct hash when tx has multiple cell_deps" do
         tx = CKB::Types::Transaction.from_h(multiple_cell_dep_tx_h)
-        tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-        blake2b = CKB::Blake2b.new
-        blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-        expected_tx_hash = blake2b.hexdigest
 
         expect(
-          expected_tx_hash
+          tx.compute_hash
         ).to eq api.compute_transaction_hash(tx)
       end
 
       it "should build correct hash when has dep_type is code cell_dep" do
         tx = CKB::Types::Transaction.from_h(code_dep_type_tx_h)
-        tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-        blake2b = CKB::Blake2b.new
-        blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-        expected_tx_hash = blake2b.hexdigest
 
         expect(
-          expected_tx_hash
+          tx.compute_hash
         ).to eq api.compute_transaction_hash(tx)
       end
 
       it "should build correct hash when has type script" do
         tx = CKB::Types::Transaction.from_h(has_type_script_tx_h)
-        tx_binary = CKB::Serializers::RawTransactionSerializer.new(tx).serialize
-        blake2b = CKB::Blake2b.new
-        blake2b << CKB::Utils.hex_to_bin("0x#{tx_binary}")
-        expected_tx_hash = blake2b.hexdigest
 
         expect(
-          expected_tx_hash
+          tx.compute_hash
         ).to eq api.compute_transaction_hash(tx)
       end
     end
