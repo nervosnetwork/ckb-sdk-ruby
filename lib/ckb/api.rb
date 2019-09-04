@@ -37,7 +37,7 @@ module CKB
           index: "0"
         )
 
-        secp_cell_type_hash = system_cell_transaction.outputs[1].type.to_hash
+        secp_cell_type_hash = system_cell_transaction.outputs[1].type.compute_hash
         raise "System script type_hash error!" unless secp_cell_type_hash == expected_type_hash
         set_secp_group_dep(secp_group_out_point, secp_cell_type_hash)
 

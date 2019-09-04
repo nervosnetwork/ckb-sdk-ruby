@@ -38,7 +38,7 @@ module CKB
         )
       end
 
-      def to_hash
+      def compute_hash
         script_serializer = CKB::Serializers::ScriptSerializer.new(self)
         blake2b = CKB::Blake2b.new
         blake2b << Utils.hex_to_bin("0x#{script_serializer.serialize}")
