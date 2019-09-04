@@ -8,9 +8,9 @@ module CKB
       # @param transaction [CKB::Types::Transaction]
       def initialize(transaction)
         @version_serializer = VersionSerializer.new(transaction.version)
-        @cell_deps_serializer = DynVecSerializer.new(transaction.cell_deps, CellDepSerializer)
+        @cell_deps_serializer = FixVecSerializer.new(transaction.cell_deps, CellDepSerializer)
         @header_deps_serializer = FixVecSerializer.new(transaction.header_deps, HeaderDepSerializer)
-        @inputs_serializer = DynVecSerializer.new(transaction.inputs, InputSerializer)
+        @inputs_serializer = FixVecSerializer.new(transaction.inputs, InputSerializer)
         @outputs_serializer = DynVecSerializer.new(transaction.outputs, OutputSerializer)
         @outputs_data_serializer = DynVecSerializer.new(transaction.outputs_data, OutputDataSerializer)
         @items_count = 6
