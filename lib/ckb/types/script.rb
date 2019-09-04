@@ -38,8 +38,12 @@ module CKB
         )
       end
 
-      def to_hash(api)
-        api.compute_script_hash(self)
+      def compute_hash
+        script_serializer = CKB::Serializers::ScriptSerializer.new(self)
+        blake2b = CKB::Blake2b.new
+        blake2b << Utils.hex_to_bin("0x#{script_serializer.serialize}")
+
+        blake2b.hexdigest
       end
 
       def self.generate_lock(target_pubkey_blake160, secp_cell_type_hash, hash_type = "type")
