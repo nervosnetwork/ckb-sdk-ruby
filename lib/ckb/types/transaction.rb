@@ -76,6 +76,13 @@ module CKB
         hash
       end
 
+      def compute_hash
+        raw_transaction_serializer = CKB::Serializers::RawTransactionSerializer.new(self)
+        blake2b = CKB::Blake2b.new
+        blake2b << Utils.hex_to_bin("0x#{raw_transaction_serializer.serialize}")
+        blake2b.hexdigest
+      end
+
       def self.from_h(hash)
         return if hash.nil?
 

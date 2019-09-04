@@ -112,9 +112,8 @@ module CKB
         outputs_data: outputs.map(&:data),
         witnesses: i.witnesses
       )
-      tx_hash = compute_transaction_hash(tx)
 
-      tx.sign(key, tx_hash)
+      tx.sign(key, tx.compute_hash)
     end
 
     # @param target_address [String]
@@ -172,7 +171,7 @@ module CKB
         witnesses: i.witnesses
       )
 
-      tx_hash = compute_transaction_hash(tx)
+      tx_hash = tx.compute_hash
       send_transaction(tx.sign(key, tx_hash))
 
       Types::OutPoint.new(tx_hash: tx_hash, index: "0")
@@ -236,8 +235,7 @@ module CKB
           Types::Witness.new(data: ["0x0000000000000000"])
         ]
       )
-      tx_hash = compute_transaction_hash(tx)
-      tx.sign(key, tx_hash)
+      tx.sign(key, tx.compute_hash)
     end
 
     # @param hash_hex [String] "0x..."
@@ -269,13 +267,6 @@ args = #{lock.args}
     end
 
     private
-
-    def compute_transaction_hash(tx)
-      raw_transaction_serializer = CKB::Serializers::RawTransactionSerializer.new(tx)
-      blake2b = CKB::Blake2b.new
-      blake2b << Utils.hex_to_bin("0x#{raw_transaction_serializer.serialize}")
-      blake2b.hexdigest
-    end
 
     # @param transaction [CKB::Transaction]
     def send_transaction(transaction)
