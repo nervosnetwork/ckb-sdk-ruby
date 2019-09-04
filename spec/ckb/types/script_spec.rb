@@ -14,8 +14,11 @@ RSpec.describe CKB::Types::Script do
   let(:code_hash) { "0xc00073200d2b2f4ad816a8d04bb2431ce0d3ebd49141b086eda4ab4e06bc3a21" }
 
   context "to_hash" do
-    skip if ENV["SKIP_RPC_TESTS"]
-    api = CKB::API.new
+    before do
+      skip if ENV["SKIP_RPC_TESTS"]
+    end
+
+    let(:api) { CKB::API.new }
 
     it "should build correct hash when args is empty " do
       expect(
