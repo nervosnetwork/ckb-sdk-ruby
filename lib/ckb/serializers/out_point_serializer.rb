@@ -3,7 +3,7 @@
 module CKB
   module Serializers
     class OutPointSerializer
-      include TableSerializer
+      include StructSerializer
 
       # @param out_point [CKB::Types::OutPoint]
       def initialize(out_point)
@@ -26,13 +26,6 @@ module CKB
 
       def tx_hash_layout
         tx_hash_serializer.serialize
-      end
-
-      def offsets
-        offset0 = (items_count + 1) * UINT32_CAPACITY
-        offset1 = offset0 + BYTE32_CAPACITY
-
-        [offset0, offset1]
       end
     end
   end

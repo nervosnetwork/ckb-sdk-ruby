@@ -3,28 +3,20 @@
 module CKB
   module Serializers
     class InputSerializer
-      include TableSerializer
+      include StructSerializer
 
       # @param input [CKB::Types::Input]
       def initialize(input)
         @out_point_serializer = OutPointSerializer.new(input.previous_output)
         @since_serializer = SinceSerializer.new(input.since)
-        @items_count = 2
       end
 
       private
 
-      attr_reader :out_point_serializer, :since_serializer, :items_count
+      attr_reader :out_point_serializer, :since_serializer
 
       def body
-        out_point_layout + since_layout
-      end
-
-      def offsets
-        offset0 = (items_count + 1) * UINT32_CAPACITY
-        offset1 = offset0 + out_point_serializer.capacity
-
-        [offset0, offset1]
+        since_layout + out_point_layout
       end
 
       def since_layout
