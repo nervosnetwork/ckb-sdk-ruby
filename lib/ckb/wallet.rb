@@ -144,8 +144,9 @@ module CKB
         capacity: capacity,
         lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
         type: Types::Script.new(
-          code_hash: api.dao_code_hash,
-          args: []
+          code_hash: api.dao_type_hash,
+          args: [],
+          hash_type: "type"
         )
       )
       output_data = "0x"

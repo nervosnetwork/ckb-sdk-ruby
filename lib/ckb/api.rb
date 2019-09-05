@@ -14,6 +14,7 @@ module CKB
     attr_reader :secp_cell_code_hash
     attr_reader :dao_out_point
     attr_reader :dao_code_hash
+    attr_reader :dao_type_hash
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
@@ -21,6 +22,8 @@ module CKB
         # Testnet system script code_hash
         expected_code_hash = "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176"
         expected_type_hash = "0x1892ea40d82b53c678ff88312450bbb17e164d7a3e0a90941aa58839f56f8df2"
+        expected_dao_code_hash = "0x64dce4af48b54197a188b2deb6c3ad99347dd680ffe0d0c85061a92012d7665b"
+        expected_dao_type_hash = "0xa20df8e80518e9b2eabc1a0efb0ebe1de83f8df9c867edf99d0c5895654fcde1"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -47,8 +50,13 @@ module CKB
         )
         dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[2])
         dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
+        raise "System script code_hash error!" unless dao_code_hash == expected_dao_code_hash
 
-        set_dao_dep(dao_out_point, dao_code_hash)
+        dao_type_hash = system_cell_transaction.outputs[2].type.compute_hash
+
+        raise "System script code_hash error!" unless dao_type_hash == expected_dao_type_hash
+
+        set_dao_dep(dao_out_point, dao_code_hash, dao_type_hash)
       end
     end
 
@@ -59,9 +67,10 @@ module CKB
       @secp_cell_type_hash = secp_cell_type_hash
     end
 
-    def set_dao_dep(out_point, code_hash)
+    def set_dao_dep(out_point, code_hash, dao_type_hash)
       @dao_out_point = out_point
       @dao_code_hash = code_hash
+      @dao_type_hash = dao_type_hash
     end
 
     def genesis_block
