@@ -19,8 +19,8 @@ module CKB
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0x1d107ddec56ec77b79c41cd10b35a3b47434c93a604ecb8e8e73e7372fe1a794"
-        expected_type_hash = "0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88"
+        expected_code_hash = "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176"
+        expected_type_hash = "0x1892ea40d82b53c678ff88312450bbb17e164d7a3e0a90941aa58839f56f8df2"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
