@@ -16,11 +16,7 @@ module CKB
       attr_reader :items, :items_count, :item_serializer
 
       def layout
-        if items_count == 0
-          [UINT32_CAPACITY].pack("V").unpack1("H*")
-        else
-          header + body
-        end
+        header + body
       end
 
       def header
@@ -33,10 +29,9 @@ module CKB
 
       def offsets
         offset0 = (items_count + 1) * UINT32_CAPACITY
-        offsets = [offset0]
-        items.each.with_index(1) do |_item, index|
-          break if items[index].nil?
-
+        offsets = []
+        items.each.with_index do |_item, index|
+          offsets << offset0 and next if index == 0
           offsets << offset0 += item_serializer.new(items[index - 1]).capacity
         end
 
