@@ -1,6 +1,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.20.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.19.0...v0.20.0) (2019-09-07)
+
+
+### Bug Fixes
+
+* test ([8ac5926](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8ac5926))
+* type script serialization ([b72fe3e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/b72fe3e))
+* wrong dep_type value ([51d5f95](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/51d5f95))
+
+
+### Features
+
+* add composite data serializers ([7783444](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/7783444))
+* add compute_hash to transaction ([7ae9c92](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/7ae9c92))
+* add compute_transaction_hash method ([d69ebf2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/d69ebf2))
+* add transaction serialization related serializers ([4488008](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4488008))
+* serialize script ([155c472](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/155c472))
+* update expected code_hash and type_hash ([37f0684](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/37f0684))
+* update expected code_hash and type_hash ([313ee86](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/313ee86))
+* use struct replace some table ([c5e1f17](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c5e1f17))
+
+
 # [v0.19.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.18.0...v0.19.0) (2019-08-27)
 
 
