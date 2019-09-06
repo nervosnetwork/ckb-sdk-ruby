@@ -30,12 +30,13 @@ module CKB
       def offsets
         offset0 = (items_count + 1) * UINT32_CAPACITY
         offsets = []
+        previous_offset = offset0
         items.each.with_index do |_item, index|
-          offsets << offset0 and next if index == 0
+          offsets << previous_offset and next if index == 0
 
-          sum_of_prev_offsets = offsets[0..index - 1].reduce(0, :+)
-          new_offset = sum_of_prev_offsets + item_serializer.new(items[index - 1]).capacity
+          new_offset = previous_offset + item_serializer.new(items[index - 1]).capacity
           offsets << new_offset
+          previous_offset = new_offset
         end
 
         offsets
