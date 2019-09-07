@@ -36,11 +36,11 @@ module CKB
       end
 
       def version_layout
-        version_serializer.serialize
+        version_serializer.serialize[2..-1]
       end
 
       def cell_deps_layout
-        cell_deps_serializer.serialize
+        cell_deps_serializer.serialize[2..-1]
       end
 
       def cell_deps_capacity
@@ -48,7 +48,7 @@ module CKB
       end
 
       def header_deps_layout
-        header_deps_serializer.serialize
+        header_deps_serializer.serialize[2..-1]
       end
 
       def header_deps_capacity
@@ -56,7 +56,7 @@ module CKB
       end
 
       def inputs_layout
-        inputs_serializer.serialize
+        inputs_serializer.serialize[2..-1]
       end
 
       def inputs_capacity
@@ -64,7 +64,7 @@ module CKB
       end
 
       def outputs_layout
-        outputs_serializer.serialize
+        outputs_serializer.serialize[2..-1]
       end
 
       def outputs_capacity
@@ -72,7 +72,7 @@ module CKB
       end
 
       def outputs_data_layout
-        outputs_data_serializer.serialize
+        outputs_data_serializer.serialize[2..-1]
       end
     end
   end

@@ -19,7 +19,7 @@ module CKB
       end
 
       def body
-        uint32_serializer.serialize
+        uint32_serializer.serialize[2..-1]
       end
     end
   end
