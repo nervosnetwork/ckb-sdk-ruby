@@ -2,7 +2,7 @@ module CKB
   module Serializers
     module BaseSerializer
       def serialize
-        layout
+        "0x#{layout}"
       end
 
       def capacity

@@ -20,11 +20,11 @@ module CKB
       end
 
       def since_layout
-        since_serializer.serialize
+        since_serializer.serialize[2..-1]
       end
 
       def out_point_layout
-        out_point_serializer.serialize
+        out_point_serializer.serialize[2..-1]
       end
     end
   end

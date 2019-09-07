@@ -21,11 +21,11 @@ module CKB
       end
 
       def index_layout
-        index_serializer.serialize
+        index_serializer.serialize[2..-1]
       end
 
       def tx_hash_layout
-        tx_hash_serializer.serialize
+        tx_hash_serializer.serialize[2..-1]
       end
     end
   end
