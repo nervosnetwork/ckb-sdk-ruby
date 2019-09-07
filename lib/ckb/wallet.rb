@@ -52,8 +52,10 @@ module CKB
         cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
         if skip_data_and_type
           cells.each do |cell|
-            output = api.get_live_cell(cell.out_point).cell
-            results << cell if (output.data.nil? || output.data == "0x") && output.type.nil?
+            tx = api.get_transaction(cell.out_point.tx_hash).transaction
+            output = tx.outputs[cell.out_point.index.to_i]
+            output_data = tx.outputs_data[cell.out_point.index.to_i]
+            results << cell if (output_data.nil? || output_data == "0x") && output.type.nil?
           end
         else
           results.concat(cells)
@@ -77,30 +79,35 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        data: data,
         lock: Types::Script.generate_lock(
           addr.parse(target_address),
           api.secp_cell_type_hash,
           "type"
         )
       )
+      output_data = data
 
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
+      change_output_data = "0x"
 
       i = gather_inputs(
         capacity,
-        output.calculate_min_capacity,
-        change_output.calculate_min_capacity,
+        output.calculate_min_capacity(output_data),
+        change_output.calculate_min_capacity(change_output_data),
         fee
       )
       input_capacities = i.capacities
 
       outputs = [output]
+      outputs_data = [output_data]
       change_output.capacity = input_capacities - (capacity + fee)
-      outputs << change_output if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i > 0
+        outputs << change_output
+        outputs_data << change_output_data
+      end
 
       tx = Types::Transaction.new(
         version: 0,
@@ -109,13 +116,11 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
+        outputs_data: outputs_data,
         witnesses: i.witnesses
       )
 
-      tx_hash = api.compute_transaction_hash(tx)
-
-      tx.sign(key, tx_hash)
+      tx.sign(key, tx.compute_hash)
     end
 
     # @param target_address [String]
@@ -143,23 +148,29 @@ module CKB
           args: []
         )
       )
+      output_data = "0x"
 
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
+      change_output_data = "0x"
 
       i = gather_inputs(
         capacity,
-        output.calculate_min_capacity,
-        change_output.calculate_min_capacity,
+        output.calculate_min_capacity(output_data),
+        change_output.calculate_min_capacity(change_output_data),
         0
       )
       input_capacities = i.capacities
 
       outputs = [output]
+      outputs_data = [output_data]
       change_output.capacity = input_capacities - capacity
-      outputs << change_output if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i > 0
+        outputs << change_output
+        outputs_data << change_output_data
+      end
 
       tx = Types::Transaction.new(
         version: 0,
@@ -169,11 +180,11 @@ module CKB
         ],
         inputs: i.inputs,
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
+        outputs_data: outputs_data,
         witnesses: i.witnesses
       )
 
-      tx_hash = api.compute_transaction_hash(tx)
+      tx_hash = tx.compute_hash
       send_transaction(tx.sign(key, tx_hash))
 
       Types::OutPoint.new(tx_hash: tx_hash, index: "0")
@@ -218,6 +229,7 @@ module CKB
       outputs = [
         Types::Output.new(capacity: output_capacity, lock: lock)
       ]
+      outputs_data = ["0x"]
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
@@ -232,13 +244,12 @@ module CKB
           Types::Input.new(previous_output: new_out_point, since: since)
         ],
         outputs: outputs,
-        outputs_data: outputs.map(&:data),
+        outputs_data: outputs_data,
         witnesses: [
           Types::Witness.new(data: ["0x0000000000000000"])
         ]
       )
-      tx_hash = api.compute_transaction_hash(tx)
-      tx.sign(key, tx_hash)
+      tx.sign(key, tx.compute_hash)
     end
 
     # @param hash_hex [String] "0x..."
@@ -257,7 +268,7 @@ args = #{lock.args}
     end
 
     def lock_hash
-      @lock_hash ||= lock.to_hash(api)
+      @lock_hash ||= lock.compute_hash
     end
 
     # @return [CKB::Types::Script]
