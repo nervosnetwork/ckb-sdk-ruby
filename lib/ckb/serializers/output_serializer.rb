@@ -29,15 +29,15 @@ module CKB
       end
 
       def type_script_layout
-        type_script_serializer.serialize
+        type_script_serializer.serialize[2..-1]
       end
 
       def lock_script_layout
-        lock_script_serializer.serialize
+        lock_script_serializer.serialize[2..-1]
       end
 
       def capacity_layout
-        capacity_serializer.serialize
+        capacity_serializer.serialize[2..-1]
       end
 
       def offsets

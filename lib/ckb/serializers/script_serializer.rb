@@ -30,15 +30,15 @@ module CKB
       end
 
       def code_hash_layout
-        code_hash_serializer.serialize
+        code_hash_serializer.serialize[2..-1]
       end
 
       def hash_type_layout
-        hash_type_serializer.serialize
+        hash_type_serializer.serialize[2..-1]
       end
 
       def args_layout
-        args_serializer.serialize
+        args_serializer.serialize[2..-1]
       end
     end
   end

@@ -21,7 +21,7 @@ module CKB
       attr_reader :bytes_serializer
 
       def layout
-        bytes_serializer.serialize
+        bytes_serializer.serialize[2..-1]
       end
     end
   end
