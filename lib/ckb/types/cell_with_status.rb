@@ -5,7 +5,7 @@ module CKB
     class CellWithStatus
       attr_accessor :cell, :status
 
-      # @param cell [CKB::Types::Output]
+      # @param cell [CKB::Types::CellInfo | nil]
       # @param status [String]
       def initialize(cell:, status:)
         @cell = cell
@@ -23,7 +23,7 @@ module CKB
         return if hash.nil?
 
         new(
-          cell: Output.from_h(hash[:cell]),
+          cell: CellInfo.from_h(hash[:cell]),
           status: hash[:status]
         )
       end

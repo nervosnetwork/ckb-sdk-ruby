@@ -123,10 +123,11 @@ module CKB
     end
 
     # @param out_point [CKB::Types::OutPoint]
+    # @param with_data [Boolean]
     #
     # @return [CKB::Types::CellWithStatus]
-    def get_live_cell(out_point)
-      cell_h = rpc.get_live_cell(out_point.to_h)
+    def get_live_cell(out_point, with_data = false)
+      cell_h = rpc.get_live_cell(out_point.to_h, with_data)
       Types::CellWithStatus.from_h(cell_h)
     end
 
