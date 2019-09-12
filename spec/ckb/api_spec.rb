@@ -52,7 +52,13 @@ RSpec.describe CKB::API do
     expect(result.transaction.hash).to eq tx.hash
   end
 
-  it "get live cell" do
+  it "get live cell with data" do
+    out_point = Types::OutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: "0")
+    result = api.get_live_cell(out_point, true)
+    expect(result).not_to be nil
+  end
+
+  it "get live cell without data" do
     out_point = Types::OutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: "0")
     result = api.get_live_cell(out_point)
     expect(result).not_to be nil
