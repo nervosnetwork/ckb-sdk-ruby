@@ -21,6 +21,7 @@ module CKB
       # @param witnesses_root [String] 0x...
       # @param epoch [String] number
       # @param dao [String] 0x...
+      # @param chain_root [String] 0x...
       def initialize(
         difficulty:,
         hash:,
@@ -35,7 +36,8 @@ module CKB
         version:,
         witnesses_root:,
         epoch:,
-        dao:
+        dao: ,
+        chain_root:
       )
         @difficulty = difficulty
         @hash = hash
@@ -51,6 +53,7 @@ module CKB
         @witnesses_root = witnesses_root
         @epoch = epoch
         @dao = dao
+        @chain_root = chain_root
       end
 
       def to_h
@@ -68,7 +71,8 @@ module CKB
           version: @version,
           witnesses_root: @witnesses_root,
           epoch: @epoch,
-          dao: @dao
+          dao: @dao,
+          chain_root: @chain_root
         }
       end
 
@@ -89,7 +93,8 @@ module CKB
           version: hash[:version],
           witnesses_root: hash[:witnesses_root],
           epoch: hash[:epoch],
-          dao: hash[:dao]
+          dao: hash[:dao],
+          chain_root: hash[:chain_root]
         )
       end
     end
