@@ -6,16 +6,16 @@ module CKB
       attr_accessor :tx_hash, :index
 
       # @param tx_hash [String] 0x...
-      # @param index [String] number
+      # @param index [String | Integer] integer or hex number
       def initialize(tx_hash:, index:)
         @tx_hash = tx_hash
-        @index = index.to_s
+        @index = Utils.to_int(index)
       end
 
       def to_h
         {
           tx_hash: tx_hash,
-          index: index
+          index: Utils.to_hex(index)
         }
       end
 

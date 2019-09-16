@@ -6,16 +6,16 @@ module CKB
       attr_accessor :address, :score
 
       # @param address [String]
-      # @param score [String] number
+      # @param score [String | Integer] integer or hex number
       def initialize(address:, score:)
         @address = address
-        @score = score.to_s
+        @score = Utils.to_int(score)
       end
 
       def to_h
         {
           address: @address,
-          score: @score
+          score: Utils.to_hex(@score)
         }
       end
 

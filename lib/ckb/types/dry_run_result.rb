@@ -5,14 +5,14 @@ module CKB
     class DryRunResult
       attr_accessor :cycles
 
-      # @param cycles [String] number
+      # @param cycles [String | Integer] integer or hex number
       def initialize(cycles:)
-        @cycles = cycles
+        @cycles = Utils.to_int(cycles)
       end
 
       def to_h
         {
-          cycles: @cycles
+          cycles: Utils.to_hex(@cycles)
         }
       end
 

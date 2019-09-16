@@ -5,12 +5,12 @@ module CKB
     class TxPoolInfo
       attr_accessor :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at
 
-      # @param pending [String] number
-      # @param proposed [String] number
-      # @param orphan [String] number
-      # @param total_tx_cycles [String] number
-      # @param total_tx_size [String] number
-      # @param last_txs_updated_at [String] timestamp
+      # @param pending [String | Integer] integer or hex number
+      # @param proposed [String | Integer] integer or hex number
+      # @param orphan [String | Integer] integer or hex number
+      # @param total_tx_cycles [String | Integer] integer or hex number
+      # @param total_tx_size [String | Integer] integer or hex number
+      # @param last_txs_updated_at [String | Integer] timestamp
       def initialize(
         pending:,
         proposed:,
@@ -19,22 +19,22 @@ module CKB
         total_tx_cycles:,
         total_tx_size:
       )
-        @pending = pending.to_s
-        @proposed = proposed.to_s
-        @orphan = orphan.to_s
-        @total_tx_cycles = total_tx_cycles.to_s
-        @total_tx_size = total_tx_size.to_s
-        @last_txs_updated_at = last_txs_updated_at
+        @pending = Utils.to_int(pending)
+        @proposed = Utils.to_int(proposed)
+        @orphan = Utils.to_int(orphan)
+        @total_tx_cycles = Utils.to_int(total_tx_cycles)
+        @total_tx_size = Utils.to_int(total_tx_size)
+        @last_txs_updated_at = Utils.to_int(last_txs_updated_at)
       end
 
       def to_h
         {
-          pending: @pending,
-          proposed: @proposed,
-          orphan: @orphan,
-          total_tx_cycles: @total_tx_cycles,
-          total_tx_size: @total_tx_size,
-          last_txs_updated_at: @last_txs_updated_at
+          pending: Utils.to_hex(@pending),
+          proposed: Utils.to_hex(@proposed),
+          orphan: Utils.to_hex(@orphan),
+          total_tx_cycles: Utils.to_hex(@total_tx_cycles),
+          total_tx_size: Utils.to_hex(@total_tx_size),
+          last_txs_updated_at: Utils.to_hex(@last_txs_updated_at)
         }
       end
 

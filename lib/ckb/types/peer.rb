@@ -18,7 +18,7 @@ module CKB
 
       def to_h
         {
-          addresses: @addresses,
+          addresses: @addresses.map(&:to_h),
           is_outbound: @is_outbound,
           node_id: @node_id,
           version: @version

@@ -6,16 +6,16 @@ module CKB
       attr_accessor :previous_output, :since
 
       # @param previous_output [CKB::Types::OutPoint]
-      # @param since [String]
+      # @param since [String | Integer] integer or hex number
       def initialize(previous_output:, since: "0")
         @previous_output = previous_output
-        @since = since.to_s
+        @since = Utils.to_int(since)
       end
 
       def to_h
         {
           previous_output: @previous_output.to_h,
-          since: since
+          since: Utils.to_hex(@since)
         }
       end
 

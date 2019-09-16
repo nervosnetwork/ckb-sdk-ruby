@@ -6,18 +6,18 @@ module CKB
       attr_accessor :lock_hash, :block_number, :block_hash
 
       # @param lock_hash [String]
-      # @param block_number [String] number
+      # @param block_number [String | Integer] integer or hex number
       # @param block_hash [String]
       def initialize(lock_hash:, block_number:, block_hash:)
         @lock_hash = lock_hash
-        @block_number = block_number.to_s
+        @block_number = Utils.to_int(block_number)
         @block_hash = block_hash
       end
 
       def to_h
         {
           lock_hash: @lock_hash,
-          block_number: @block_number,
+          block_number: Utils.to_hex(@block_number),
           block_hash: @block_hash
         }
       end
