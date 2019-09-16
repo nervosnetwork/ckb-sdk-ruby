@@ -69,8 +69,8 @@ module CKB
       rpc_request("get_transaction", params: [tx_hash])
     end
 
-    def get_live_cell(out_point)
-      rpc_request("get_live_cell", params: [out_point])
+    def get_live_cell(out_point, with_data = false)
+      rpc_request("get_live_cell", params: [out_point, with_data])
     end
 
     def send_transaction(transaction)
