@@ -6,22 +6,22 @@ module CKB
       attr_accessor :address, :ban_until, :ban_reason, :created_at
 
       # @param address [String]
-      # @param ban_until [String] timestamp
+      # @param ban_until [String | Integer] timestamp
       # @param ban_reason [String]
-      # @param created_at [String] timestamp
+      # @param created_at [String | Integer] timestamp
       def initialize(address:, ban_until:, ban_reason:, created_at:)
         @address = address
-        @ban_until = ban_until
+        @ban_until = Utils.to_int(ban_until)
         @ban_reason = ban_reason
-        @created_at = created_at
+        @created_at = Utils.to_int(created_at)
       end
 
       def to_h
         {
           address: @address,
-          ban_until: @ban_until,
+          ban_until: Utils.to_hex(@ban_until),
           ban_reason: @ban_reason,
-          created_at: @created_at
+          created_at: Utils.to_hex(@created_at)
         }
       end
 

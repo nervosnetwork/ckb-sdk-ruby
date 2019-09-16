@@ -5,26 +5,26 @@ module CKB
     class BlockReward
       attr_accessor :total, :primary, :secondary, :tx_fee, :proposal_reward
 
-      # @param total [String] number
-      # @param primary [String] number
-      # @param secondary [String] number
-      # @param tx_fee [String] number
-      # @param proposal_reward [String] number
+      # @param total [String | Integer] integer or hex number
+      # @param primary [String | Integer] integer or hex number
+      # @param secondary [String | Integer] integer or hex number
+      # @param tx_fee [String | Integer] integer or hex number
+      # @param proposal_reward [String | Integer] integer or hex number
       def initialize(total:, primary:, secondary:, tx_fee:, proposal_reward:)
-        @total = total
-        @primary = primary
-        @secondary = secondary
-        @tx_fee = tx_fee
-        @proposal_reward = proposal_reward
+        @total = Utils.to_int(total)
+        @primary = Utils.to_int(primary)
+        @secondary = Utils.to_int(secondary)
+        @tx_fee = Utils.to_int(tx_fee)
+        @proposal_reward = Utils.to_int(proposal_reward)
       end
 
       def to_h
         {
-          total: @total,
-          primary: @primary,
-          secondary: @secondary,
-          tx_fee: @tx_fee,
-          proposal_reward: @proposal_reward
+          total: Utils.to_hex(@total),
+          primary: Utils.to_hex(@primary),
+          secondary: Utils.to_hex(@secondary),
+          tx_fee: Utils.to_hex(@tx_fee),
+          proposal_reward: Utils.to_hex(@proposal_reward)
         }
       end
 

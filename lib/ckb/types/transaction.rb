@@ -6,7 +6,7 @@ module CKB
       attr_accessor :version, :cell_deps, :header_deps, :inputs, :outputs, :outputs_data, :witnesses, :hash
 
       # @param hash [String | nil] 0x...
-      # @param version [String]
+      # @param version [String | Integer] integer or hex number
       # @param cell_deps [CKB::Types::CellDep[]]
       # @param header_deps [String[]]
       # @param inputs [CKB::Types::Input[]]
@@ -24,7 +24,7 @@ module CKB
         witnesses: []
       )
         @hash = hash
-        @version = version.to_s
+        @version = Utils.to_int(version)
         @cell_deps = cell_deps
         @header_deps = header_deps
         @inputs = inputs
@@ -64,7 +64,7 @@ module CKB
 
       def to_h
         hash = {
-          version: @version,
+          version: Utils.to_hex(@version),
           cell_deps: @cell_deps.map(&:to_h),
           header_deps: @header_deps,
           inputs: @inputs.map(&:to_h),
