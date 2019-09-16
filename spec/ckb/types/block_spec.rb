@@ -2,7 +2,6 @@ RSpec.describe CKB::Types::Block do
   let(:block_h) do
     {
       "header": {
-        "chain_root": "0x9f5ebec9c725c99487ec6d07e8ff0963ac5f8a75fcc15d26df1787353e980e4f",
         "dao": "0x0100000000000000005827f2ba13b000d77fa3d595aa00000061eb7ada030000",
         "difficulty": "0x7a1200",
         "epoch": "0x1",

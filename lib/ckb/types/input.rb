@@ -7,7 +7,7 @@ module CKB
 
       # @param previous_output [CKB::Types::OutPoint]
       # @param since [String | Integer] integer or hex number
-      def initialize(previous_output:, since: "0")
+      def initialize(previous_output:, since: 0)
         @previous_output = previous_output
         @since = Utils.to_int(since)
       end
