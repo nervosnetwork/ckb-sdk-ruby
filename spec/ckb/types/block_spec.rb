@@ -45,7 +45,8 @@ RSpec.describe CKB::Types::Block do
         "uncles_count":"0",
         "uncles_hash":"0x0000000000000000000000000000000000000000000000000000000000000000",
         "version":"0",
-        "witnesses_root":"0x3b84ab9739349ec9ba1bfb7da2662d3cb2f1a1e3ecc0470542fbf4b0bee25f67"
+        "witnesses_root":"0x3b84ab9739349ec9ba1bfb7da2662d3cb2f1a1e3ecc0470542fbf4b0bee25f67",
+        "chain_root": "0x9f5ebec9c725c99487ec6d07e8ff0963ac5f8a75fcc15d26df1787353e980e4f"
       },
       "proposals": [],
       "uncles": []
