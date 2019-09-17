@@ -1,4 +1,3 @@
-require "pry"
 RSpec.describe CKB::Types::Transaction do
   let(:tx_to_sign_hash) do
     {
