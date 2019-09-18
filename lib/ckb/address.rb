@@ -35,7 +35,7 @@ module CKB
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     # @param [String] hash160
     # @return [String]
-    def generate_type11_address(hash160)
+    def generate_short_payload_hash160_address(hash160)
       hash160_bin = [hash160[2..-1]].pack("H*")
       type = [TYPES[0]].pack("H*")
       code_hash_index = [CODE_HASH_INDEXES[1]].pack("H*")
@@ -76,15 +76,15 @@ module CKB
       self.class.parse(address, mode: @mode)
     end
 
-    def parse_type11_address(address)
-      self.class.parse_type11_address(address, mode: @mode)
+    def parse_short_payload_hash160_address(address)
+      self.class.parse_short_payload_hash160_address(address, mode: @mode)
     end
 
     def parse_full_payload_address(address)
       self.class.parse_full_payload_address(address, mode: @mode)
     end
 
-    def self.parse_type11_address(address, mode: DEFAULT_MODE)
+    def self.parse_short_payload_hash160_address(address, mode: DEFAULT_MODE)
       decoded_prefix, data = ConvertAddress.decode(address)
 
       raise "Invalid prefix" if decoded_prefix != prefix(mode: mode)
