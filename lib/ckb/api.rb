@@ -135,11 +135,11 @@ module CKB
     #
     # @return [String] tx_hash
     def send_transaction(transaction)
-      rpc.send_transaction(transaction.to_h)
+      rpc.send_transaction(transaction.to_h(false))
     end
 
     def compute_transaction_hash(transaction)
-      rpc.compute_transaction_hash(transaction.to_h)
+      rpc.compute_transaction_hash(transaction.to_h(false))
     end
 
     def compute_script_hash(script)
@@ -195,7 +195,7 @@ module CKB
     #
     # @return [CKB::Types::DryRunResult]
     def dry_run_transaction(transaction)
-      result = rpc.dry_run_transaction(transaction.to_h)
+      result = rpc.dry_run_transaction(transaction.to_h(false))
       Types::DryRunResult.from_h(result)
     end
 
