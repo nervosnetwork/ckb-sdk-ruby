@@ -59,8 +59,8 @@ module CKB
       args.each do |arg|
         arg_bytes = CKB::Utils.hex_to_bin(arg)
         arg_len = arg_bytes.bytesize
-        if arg_len > 256 || arg_len == 0
-          raise InvalidArgSizeError.new("Arg size is too large")
+        if arg_len > 256
+          raise InvalidArgSizeError.new("The maximum size of arg is 256")
         else
           payload += [arg_len].pack("C") + arg_bytes
         end
