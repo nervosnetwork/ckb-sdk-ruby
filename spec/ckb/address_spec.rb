@@ -38,56 +38,56 @@ RSpec.describe CKB::Address do
 
     it "generate short payload hash160 address" do
       expect(
-        addr.generate_short_payload_hash160_address(pubkey_hash160)
+        CKB::Address.generate_short_payload_hash160_address(pubkey_hash160)
       ).to eq short_payload_hash160_address
     end
 
     it "generate full payload data address" do
       expect(
-        addr.generate_full_payload_address(2, data_hash, [pubkey_blake160])
+        CKB::Address.generate_full_payload_address(2, data_hash, [pubkey_blake160])
       ).to eq full_payload_data_address
     end
 
     it "generate full payload data address should raise error when format_type is invalid" do
       expect {
-        addr.generate_full_payload_address(3, data_hash, pubkey_blake160)
+        CKB::Address.generate_full_payload_address(3, data_hash, pubkey_blake160)
       }.to raise_error(CKB::Address::InvalidFormatTypeError)
     end
 
     it "generate full payload data address should raise error when args is not an array" do
       expect {
-        addr.generate_full_payload_address(2, data_hash, pubkey_blake160)
+        CKB::Address.generate_full_payload_address(2, data_hash, pubkey_blake160)
       }.to raise_error(CKB::Address::InvalidArgsTypeError)
     end
 
     it "generate full payload data address should raise error when args size is too large" do
       args = ["0x#{SecureRandom.hex(300)}"]
       expect {
-        addr.generate_full_payload_address(2, data_hash, args)
+        CKB::Address.generate_full_payload_address(2, data_hash, args)
       }.to raise_error(CKB::Address::InvalidArgSizeError)
     end
 
     it "generate full payload data address can accept empty arg" do
       expect {
-        addr.generate_full_payload_address(2, data_hash, ["0x"])
+        CKB::Address.generate_full_payload_address(2, data_hash, ["0x"])
       }.not_to raise_error
     end
 
     it "generate full payload type address" do
       expect(
-        addr.generate_full_payload_address(4, type_hash, [pubkey_blake160])
+        CKB::Address.generate_full_payload_address(4, type_hash, [pubkey_blake160])
       ).to eq full_payload_type_address
     end
 
     it "generate full payload data address with multiple args" do
       expect(
-        addr.generate_full_payload_address(2, data_hash, multiple_args)
+        CKB::Address.generate_full_payload_address(2, data_hash, multiple_args)
       ).to eq full_payload_data_address_with_multiple_args
     end
 
     it "generate full payload type address with multiple args" do
       expect(
-        addr.generate_full_payload_address(4, type_hash, multiple_args)
+        CKB::Address.generate_full_payload_address(4, type_hash, multiple_args)
       ).to eq full_payload_type_address_with_multiple_args
     end
 
@@ -139,31 +139,31 @@ RSpec.describe CKB::Address do
 
     it "generate short payload hash160 address" do
       expect(
-        addr.generate_short_payload_hash160_address(pubkey_hash160)
+        CKB::Address.generate_short_payload_hash160_address(pubkey_hash160)
       ).to eq short_payload_hash160_address
     end
 
     it "generate full payload data address" do
       expect(
-        addr.generate_full_payload_address("0x02", data_hash, [pubkey_blake160])
+        CKB::Address.generate_full_payload_address("0x02", data_hash, [pubkey_blake160])
       ).to eq full_payload_data_address
     end
 
     it "generate full payload type address" do
       expect(
-        addr.generate_full_payload_address("0x04", type_hash, [pubkey_blake160])
+        CKB::Address.generate_full_payload_address("0x04", type_hash, [pubkey_blake160])
       ).to eq full_payload_type_address
     end
 
     it "generate full payload data address with multiple args" do
       expect(
-        addr.generate_full_payload_address("0x02", data_hash, multiple_args)
+        CKB::Address.generate_full_payload_address("0x02", data_hash, multiple_args)
       ).to eq full_payload_data_address_with_multiple_args
     end
 
     it "generate full payload type address with multiple args" do
       expect(
-        addr.generate_full_payload_address("0x04", type_hash, multiple_args)
+        CKB::Address.generate_full_payload_address("0x04", type_hash, multiple_args)
       ).to eq full_payload_type_address_with_multiple_args
     end
 
