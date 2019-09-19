@@ -76,20 +76,14 @@ module CKB
       self.class.parse(address, mode: @mode)
     end
 
-    def parse_short_payload_hash160_address(address)
-      self.class.parse_short_payload_hash160_address(address, mode: @mode)
-    end
-
-    def parse_full_payload_address(address)
-      self.class.parse_full_payload_address(address, mode: @mode)
-    end
-
-    def self.parse_short_payload_hash160_address(address, mode: DEFAULT_MODE)
+    def self.parse_short_payload_address(address, mode: DEFAULT_MODE)
       decoded_prefix, data = ConvertAddress.decode(address)
+      format_type = data[0].unpack("H*").first
+      code_hash_index = data[1].unpack("H*").first
 
       raise InvalidPrefixError.new("Invalid prefix") if decoded_prefix != prefix(mode: mode)
-      raise InvalidFormatTypeError.new("Invalid format type") if data[0] != [TYPES[0]].pack("H*")
-      raise InvalidCodeHashIndexError.new("Invalid code hash index") if data[1] != [CODE_HASH_INDEXES[1]].pack("H*")
+      raise InvalidFormatTypeError.new("Invalid format type") if format_type != TYPES[0]
+      raise InvalidCodeHashIndexError.new("Invalid code hash index") unless CODE_HASH_INDEXES.include?(code_hash_index)
 
       CKB::Utils.bin_to_hex(data.slice(2..-1))
     end
@@ -119,13 +113,16 @@ module CKB
     end
 
     def self.parse(address, mode: DEFAULT_MODE)
-      decoded_prefix, data = ConvertAddress.decode(address)
-
-      raise InvalidPrefixError.new("Invalid prefix") if decoded_prefix != prefix(mode: mode)
-      raise InvalidFormatTypeError.new("Invalid format type") if data[0] != [TYPES[0]].pack("H*")
-      raise InvalidCodeHashIndexError.new("Invalid code hash index") if data[1] != [CODE_HASH_INDEXES[0]].pack("H*")
-
-      CKB::Utils.bin_to_hex(data.slice(2..-1))
+      _decoded_prefix, data = ConvertAddress.decode(address)
+      format_type = data[0].unpack("H*").first
+      case format_type
+      when "01"
+        parse_short_payload_address(address, mode: mode)
+      when "02", "04"
+        parse_full_payload_address(address, mode: mode)
+      else
+        raise InvalidFormatTypeError.new("Invalid format type")
+      end
     end
 
     def self.blake160(pubkey)
