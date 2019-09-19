@@ -109,7 +109,7 @@ module CKB
         offset += arg_len
       end
 
-      [format_type, code_hash, args.map { |item| CKB::Utils.bin_to_hex(item) }]
+      ["0x#{format_type}", code_hash, args.map { |item| CKB::Utils.bin_to_hex(item) }]
     end
 
     def self.parse(address, mode: DEFAULT_MODE)
