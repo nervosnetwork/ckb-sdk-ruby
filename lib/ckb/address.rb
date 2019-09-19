@@ -52,15 +52,15 @@ module CKB
     # @return [String]
     def generate_full_payload_address(format_type, code_hash, args)
       format_type = Utils.to_hex(format_type)[2..-1].rjust(2, '0')
-      raise "Invalid format type" unless TYPES[1..-1].include?(format_type)
-      raise "Args should be an array" unless args.is_a?(Array)
+      raise InvalidFormatTypeError.new("Invalid format type") unless TYPES[1..-1].include?(format_type)
+      raise InvalidArgsTypeError.new("Args should be an array") unless args.is_a?(Array)
 
       payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(code_hash)
       args.each do |arg|
         arg_bytes = CKB::Utils.hex_to_bin(arg)
         arg_len = arg_bytes.bytesize
         if arg_len > 256 || arg_len == 0
-          raise "Arg size is too large"
+          raise InvalidArgSizeError.new("Arg size is too large")
         else
           payload += [arg_len].pack("C") + arg_bytes
         end
@@ -87,9 +87,11 @@ module CKB
     def self.parse_short_payload_hash160_address(address, mode: DEFAULT_MODE)
       decoded_prefix, data = ConvertAddress.decode(address)
 
-      raise "Invalid prefix" if decoded_prefix != prefix(mode: mode)
+      raise InvalidPrefixError.new("Invalid prefix") if decoded_prefix != prefix(mode: mode)
+      raise InvalidFormatTypeError.new("Invalid format type") if data[0] != [TYPES[0]].pack("H*")
+      raise InvalidCodeHashIndexError.new("Invalid code hash index") if data[1] != [CODE_HASH_INDEXES[1]].pack("H*")
 
-      raise "Invalid type/code hash index" if data.slice(0..1) != [TYPES[0] + CODE_HASH_INDEXES[1]].pack("H*")
+      # raise "Invalid type/code hash index" if data.slice(0..1) != [TYPES[0] + CODE_HASH_INDEXES[1]].pack("H*")
 
       CKB::Utils.bin_to_hex(data.slice(2..-1))
     end
@@ -98,9 +100,8 @@ module CKB
       decoded_prefix, data = ConvertAddress.decode(address)
       format_type = data[0].unpack("H*").first
 
-      raise "Invalid prefix" if decoded_prefix != prefix(mode: mode)
-
-      raise "Invalid type format type" unless TYPES[1..-1].include?(format_type)
+      raise InvalidPrefixError.new("Invalid prefix") if decoded_prefix != prefix(mode: mode)
+      raise InvalidFormatTypeError.new("Invalid format type") unless TYPES[1..-1].include?(format_type)
 
       offset = 1
       code_hash_size = 32
@@ -122,9 +123,11 @@ module CKB
     def self.parse(address, mode: DEFAULT_MODE)
       decoded_prefix, data = ConvertAddress.decode(address)
 
-      raise "Invalid prefix" if decoded_prefix != prefix(mode: mode)
+      raise InvalidPrefixError.new("Invalid prefix") if decoded_prefix != prefix(mode: mode)
+      raise InvalidFormatTypeError.new("Invalid format type") if data[0] != [TYPES[0]].pack("H*")
+      raise InvalidCodeHashIndexError.new("Invalid code hash index") if data[1] != [CODE_HASH_INDEXES[0]].pack("H*")
 
-      raise "Invalid type/code hash index" if data.slice(0..1) != [TYPES[0] + CODE_HASH_INDEXES[0]].pack("H*")
+      # raise "Invalid type/code hash index" if data.slice(0..1) != [TYPES[0] + CODE_HASH_INDEXES[0]].pack("H*")
 
       CKB::Utils.bin_to_hex(data.slice(2..-1))
     end
@@ -155,5 +158,11 @@ module CKB
         PREFIX_MAINNET
       end
     end
+
+    class InvalidFormatTypeError < StandardError; end
+    class InvalidArgsTypeError < StandardError; end
+    class InvalidArgSizeError < StandardError; end
+    class InvalidPrefixError < StandardError; end
+    class InvalidCodeHashIndexError < StandardError; end
   end
 end
