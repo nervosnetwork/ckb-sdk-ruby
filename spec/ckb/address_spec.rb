@@ -28,37 +28,37 @@ RSpec.describe CKB::Address do
       ).to eq pubkey_blake160
     end
 
-    it "generate type1 code_hash_index 0 address" do
+    it "generate short payload blake160 address" do
       expect(
         addr.to_s
       ).to eq short_payload_blake160_address
     end
 
-    it "generate type1 code_hash_index 1 address" do
+    it "generate short payload hash160 address" do
       expect(
         addr.generate_short_payload_hash160_address(pubkey_hash160)
       ).to eq short_payload_hash160_address
     end
 
-    it "generate type2 address" do
+    it "generate full payload data address" do
       expect(
         addr.generate_full_payload_address(2, data_hash, [pubkey_blake160])
       ).to eq full_payload_data_address
     end
 
-    it "generate type2 address should raise error when format_type is invalid" do
+    it "generate full payload data address should raise error when format_type is invalid" do
       expect {
         addr.generate_full_payload_address(3, data_hash, pubkey_blake160)
       }.to raise_error(CKB::Address::InvalidFormatTypeError)
     end
 
-    it "generate type2 address should raise error when args is not an array" do
+    it "generate full payload data address should raise error when args is not an array" do
       expect {
         addr.generate_full_payload_address(2, data_hash, pubkey_blake160)
       }.to raise_error(CKB::Address::InvalidArgsTypeError)
     end
 
-    it "generate type2 address should raise error when args size is too large" do
+    it "generate full payload data address should raise error when args size is too large" do
       args = ["0x#{SecureRandom.hex(300)}"]
       expect {
         addr.generate_full_payload_address(2, data_hash, args)
@@ -71,55 +71,55 @@ RSpec.describe CKB::Address do
       }.not_to raise_error
     end
 
-    it "generate type4 address" do
+    it "generate full payload type address" do
       expect(
         addr.generate_full_payload_address(4, type_hash, [pubkey_blake160])
       ).to eq full_payload_type_address
     end
 
-    it "generate type2 address with multiple args" do
+    it "generate full payload data address with multiple args" do
       expect(
         addr.generate_full_payload_address(2, data_hash, multiple_args)
       ).to eq full_payload_data_address_with_multiple_args
     end
 
-    it "generate type4 address with multiple args" do
+    it "generate full payload type address with multiple args" do
       expect(
         addr.generate_full_payload_address(4, type_hash, multiple_args)
       ).to eq full_payload_type_address_with_multiple_args
     end
 
-    it "parse type1 code_hash_index 0 address" do
+    it "parse short payload blake160 address" do
       expect(
         addr.parse(short_payload_blake160_address)
       ).to eq pubkey_blake160
     end
 
-    it "parse type1 code_hash_index 1 address" do
+    it "parse short payload hash160 address" do
       expect(
         addr.parse_short_payload_hash160_address(short_payload_hash160_address)
       ).to eq pubkey_hash160
     end
 
-    it "parse type2 address" do
+    it "parse full payload data address" do
       expect(
         addr.parse_full_payload_address(full_payload_data_address)
       ).to eq ["02", data_hash, [pubkey_blake160]]
     end
 
-    it "parse type4 address" do
+    it "parse full payload type address" do
       expect(
         addr.parse_full_payload_address(full_payload_type_address)
       ).to eq ["04", type_hash, [pubkey_blake160]]
     end
 
-    it "parse type2 address with multiple args" do
+    it "parse full payload data address with multiple args" do
       expect(
         addr.parse_full_payload_address(full_payload_data_address_with_multiple_args)
       ).to eq ["02", data_hash, multiple_args]
     end
 
-    it "parse type4 address with multiple args" do
+    it "parse full payload type address with multiple args" do
       expect(
         addr.parse_full_payload_address(full_payload_type_address_with_multiple_args)
       ).to eq ["04", type_hash, multiple_args]
@@ -129,73 +129,73 @@ RSpec.describe CKB::Address do
   context "from pubkey hash" do
     let(:addr) { CKB::Address.new(pubkey_blake160) }
 
-    it "generate type1 code_hash_index 0 address" do
+    it "generate short payload blake160 address" do
       expect(
         addr.to_s
       ).to eq short_payload_blake160_address
     end
 
-    it "generate type1 code_hash_index 1 address" do
+    it "generate short payload hash160 address" do
       expect(
         addr.generate_short_payload_hash160_address(pubkey_hash160)
       ).to eq short_payload_hash160_address
     end
 
-    it "generate type2 address" do
+    it "generate full payload data address" do
       expect(
         addr.generate_full_payload_address("0x02", data_hash, [pubkey_blake160])
       ).to eq full_payload_data_address
     end
 
-    it "generate type4 address" do
+    it "generate full payload type address" do
       expect(
         addr.generate_full_payload_address("0x04", type_hash, [pubkey_blake160])
       ).to eq full_payload_type_address
     end
 
-    it "generate type2 address with multiple args" do
+    it "generate full payload data address with multiple args" do
       expect(
         addr.generate_full_payload_address("0x02", data_hash, multiple_args)
       ).to eq full_payload_data_address_with_multiple_args
     end
 
-    it "generate type4 address with multiple args" do
+    it "generate full payload type address with multiple args" do
       expect(
         addr.generate_full_payload_address("0x04", type_hash, multiple_args)
       ).to eq full_payload_type_address_with_multiple_args
     end
 
-    it "parse type1 code_hash_index 0 address" do
+    it "parse short payload blake160 address" do
       expect(
         addr.parse(short_payload_blake160_address)
       ).to eq pubkey_blake160
     end
 
-    it "parse type1 code_hash_index 1 address" do
+    it "parse short payload hash160 address" do
       expect(
         addr.parse_short_payload_hash160_address(short_payload_hash160_address)
       ).to eq pubkey_hash160
     end
 
-    it "parse type2 address" do
+    it "parse full payload data address" do
       expect(
         addr.parse_full_payload_address(full_payload_data_address)
       ).to eq ["02", data_hash, [pubkey_blake160]]
     end
 
-    it "parse type4 address" do
+    it "parse full payload type address" do
       expect(
         addr.parse_full_payload_address(full_payload_type_address)
       ).to eq ["04", type_hash, [pubkey_blake160]]
     end
 
-    it "parse type2 address with multiple args" do
+    it "parse full payload data address with multiple args" do
       expect(
         addr.parse_full_payload_address(full_payload_data_address_with_multiple_args)
       ).to eq ["02", data_hash, multiple_args]
     end
 
-    it "parse type4 address with multiple args" do
+    it "parse full payload type address with multiple args" do
       expect(
         addr.parse_full_payload_address(full_payload_type_address_with_multiple_args)
       ).to eq ["04", type_hash, multiple_args]
