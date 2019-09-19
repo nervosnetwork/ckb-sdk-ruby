@@ -49,20 +49,20 @@ RSpec.describe CKB::Address do
     it "generate type2 address should raise error when format_type is invalid" do
       expect {
         addr.generate_full_payload_address(3, data_hash, pubkey_blake160)
-      }.to raise_error("Invalid format type")
+      }.to raise_error(CKB::Address::InvalidFormatTypeError)
     end
 
     it "generate type2 address should raise error when args is not an array" do
       expect {
         addr.generate_full_payload_address(2, data_hash, pubkey_blake160)
-      }.to raise_error("Args should be an array")
+      }.to raise_error(CKB::Address::InvalidArgsTypeError)
     end
 
     it "generate type2 address should raise error when args size is too large" do
       args = ["0x#{SecureRandom.hex(300)}"]
       expect {
         addr.generate_full_payload_address(2, data_hash, args)
-      }.to raise_error("Arg size is too large")
+      }.to raise_error(CKB::Address::InvalidArgSizeError)
     end
 
     it "generate type4 address" do
@@ -206,7 +206,7 @@ RSpec.describe CKB::Address do
     it "failed if mainnet mode" do
       expect {
         CKB::Address.parse(short_payload_blake160_address, mode: CKB::MODE::MAINNET)
-      }.to raise_error(RuntimeError)
+      }.to raise_error(CKB::Address::InvalidPrefixError)
     end
 
     it "eq to parse" do

@@ -91,8 +91,6 @@ module CKB
       raise InvalidFormatTypeError.new("Invalid format type") if data[0] != [TYPES[0]].pack("H*")
       raise InvalidCodeHashIndexError.new("Invalid code hash index") if data[1] != [CODE_HASH_INDEXES[1]].pack("H*")
 
-      # raise "Invalid type/code hash index" if data.slice(0..1) != [TYPES[0] + CODE_HASH_INDEXES[1]].pack("H*")
-
       CKB::Utils.bin_to_hex(data.slice(2..-1))
     end
 
@@ -126,8 +124,6 @@ module CKB
       raise InvalidPrefixError.new("Invalid prefix") if decoded_prefix != prefix(mode: mode)
       raise InvalidFormatTypeError.new("Invalid format type") if data[0] != [TYPES[0]].pack("H*")
       raise InvalidCodeHashIndexError.new("Invalid code hash index") if data[1] != [CODE_HASH_INDEXES[0]].pack("H*")
-
-      # raise "Invalid type/code hash index" if data.slice(0..1) != [TYPES[0] + CODE_HASH_INDEXES[0]].pack("H*")
 
       CKB::Utils.bin_to_hex(data.slice(2..-1))
     end
