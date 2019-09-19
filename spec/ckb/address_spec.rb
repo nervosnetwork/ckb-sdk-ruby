@@ -65,6 +65,12 @@ RSpec.describe CKB::Address do
       }.to raise_error(CKB::Address::InvalidArgSizeError)
     end
 
+    it "generate full payload data address can accept empty arg" do
+      expect {
+        addr.generate_full_payload_address(2, data_hash, ["0x"])
+      }.not_to raise_error
+    end
+
     it "generate type4 address" do
       expect(
         addr.generate_full_payload_address(4, type_hash, [pubkey_blake160])
