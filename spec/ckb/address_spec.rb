@@ -10,6 +10,8 @@ RSpec.describe CKB::Address do
   let(:type_hash) { "0x1892ea40d82b53c678ff88312450bbb17e164d7a3e0a90941aa58839f56f8df2" }
   let(:pubkey_hash160) { "0xc8045f588e627a8381810923c61d0705d10b86d3" }
   let(:short_payload_blake160_address) { "ckt1qyqrdsefa43s6m882pcj53m4gdnj4k440axqswmu83" }
+  let(:short_payload_blake160_address_with_invalid_format_type) { "ckt1qvqrdsefa43s6m882pcj53m4gdnj4k440axqdxkp8n" }
+  let(:short_payload_blake160_address_with_invalid_code_hash_index) { "ckt1qypndsefa43s6m882pcj53m4gdnj4k440axq2jsln8" }
   let(:short_payload_hash160_address) { "ckt1qyquspzltz8xy75rsxqsjg7xr5rst5gtsmfsjh777d" }
   let(:full_payload_data_address) { "ckt1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhv9pkcv576ccddnn4quf2ga65xee2m26h7nq2rtnac" }
   let(:full_payload_type_address) { "ckt1qsvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xly9pkcv576ccddnn4quf2ga65xee2m26h7nqp5mnpu" }
@@ -97,31 +99,31 @@ RSpec.describe CKB::Address do
 
     it "parse short payload hash160 address" do
       expect(
-        addr.parse_short_payload_hash160_address(short_payload_hash160_address)
+        addr.parse(short_payload_hash160_address)
       ).to eq pubkey_hash160
     end
 
     it "parse full payload data address" do
       expect(
-        addr.parse_full_payload_address(full_payload_data_address)
+        addr.parse(full_payload_data_address)
       ).to eq ["02", data_hash, [pubkey_blake160]]
     end
 
     it "parse full payload type address" do
       expect(
-        addr.parse_full_payload_address(full_payload_type_address)
+        addr.parse(full_payload_type_address)
       ).to eq ["04", type_hash, [pubkey_blake160]]
     end
 
     it "parse full payload data address with multiple args" do
       expect(
-        addr.parse_full_payload_address(full_payload_data_address_with_multiple_args)
+        addr.parse(full_payload_data_address_with_multiple_args)
       ).to eq ["02", data_hash, multiple_args]
     end
 
     it "parse full payload type address with multiple args" do
       expect(
-        addr.parse_full_payload_address(full_payload_type_address_with_multiple_args)
+        addr.parse(full_payload_type_address_with_multiple_args)
       ).to eq ["04", type_hash, multiple_args]
     end
   end
@@ -173,37 +175,37 @@ RSpec.describe CKB::Address do
 
     it "parse short payload hash160 address" do
       expect(
-        addr.parse_short_payload_hash160_address(short_payload_hash160_address)
+        addr.parse(short_payload_hash160_address)
       ).to eq pubkey_hash160
     end
 
     it "parse full payload data address" do
       expect(
-        addr.parse_full_payload_address(full_payload_data_address)
+        addr.parse(full_payload_data_address)
       ).to eq ["02", data_hash, [pubkey_blake160]]
     end
 
     it "parse full payload type address" do
       expect(
-        addr.parse_full_payload_address(full_payload_type_address)
+        addr.parse(full_payload_type_address)
       ).to eq ["04", type_hash, [pubkey_blake160]]
     end
 
     it "parse full payload data address with multiple args" do
       expect(
-        addr.parse_full_payload_address(full_payload_data_address_with_multiple_args)
+        addr.parse(full_payload_data_address_with_multiple_args)
       ).to eq ["02", data_hash, multiple_args]
     end
 
     it "parse full payload type address with multiple args" do
       expect(
-        addr.parse_full_payload_address(full_payload_type_address_with_multiple_args)
+        addr.parse(full_payload_type_address_with_multiple_args)
       ).to eq ["04", type_hash, multiple_args]
     end
   end
 
   context "self.parse" do
-    it "parse type1 code_hash_index 0  address" do
+    it "parse short payload blake160 address" do
       expect(
         CKB::Address.parse(short_payload_blake160_address)
       ).to eq pubkey_blake160
@@ -213,6 +215,18 @@ RSpec.describe CKB::Address do
       expect {
         CKB::Address.parse(short_payload_blake160_address, mode: CKB::MODE::MAINNET)
       }.to raise_error(CKB::Address::InvalidPrefixError)
+    end
+
+    it "failed when format type is invalid" do
+      expect {
+        CKB::Address.parse(short_payload_blake160_address_with_invalid_format_type)
+      }.to raise_error(CKB::Address::InvalidFormatTypeError)
+    end
+
+    it "failed when code hash index is invalid" do
+      expect {
+        CKB::Address.parse(short_payload_blake160_address_with_invalid_code_hash_index)
+      }.to raise_error(CKB::Address::InvalidCodeHashIndexError)
     end
 
     it "eq to parse" do
