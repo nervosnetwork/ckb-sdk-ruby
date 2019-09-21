@@ -6,19 +6,19 @@ module CKB
       attr_accessor :lock, :type, :out_point
       attr_reader :capacity
 
-      # @param capacity [String]
+      # @param capacity [String | Integer] integer or hex number
       # @param lock [CKB::Types::Script]
       # @param type [CKB::Types::Script | nil]
       # @param out_point [CKB::Types::OutPoint | nil]
       def initialize(capacity:, lock:, type: nil, out_point: nil)
-        @capacity = capacity.to_s
+        @capacity = Utils.to_int(capacity)
         @lock = lock
         @type = type
         @out_point = out_point
       end
 
       def capacity=(value)
-        @capacity = value.to_s
+        @capacity = Utils.to_int(value)
       end
 
       # @param data [String] 0x...
@@ -35,7 +35,7 @@ module CKB
 
       def to_h
         hash = {
-          capacity: @capacity,
+          capacity: Utils.to_hex(@capacity),
           lock: @lock.to_h,
           type: @type&.to_h
         }

@@ -5,22 +5,22 @@ module CKB
     class AlertMessage
       attr_accessor :id, :priority, :notice_until, :message
 
-      # @param id [String]
-      # @param priority [String]
-      # @param notice_until [String]
+      # @param id [String | Integer] integer or hex number
+      # @param priority [String | Integer] integer or hex number
+      # @param notice_until [String] timestamp
       # @param message [String]
       def initialize(id:, priority:, notice_until:, message:)
-        @id = id
-        @priority = priority
-        @notice_until = notice_until
+        @id = Utils.to_int(id)
+        @priority = Utils.to_int(priority)
+        @notice_until = Utils.to_int(notice_until)
         @message = message
       end
 
       def to_h
         {
-          id: @id,
-          priority: @priority,
-          notice_until: @notice_until,
+          id: Utils.to_hex(@id),
+          priority: Utils.to_hex(@priority),
+          notice_until: Utils.to_hex(@notice_until),
           message: @message
         }
       end

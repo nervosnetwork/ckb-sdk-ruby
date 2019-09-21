@@ -44,7 +44,7 @@ module Bech32
     bech = bech.downcase
     # check data length
     pos = bech.rindex(SEPARATOR)
-    return nil if pos.nil? || pos < 1 || pos + 7 > bech.length || bech.length > 90
+    return nil if pos.nil? || pos < 1 || pos + 7 > bech.length
     # check valid charset
     bech[pos+1..-1].each_char{|c|return nil unless CHARSET.include?(c)}
     # split hrp and data

@@ -34,15 +34,15 @@ module CKB
     end
 
     def genesis_block
-      @genesis_block ||= get_block_by_number("0")
+      @genesis_block ||= get_block_by_number(0)
     end
 
     def genesis_block_hash
-      @genesis_block_hash ||= get_block_hash("0")
+      @genesis_block_hash ||= get_block_hash(0)
     end
 
     def get_block_hash(block_number)
-      rpc_request("get_block_hash", params: [block_number])
+      rpc_request("get_block_hash", params: [Utils.to_hex(block_number)])
     end
 
     def get_block(block_hash)
@@ -50,7 +50,7 @@ module CKB
     end
 
     def get_block_by_number(block_number)
-      rpc_request("get_block_by_number", params: [block_number.to_s])
+      rpc_request("get_block_by_number", params: [Utils.to_hex(block_number)])
     end
 
     def get_tip_header
@@ -62,15 +62,15 @@ module CKB
     end
 
     def get_cells_by_lock_hash(hash, from, to)
-      rpc_request("get_cells_by_lock_hash", params: [hash, from, to])
+      rpc_request("get_cells_by_lock_hash", params: [hash, Utils.to_hex(from), Utils.to_hex(to)])
     end
 
     def get_transaction(tx_hash)
       rpc_request("get_transaction", params: [tx_hash])
     end
 
-    def get_live_cell(out_point)
-      rpc_request("get_live_cell", params: [out_point])
+    def get_live_cell(out_point, with_data = false)
+      rpc_request("get_live_cell", params: [out_point, with_data])
     end
 
     def send_transaction(transaction)
@@ -86,7 +86,7 @@ module CKB
     end
 
     def get_epoch_by_number(number)
-      rpc_request("get_epoch_by_number", params: [number.to_s])
+      rpc_request("get_epoch_by_number", params: [Utils.to_hex(number)])
     end
 
     # @return [Hash[]]
@@ -132,7 +132,7 @@ module CKB
     end
 
     def get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: false)
-      rpc_request("get_live_cells_by_lock_hash", params: [lock_hash, page.to_s, per.to_s, reverse_order])
+      rpc_request("get_live_cells_by_lock_hash", params: [lock_hash, Utils.to_hex(page), Utils.to_hex(per), reverse_order])
     end
 
     def get_lock_hash_index_states
@@ -140,11 +140,11 @@ module CKB
     end
 
     def get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: false)
-      rpc_request("get_transactions_by_lock_hash", params: [lock_hash, page.to_s, per.to_s, reverse_order])
+      rpc_request("get_transactions_by_lock_hash", params: [lock_hash, Utils.to_hex(page), Utils.to_hex(per), reverse_order])
     end
 
-    def index_lock_hash(lock_hash, index_from: '0')
-      rpc_request("index_lock_hash", params: [lock_hash, index_from.to_s])
+    def index_lock_hash(lock_hash, index_from: 0)
+      rpc_request("index_lock_hash", params: [lock_hash, Utils.to_hex(index_from)])
     end
 
     def get_header(block_hash)
@@ -152,7 +152,7 @@ module CKB
     end
 
     def get_header_by_number(block_number)
-      rpc_request("get_header_by_number", params: [block_number.to_s])
+      rpc_request("get_header_by_number", params: [Utils.to_hex(block_number)])
     end
 
     def get_cellbase_output_capacity_details(block_hash)
@@ -165,7 +165,7 @@ module CKB
     # @param absolute [Boolean | nil]
     # @param reason [String | nil]
     def set_ban(address, command, ban_time = nil, absolute = nil, reason = nil)
-      rpc_request("set_ban", params: [address, command, ban_time, absolute, reason])
+      rpc_request("set_ban", params: [address, command, Utils.to_hex(ban_time), absolute, reason])
     end
 
     def get_banned_addresses

@@ -1,6 +1,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.21.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.20.0...v0.21.0) (2019-09-21)
+
+
+### Bug Fixes
+
+* return hex string format type ([c3c9af7](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c3c9af7))
+
+
+### Features
+
+* add cell data ([4e7d661](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4e7d661))
+* add cell info ([8b47dcb](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8b47dcb))
+* add chain_root to block header ([af3f10f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/af3f10f))
+* add errors on Address ([66dc62a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/66dc62a))
+* add to_raw_transaction_h method ([9e14366](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/9e14366))
+* add with_data to get_live_cell ([40e85d3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/40e85d3))
+* add with_hash to transaction to_h ([55abb63](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/55abb63))
+* change all number to integer and convert to hex string in RPC interface ([a1f0495](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a1f0495))
+* change to class method ([4a7ea7e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4a7ea7e))
+* implement new type addresses ([d2b7a98](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/d2b7a98))
+
+
+### BREAKING CHANGES
+
+* All number type changed to integer and will convert to hex string in RPC interface
+
+
 # [v0.20.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.19.0...v0.20.0) (2019-09-07)
 
 

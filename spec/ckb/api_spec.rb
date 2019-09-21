@@ -17,13 +17,13 @@ RSpec.describe CKB::API do
   end
 
   it "get block" do
-    genesis_block_hash = api.get_block_hash("0")
+    genesis_block_hash = api.get_block_hash(0)
     result = api.get_block(genesis_block_hash)
     expect(result).to be_a(Types::Block)
   end
 
   it "get block by number" do
-    block_number = "0"
+    block_number = 0
     result = api.get_block_by_number(block_number)
     expect(result).to be_a(Types::Block)
     expect(result.header.number).to eq block_number
@@ -32,12 +32,12 @@ RSpec.describe CKB::API do
   it "get tip header" do
     result = api.get_tip_header
     expect(result).to be_a(Types::BlockHeader)
-    expect(result.number.to_i > 0).to be true
+    expect(result.number > 0).to be true
   end
 
   it "get tip block number" do
     result = api.get_tip_block_number
-    expect(result.to_i > 0).to be true
+    expect(result > 0).to be true
   end
 
   it "get cells by lock hash" do
@@ -52,8 +52,14 @@ RSpec.describe CKB::API do
     expect(result.transaction.hash).to eq tx.hash
   end
 
-  it "get live cell" do
-    out_point = Types::OutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: "0")
+  it "get live cell with data" do
+    out_point = Types::OutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: 0)
+    result = api.get_live_cell(out_point, true)
+    expect(result).not_to be nil
+  end
+
+  it "get live cell without data" do
+    out_point = Types::OutPoint.new(tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a", index: 0)
     result = api.get_live_cell(out_point)
     expect(result).not_to be nil
   end
@@ -81,7 +87,7 @@ RSpec.describe CKB::API do
     number = 0
     result = api.get_epoch_by_number(number)
     expect(result).to be_a(Types::Epoch)
-    expect(result.number).to eq number.to_s
+    expect(result.number).to eq number
   end
 
   it "local node info" do
@@ -97,13 +103,13 @@ RSpec.describe CKB::API do
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).to be_a(Types::TxPoolInfo)
-    expect(result.pending.to_i >= 0).to be true
+    expect(result.pending >= 0).to be true
   end
 
   it "get blockchain info" do
     result = api.get_blockchain_info
     expect(result).to be_a(Types::ChainInfo)
-    expect(result.epoch.to_i >= 0).to be true
+    expect(result.epoch >= 0).to be true
   end
 
   it "get peers state" do
@@ -121,7 +127,7 @@ RSpec.describe CKB::API do
 
     result = api.dry_run_transaction(tx)
     expect(result).to be_a(Types::DryRunResult)
-    expect(result.cycles.to_i >= 0).to be true
+    expect(result.cycles >= 0).to be true
   end
 
   context "indexer RPCs" do
@@ -152,27 +158,27 @@ RSpec.describe CKB::API do
   end
 
   it "get block header" do
-    block_hash = api.get_block_hash("1")
+    block_hash = api.get_block_hash(1)
     result = api.get_header(block_hash)
     expect(result).to be_a(Types::BlockHeader)
-    expect(result.number.to_i > 0).to be true
+    expect(result.number > 0).to be true
   end
 
   it "get block header by number" do
-    block_number = "1"
+    block_number = 1
     result = api.get_header_by_number(block_number)
     expect(result).to be_a(Types::BlockHeader)
     expect(result.number).to eq block_number
   end
 
   it "get block reward by block hash" do
-    block_hash = api.get_block_hash("1")
+    block_hash = api.get_block_hash(1)
     result = api.get_cellbase_output_capacity_details(block_hash)
     expect(result).to be_a(Types::BlockReward)
   end
 
   it "set ban" do
-    params = ["192.168.0.2", "insert", "1840546800000", true, "test set_ban rpc"]
+    params = ["192.168.0.2", "insert", 1840546800000, true, "test set_ban rpc"]
     result = api.set_ban(*params)
     expect(result).to be nil
   end

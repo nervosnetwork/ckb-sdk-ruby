@@ -9,7 +9,7 @@ RSpec.describe CKB::RPC do
   it "genesis block" do
     result = rpc.genesis_block
     expect(result).not_to be nil
-    expect(result[:header][:number]).to eq "0"
+    expect(result[:header][:number]).to eq "0x0"
   end
 
   it "genesis block hash" do
@@ -18,32 +18,31 @@ RSpec.describe CKB::RPC do
   end
 
   it "get block" do
-    genesis_block_hash = rpc.get_block_hash("0")
+    genesis_block_hash = rpc.get_block_hash(0)
     result = rpc.get_block(genesis_block_hash)
     expect(result).not_to be nil
     expect(result[:header][:hash]).to eq genesis_block_hash
   end
 
   it "get block by number" do
-    block_number = "0"
-    result = rpc.get_block_by_number(block_number)
+    result = rpc.get_block_by_number(0)
     expect(result).not_to be nil
-    expect(result[:header][:number]).to eq block_number
+    expect(result[:header][:number]).to eq "0x0"
   end
 
   it "get tip header" do
     result = rpc.get_tip_header
     expect(result).not_to be nil
-    expect(result[:number].to_i > 0).to be true
+    expect(result[:number].hex > 0).to be true
   end
 
   it "get tip block number" do
     result = rpc.get_tip_block_number
-    expect(result.to_i > 0).to be true
+    expect(result.hex > 0).to be true
   end
 
   it "get cells by lock hash" do
-    result = rpc.get_cells_by_lock_hash(lock_hash, '0', '100')
+    result = rpc.get_cells_by_lock_hash(lock_hash, 0, 100)
     expect(result).not_to be nil
   end
 
@@ -54,10 +53,19 @@ RSpec.describe CKB::RPC do
     expect(result[:transaction][:hash]).to eq tx[:hash]
   end
 
-  it "get live cell" do
+  it "get live cell with data" do
     out_point = {
       tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a",
-      index: "0"
+      index: "0x0"
+    }
+    result = rpc.get_live_cell(out_point, true)
+    expect(result).not_to be nil
+  end
+
+  it "get live cell without data" do
+    out_point = {
+      tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a",
+      index: "0x0"
     }
     result = rpc.get_live_cell(out_point)
     expect(result).not_to be nil
@@ -84,10 +92,10 @@ RSpec.describe CKB::RPC do
   end
 
   it "get epoch by number" do
-    number = '0'
+    number = 0
     result = rpc.get_epoch_by_number(number)
     expect(result).to be_a(Hash)
-    expect(result[:number]).to eq number
+    expect(result[:number].hex).to eq number
   end
 
   context "indexer RPCs" do
@@ -118,25 +126,25 @@ RSpec.describe CKB::RPC do
   end
 
   it "get block header" do
-    block_hash = rpc.get_block_hash("1")
+    block_hash = rpc.get_block_hash(1)
     result = rpc.get_header(block_hash)
-    expect(result[:number].to_i > 0).to be true
+    expect(result[:number].hex > 0).to be true
   end
 
   it "get block header by number" do
-    block_number = "1"
+    block_number = 1
     result = rpc.get_header_by_number(block_number)
-    expect(result[:number]).to eq block_number
+    expect(result[:number].hex).to eq block_number
   end
 
   it "get block reward by block hash" do
-    block_hash = rpc.get_block_hash("1")
+    block_hash = rpc.get_block_hash(1)
     result = rpc.get_cellbase_output_capacity_details(block_hash)
     expect(result).not_to be nil
   end
 
   it "set ban" do
-    params = ["192.168.0.2", "insert", "1840546800000", true, "test set_ban rpc"]
+    params = ["192.168.0.2", "insert", 1840546800000, true, "test set_ban rpc"]
     result = rpc.set_ban(*params)
     expect(result).to be nil
   end

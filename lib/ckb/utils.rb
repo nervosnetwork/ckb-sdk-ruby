@@ -22,5 +22,27 @@ module CKB
     def self.byte_to_shannon(capacity)
       capacity * (10**8)
     end
+
+    # @param num [Integer | String]
+    def self.to_int(num)
+      return if num.nil?
+
+      return num if num.is_a?(Integer)
+
+      return num.hex if num.is_a?(String) && num.start_with?("0x")
+
+      raise "Can't convert to int!"
+    end
+
+    # @param num [Integer | String]
+    def self.to_hex(num)
+      return if num.nil?
+
+      return "0x" + num.to_s(16) if num.is_a?(Integer)
+
+      return num if num.is_a?(String) && num.start_with?("0x")
+
+      raise "Can't convert to hex string!"
+    end
   end
 end

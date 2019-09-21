@@ -34,7 +34,7 @@ module CKB
         secp_group_cell_transaction = genesis_block.transactions[1]
         secp_group_out_point = Types::OutPoint.new(
           tx_hash: secp_group_cell_transaction.hash,
-          index: "0"
+          index: 0
         )
 
         secp_cell_type_hash = system_cell_transaction.outputs[1].type.compute_hash
@@ -43,7 +43,7 @@ module CKB
 
         dao_out_point = Types::OutPoint.new(
           tx_hash: system_cell_transaction.hash,
-          index: "2"
+          index: 2
         )
         dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[2])
         dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
@@ -65,16 +65,16 @@ module CKB
     end
 
     def genesis_block
-      @genesis_block ||= get_block_by_number("0")
+      @genesis_block ||= get_block_by_number(0)
     end
 
     def genesis_block_hash
-      @genesis_block_hash ||= get_block_hash("0")
+      @genesis_block_hash ||= get_block_hash(0)
     end
 
     # @return [String | Integer]
     def get_block_hash(block_number)
-      rpc.get_block_hash(block_number.to_s)
+      rpc.get_block_hash(block_number)
     end
 
     # @param block_hash [String] 0x...
@@ -89,7 +89,7 @@ module CKB
     #
     # @return [CKB::Types::Block]
     def get_block_by_number(block_number)
-      block_h = rpc.get_block_by_number(block_number.to_s)
+      block_h = rpc.get_block_by_number(block_number)
       Types::Block.from_h(block_h)
     end
 
@@ -101,7 +101,7 @@ module CKB
 
     # @return [String]
     def get_tip_block_number
-      rpc.get_tip_block_number
+      Utils.to_int(rpc.get_tip_block_number)
     end
 
     # @param hash [String] 0x...
@@ -110,7 +110,7 @@ module CKB
     #
     # @return [CKB::Types::Output[]]
     def get_cells_by_lock_hash(hash, from, to)
-      outputs = rpc.get_cells_by_lock_hash(hash, from.to_s, to.to_s)
+      outputs = rpc.get_cells_by_lock_hash(hash, from, to)
       outputs.map { |output| Types::Output.from_h(output) }
     end
 
@@ -123,10 +123,11 @@ module CKB
     end
 
     # @param out_point [CKB::Types::OutPoint]
+    # @param with_data [Boolean]
     #
     # @return [CKB::Types::CellWithStatus]
-    def get_live_cell(out_point)
-      cell_h = rpc.get_live_cell(out_point.to_h)
+    def get_live_cell(out_point, with_data = false)
+      cell_h = rpc.get_live_cell(out_point.to_h, with_data)
       Types::CellWithStatus.from_h(cell_h)
     end
 
@@ -134,11 +135,11 @@ module CKB
     #
     # @return [String] tx_hash
     def send_transaction(transaction)
-      rpc.send_transaction(transaction.to_h)
+      rpc.send_transaction(transaction.to_raw_transaction_h)
     end
 
     def compute_transaction_hash(transaction)
-      rpc.compute_transaction_hash(transaction.to_h)
+      rpc.compute_transaction_hash(transaction.to_raw_transaction_h)
     end
 
     def compute_script_hash(script)
@@ -194,7 +195,7 @@ module CKB
     #
     # @return [CKB::Types::DryRunResult]
     def dry_run_transaction(transaction)
-      result = rpc.dry_run_transaction(transaction.to_h)
+      result = rpc.dry_run_transaction(transaction.to_raw_transaction_h)
       Types::DryRunResult.from_h(result)
     end
 
@@ -245,7 +246,7 @@ module CKB
     # @param index_from [String]
     #
     # @return [Types::LockHashIndexState]
-    def index_lock_hash(lock_hash, index_from: "0")
+    def index_lock_hash(lock_hash, index_from: 0)
       state = rpc.index_lock_hash(lock_hash, index_from: index_from)
       Types::LockHashIndexState.from_h(state)
     end
@@ -262,7 +263,7 @@ module CKB
     #
     # @return [CKB::Types::BlockHeader]
     def get_header_by_number(block_number)
-      block_header_h = rpc.get_header_by_number(block_number.to_s)
+      block_header_h = rpc.get_header_by_number(block_number)
       Types::BlockHeader.from_h(block_header_h)
     end
 

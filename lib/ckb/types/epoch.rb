@@ -5,28 +5,28 @@ module CKB
     class Epoch
       attr_accessor :difficulty, :length, :number, :start_number
 
-      # @param difficulty [String] 0x...
-      # @param length [String] number
-      # @param number [String] number
-      # @param start_number [Sring] number
+      # @param difficulty [String | Integer] integer or hex number
+      # @param length [String | Integer] integer or hex number
+      # @param number [String | Integer] integer or hex number
+      # @param start_number [String | Integer] integer or hex number
       def initialize(
         difficulty:,
         length:,
         number:,
         start_number:
       )
-        @difficulty = difficulty
-        @length = length
-        @number = number
-        @start_number = start_number
+        @difficulty = Utils.to_int(difficulty)
+        @length = Utils.to_int(length)
+        @number = Utils.to_int(number)
+        @start_number = Utils.to_int(start_number)
       end
 
       def to_h
         {
-          difficulty: @difficulty,
-          length: @length,
-          number: @number,
-          start_number: @start_number
+          difficulty: Utils.to_hex(@difficulty),
+          length: Utils.to_hex(@length),
+          number: Utils.to_hex(@number),
+          start_number: Utils.to_hex(@start_number)
         }
       end
 

@@ -35,4 +35,44 @@ RSpec.describe CKB::Utils do
     prefix_hex = "0x#{hex}"
     expect(Utils.bin_to_hex(bin)).to eq prefix_hex
   end
+
+  context "to_int" do
+    it "using integer" do
+      expect(
+        Utils.to_int(10)
+      ).to eq 10
+    end
+
+    it "using hex string" do
+      expect(
+        Utils.to_int("0x10")
+      ).to eq 16
+    end
+
+    it "empty string" do
+      expect {
+        Utils.to_int("")
+      }.to raise_error "Can't convert to int!"
+    end
+  end
+
+  context "to_hex" do
+    it "using integer" do
+      expect(
+        Utils.to_hex(10)
+      ).to eq "0xa"
+    end
+
+    it "using hex string" do
+      expect(
+        Utils.to_hex("0x10")
+      ).to eq "0x10"
+    end
+
+    it "using string without 0x" do
+      expect {
+        Utils.to_hex("10")
+      }.to raise_error "Can't convert to hex string!"
+    end
+  end
 end

@@ -1,26 +1,22 @@
-require "pry"
 RSpec.describe CKB::Types::Transaction do
   let(:tx_to_sign_hash) do
     {
-      "version": "0",
+      "version": "0x0",
       "cell_deps":[],
       "header_deps":[],
       "inputs": [
         {
           "args": [],
           "previous_output": {
-            "block_hash": nil,
-            "cell": {
-              "tx_hash": "0xa80a8e01d45b10e1cbc8a2557c62ba40edbdc36cd63a31fc717006ca7b157b50",
-              "index": "0"
-            }
+            "tx_hash": "0xa80a8e01d45b10e1cbc8a2557c62ba40edbdc36cd63a31fc717006ca7b157b50",
+            "index": "0x0"
           },
-          "since": "0"
+          "since": "0x0"
         }
       ],
       "outputs": [
         {
-          "capacity": "100000000000",
+          "capacity": "0x174876e800",
           "lock": {
             "code_hash": "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
             "args": [
@@ -31,7 +27,7 @@ RSpec.describe CKB::Types::Transaction do
           "data": "0x"
         },
         {
-          "capacity": "4900000000000",
+          "capacity": "0x474dec26800",
           "lock": {
             "code_hash": "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
             "args": [
@@ -69,34 +65,28 @@ RSpec.describe CKB::Types::Transaction do
   context "sign with witness (dao tx)" do
     let(:tx_to_sign_hash) do
       {
-        version: "0",
+        version: "0x0",
         cell_deps:[],
         header_deps:[],
         inputs: [
         {
           previous_output: {
-            block_hash: "0x23abf65800d048ed9e3eb67e0258e0d616148e9cb1116ceee532a202b4c30e09",
-                  cell: {
-              tx_hash: "0x91fcfd61f420c1090aeded6b6d91d5920a279fe53ec34353afccc59264eeddd4",
-                index: "0"
-            }
+            tx_hash: "0x91fcfd61f420c1090aeded6b6d91d5920a279fe53ec34353afccc59264eeddd4",
+            index: "0x0"
           },
-                    since: "113"
+          since: "0x71"
         },
         {
           previous_output: {
-            block_hash: nil,
-                  cell: {
-              tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031",
-                index: "0"
-            }
+            tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031",
+            index: "0x0"
           },
-                    since: "0"
+          since: "0x0"
         }
       ],
       outputs: [
       {
-        capacity: "10000009045634",
+        capacity: "0x9184efca682",
             lock: {
           code_hash: "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd",
                args: [
@@ -149,15 +139,15 @@ RSpec.describe CKB::Types::Transaction do
   context "generate tx_hash" do
     let(:specific_tx_h) do
       {
-        :version=>"0",
+        :version=>"0x0",
         :cell_deps=>[],
         :header_deps=>[],
         :inputs=>
           [{:previous_output=>
-              {:tx_hash=>"0x0000000000000000000000000000000000000000000000000000000000000000", :index=>"4294967295"},
-            :since=>"1000"}],
+              {:tx_hash=>"0x0000000000000000000000000000000000000000000000000000000000000000", :index=>"0xffffffff"},
+            :since=>"0x3e8"}],
         :outputs=>
-          [{:capacity=>"125488283274",
+          [{:capacity=>"0x1d37af3e8a",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0x0001acc717d6424ee6efdd84e0c5befb8e44a89c"],
@@ -173,23 +163,23 @@ RSpec.describe CKB::Types::Transaction do
 
     let(:one_cell_dep_tx_h) do
       {
-        :version=>"0",
+        :version=>"0x0",
         :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0"},
+          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
             :dep_type=>"dep_group"}],
         :header_deps=>[],
         :inputs=>
           [{:previous_output=>
-              {:tx_hash=>"0x1a565d7d24705b65aea74e7c5cdbbdf43f00c1a0b9f7e11e4bde0f54321bb429", :index=>"1"},
-            :since=>"0"}],
+              {:tx_hash=>"0x1a565d7d24705b65aea74e7c5cdbbdf43f00c1a0b9f7e11e4bde0f54321bb429", :index=>"0x1"},
+            :since=>"0x0"}],
         :outputs=>
-          [{:capacity=>"100000000000",
+          [{:capacity=>"0x174876e800",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0xf485c551e77fc77750115a36b7d2033fbab00951"],
                :hash_type=>"type"},
             :type=>nil},
-           {:capacity=>"98624000000000",
+           {:capacity=>"0x59b2b07c8000",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
@@ -205,23 +195,23 @@ RSpec.describe CKB::Types::Transaction do
 
     let(:multiple_cell_dep_tx_h) do
       {
-        :version=>"0",
+        :version=>"0x0",
         :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0"},
+          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
             :dep_type=>"dep_group"}],
         :header_deps=>[],
         :inputs=>
           [{:previous_output=>
-              {:tx_hash=>"0x1a565d7d24705b65aea74e7c5cdbbdf43f00c1a0b9f7e11e4bde0f54321bb429", :index=>"1"},
-            :since=>"0"}],
+              {:tx_hash=>"0x1a565d7d24705b65aea74e7c5cdbbdf43f00c1a0b9f7e11e4bde0f54321bb429", :index=>"0x1"},
+            :since=>"0x0"}],
         :outputs=>
-          [{:capacity=>"100000000000",
+          [{:capacity=>"0x174876e800",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0xf485c551e77fc77750115a36b7d2033fbab00951"],
                :hash_type=>"type"},
             :type=>nil},
-           {:capacity=>"98624000000000",
+           {:capacity=>"0x59b2b07c8000",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
@@ -237,20 +227,20 @@ RSpec.describe CKB::Types::Transaction do
 
     let(:code_dep_type_tx_h) do
       {
-        :version=>"0",
+        :version=>"0x0",
         :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0x0fb4945d52baf91e0dee2a686cdd9d84cad95b566a1d7409b970ee0a0f364f60", :index=>"2"},
+          [{:out_point=>{:tx_hash=>"0x0fb4945d52baf91e0dee2a686cdd9d84cad95b566a1d7409b970ee0a0f364f60", :index=>"0x2"},
             :dep_type=>"code"},
-           {:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0"},
+           {:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
             :dep_type=>"dep_group"}],
         :header_deps=>
           ["0x28a548494dfc02a952f5ae25bf2886abb7ba5a8092bd139700641b4979a57217", "0x3bff5d655b9e309f0d0bfea2b792e720a88df702a5724dbb9beef92516827b3f"],
         :inputs=>
           [{:previous_output=>
-              {:tx_hash=>"0x9d1bf801b235ce62812844f01381a070c0cc72876364861e00492eac1d8b54e7", :index=>"0"},
-            :since=>"67744"}],
+              {:tx_hash=>"0x9d1bf801b235ce62812844f01381a070c0cc72876364861e00492eac1d8b54e7", :index=>"0x0"},
+            :since=>"0x108a0"}],
         :outputs=>
-          [{:capacity=>"100533620439",
+          [{:capacity=>"0x1768454ed7",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
@@ -267,19 +257,19 @@ RSpec.describe CKB::Types::Transaction do
 
     let(:has_type_script_tx_h) do
       {
-        :version=>"0",
+        :version=>"0x0",
         :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0"},
+          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
             :dep_type=>"dep_group"},
-           {:out_point=>{:tx_hash=>"0x0fb4945d52baf91e0dee2a686cdd9d84cad95b566a1d7409b970ee0a0f364f60", :index=>"2"},
+           {:out_point=>{:tx_hash=>"0x0fb4945d52baf91e0dee2a686cdd9d84cad95b566a1d7409b970ee0a0f364f60", :index=>"0x2"},
             :dep_type=>"code"}],
         :header_deps=>[],
         :inputs=>
           [{:previous_output=>
-              {:tx_hash=>"0x31f695263423a4b05045dd25ce6692bb55d7bba2965d8be16b036e138e72cc65", :index=>"1"},
-            :since=>"0"}],
+              {:tx_hash=>"0x31f695263423a4b05045dd25ce6692bb55d7bba2965d8be16b036e138e72cc65", :index=>"0x1"},
+            :since=>"0x0"}],
         :outputs=>
-          [{:capacity=>"100000000000",
+          [{:capacity=>"0x174876e800",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
@@ -288,7 +278,7 @@ RSpec.describe CKB::Types::Transaction do
               {:code_hash=>"0xece45e0979030e2f8909f76258631c42333b1e906fd9701ec3600a464a90b8f6",
                :args=>[],
                :hash_type=>"data"}},
-           {:capacity=>"98824000000000",
+           {:capacity=>"0x59e1416a5000",
             :lock=>
               {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
                :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],

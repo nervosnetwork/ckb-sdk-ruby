@@ -49,12 +49,12 @@ module CKB
       current_from = 0
       while current_from <= to
         current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from.to_s, current_to.to_s)
+        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
         if skip_data_and_type
           cells.each do |cell|
-            tx = api.get_transaction(cell.out_point.tx_hash).transaction
-            output = tx.outputs[cell.out_point.index.to_i]
-            output_data = tx.outputs_data[cell.out_point.index.to_i]
+            live_cell = api.get_live_cell(cell.out_point, true)
+            output = live_cell.cell.output
+            output_data = live_cell.cell.data.content
             results << cell if (output_data.nil? || output_data == "0x") && output.type.nil?
           end
         else
@@ -187,7 +187,7 @@ module CKB
       tx_hash = tx.compute_hash
       send_transaction(tx.sign(key, tx_hash))
 
-      Types::OutPoint.new(tx_hash: tx_hash, index: "0")
+      Types::OutPoint.new(tx_hash: tx_hash, index: 0)
     end
 
     # @param out_point [CKB::Type::OutPoint]
@@ -206,9 +206,9 @@ module CKB
         raise "Transaction is not commtted yet!"
       end
       deposit_block = api.get_block(tx.tx_status.block_hash).header
-      deposit_block_number = deposit_block.number.to_i
+      deposit_block_number = deposit_block.number
       current_block = api.get_tip_header
-      current_block_number = current_block.number.to_i
+      current_block_number = current_block.number
 
       if deposit_block_number == current_block_number
         raise "You need to at least wait for 1 block before generating DAO withdraw transaction!"
@@ -218,7 +218,8 @@ module CKB
       windowleft = DAO_MATURITY_BLOCKS if windowleft < DAO_MATURITY_BLOCKS
       since = current_block_number + windowleft + 1
 
-      output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash).to_i
+      # a hex string
+      output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash)
 
       dup_out_point = out_point.dup
       new_out_point = Types::OutPoint.new(
@@ -301,7 +302,7 @@ args = #{lock.args}
       get_unspent_cells.each do |cell|
         input = Types::Input.new(
           previous_output: cell.out_point,
-          since: "0"
+          since: 0
         )
         inputs << input
         witnesses << Types::Witness.new(data: [])

@@ -14,7 +14,7 @@ module CKB
 
       def to_h
         {
-          created_by: @created_by,
+          created_by: @created_by.to_h,
           consumed_by: @consumed_by
         }
       end

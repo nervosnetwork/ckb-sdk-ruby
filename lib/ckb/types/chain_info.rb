@@ -6,9 +6,9 @@ module CKB
       attr_accessor :is_initial_block_download, :epoch, :difficulty, :median_time, :chain, :alerts
 
       # @param is_initialize_block_download [Boolean]
-      # @param epoch [String] number
-      # @param difficulty [String] 0x...
-      # @param median_time [String] timestamp
+      # @param epoch [String | Integer] integer or hex number
+      # @param difficulty [String | Integer] integer or hex number
+      # @param median_time [String | Integer] timestamp
       # @param chain [String]
       # @param alerts [Types::AlertMessage]
       def initialize(
@@ -20,9 +20,9 @@ module CKB
         alerts:
       )
         @is_initial_block_download = is_initial_block_download
-        @epoch = epoch
-        @difficulty = difficulty
-        @median_time = median_time
+        @epoch = Utils.to_int(epoch)
+        @difficulty = Utils.to_int(difficulty)
+        @median_time = Utils.to_int(median_time)
         @chain = chain
         @alerts = alerts
       end
@@ -30,11 +30,11 @@ module CKB
       def to_h
         {
           is_initial_block_download: @is_initial_block_download,
-          epoch: @epoch,
-          difficulty: @difficulty,
-          median_time: @median_time,
+          epoch: Utils.to_hex(@epoch),
+          difficulty: Utils.to_hex(@difficulty),
+          median_time: Utils.to_hex(@median_time),
           chain: @chain,
-          alerts: @alerts
+          alerts: @alerts.map(&:to_h)
         }
       end
 
