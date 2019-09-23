@@ -108,10 +108,10 @@ module CKB
     # @param from [String | Integer]
     # @param to [String | Integer]
     #
-    # @return [CKB::Types::Output[]]
+    # @return [CKB::Types::CellOutputWithOutPoint[]]
     def get_cells_by_lock_hash(hash, from, to)
       outputs = rpc.get_cells_by_lock_hash(hash, from, to)
-      outputs.map { |output| Types::Output.from_h(output) }
+      outputs.map { |output| Types::CellOutputWithOutPoint.from_h(output) }
     end
 
     # @param tx_hash [String]
