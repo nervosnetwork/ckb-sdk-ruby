@@ -161,22 +161,22 @@ RSpec.describe CKB::RPC do
     end
 
     it "get_block_template with bytes_limit" do
-      result = rpc.get_block_template(bytes_limit: 1000)
+      result = rpc.get_block_template(1000)
       expect(result).not_to be nil
     end
 
     it "get_block_template with proposals_limit" do
-      result = rpc.get_block_template(proposals_limit: 1000)
+      result = rpc.get_block_template(1000)
       expect(result).not_to be nil
     end
 
     it "get_block_template with max_version" do
-      result = rpc.get_block_template(max_version: 1000)
+      result = rpc.get_block_template(1000)
       expect(result).not_to be nil
     end
 
     it "get_block_template with bytes_limit, proposals_limit and max_version" do
-      result = rpc.get_block_template(max_version: 1000)
+      result = rpc.get_block_template(1000)
       expect(result).not_to be nil
     end
   end
