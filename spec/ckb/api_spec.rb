@@ -188,4 +188,31 @@ RSpec.describe CKB::API do
     expect(result).not_to be nil
     expect(result).to all(be_a(Types::BannedAddress))
   end
+
+  context "miner APIs" do
+    it "get_block_template" do
+      result = api.get_block_template
+      expect(result).not_to be nil
+    end
+
+    it "get_block_template with bytes_limit" do
+      result = api.get_block_template(bytes_limit: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "get_block_template with proposals_limit" do
+      result = api.get_block_template(proposals_limit: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "get_block_template with max_version" do
+      result = api.get_block_template(max_version: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "get_block_template with bytes_limit, proposals_limit and max_version" do
+      result = api.get_block_template(max_version: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+  end
 end
