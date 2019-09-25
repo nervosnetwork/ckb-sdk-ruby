@@ -172,6 +172,14 @@ module CKB
       rpc_request("get_banned_addresses")
     end
 
+    # @param bytes_limit [String | Integer] integer or hex number
+    # @param proposals_limit [String | Integer] integer or hex number
+    # @param max_version [String | Integer] integer or hex number
+    # @return block_template [Hash]
+    def get_block_template(bytes_limit = nil, proposals_limit = nil, max_version = nil)
+      rpc_request("get_block_template", params: [Utils.to_hex(bytes_limit), Utils.to_hex(proposals_limit), Utils.to_hex(max_version)])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
