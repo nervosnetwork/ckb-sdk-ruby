@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 RSpec.describe CKB::RPC do
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]

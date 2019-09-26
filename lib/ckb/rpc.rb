@@ -180,6 +180,10 @@ module CKB
       rpc_request("get_block_template", params: [Utils.to_hex(bytes_limit), Utils.to_hex(proposals_limit), Utils.to_hex(max_version)])
     end
 
+    def submit_block(work_id = nil, block_h = nil)
+      rpc_request("submit_block", params: [work_id, block_h])
+    end
+
     def inspect
       "\#<RPC@#{uri}>"
     end
