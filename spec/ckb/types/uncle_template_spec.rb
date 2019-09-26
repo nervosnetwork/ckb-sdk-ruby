@@ -29,7 +29,7 @@ RSpec.describe CKB::Types::UncleTemplate do
     expect(CKB::Types::UncleTemplate.from_h(uncle_template_h)).to be_a(CKB::Types::UncleTemplate)
   end
 
-  it "block_template's attributes value should equal with block_template_h" do
+  it "uncle_template's attributes value should equal with block_template_h" do
     number_keys = %i(hash required proposals header)
     number_keys.each do |key|
       expect(uncle_template.to_h[key]).to eq uncle_template_h[key]
