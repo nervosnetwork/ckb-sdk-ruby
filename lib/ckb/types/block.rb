@@ -25,6 +25,15 @@ module CKB
         }
       end
 
+      def to_raw_block_h
+        {
+          uncles: uncles.map(&:to_h),
+          proposals: proposals,
+          transactions: transactions.map(&:to_raw_transaction_h),
+          header: header.to_h.reject { |key| key == :hash }
+        }
+      end
+
       def self.from_h(hash)
         return if hash.nil?
 

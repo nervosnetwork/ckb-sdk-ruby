@@ -299,6 +299,14 @@ module CKB
       Types::BlockTemplate.from_h(block_template_h)
     end
 
+
+    # @param work_id [String | Integer] integer or hex number
+    # @param raw_block_h [hash]
+    # @return block_hash [String]
+    def submit_block(work_id: nil, raw_block_h: nil)
+      rpc.submit_block(work_id, raw_block_h)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
