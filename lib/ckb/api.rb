@@ -290,6 +290,15 @@ module CKB
       result.map { |addr| Types::BannedAddress.from_h(addr) }
     end
 
+    # @param bytes_limit [String | Integer] integer or hex number
+    # @param proposals_limit [String | Integer] integer or hex number
+    # @param max_version [String | Integer] integer or hex number
+    # @return block_template [BlockTemplate]
+    def get_block_template(bytes_limit: nil, proposals_limit: nil, max_version: nil)
+      block_template_h = rpc.get_block_template(bytes_limit, proposals_limit, max_version)
+      Types::BlockTemplate.from_h(block_template_h)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
