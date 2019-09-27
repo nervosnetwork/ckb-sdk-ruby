@@ -9,11 +9,23 @@ module CKB
       def initialize(script)
         @code_hash_serializer = CodeHashSerializer.new(script.code_hash)
         @hash_type_serializer = HashTypeSerializer.new(script.hash_type)
-        @args_serializer = DynVecSerializer.new(script.args, ArgSerializer)
+        args = init_args(script)
+        @args_serializer = FixVecSerializer.new(args.scan(/../), ByteSerializer)
         @items_count = 3
       end
 
       private
+
+      def init_args(script)
+        args = script.args
+        if args
+          args = args.start_with?("0x") ? args[2..-1] : args
+        else
+          args = ""
+        end
+
+        args
+      end
 
       attr_reader :code_hash_serializer, :hash_type_serializer, :args_serializer, :items_count
 
