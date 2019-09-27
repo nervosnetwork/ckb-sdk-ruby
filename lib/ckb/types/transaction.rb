@@ -39,15 +39,14 @@ module CKB
         raise "Invalid number of witnesses!" if witnesses.length < inputs.length
 
         signed_witnesses = witnesses.map do |witness|
-          old_data = witness.data || []
+          old_datum = witness
           blake2b = CKB::Blake2b.new
           blake2b.update(Utils.hex_to_bin(tx_hash))
-          old_data.each do |datum|
-            blake2b.update(Utils.hex_to_bin(datum))
-          end
+          blake2b.update(Utils.hex_to_bin(old_datum))
           message = blake2b.hexdigest
-          data = [key.sign_recoverable(message)] + old_data
-          Types::Witness.from_h(data: data)
+          data = key.sign_recoverable(message) + old_datum[2..-1]
+
+          data
         end
 
         self.class.new(

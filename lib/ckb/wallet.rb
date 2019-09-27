@@ -145,7 +145,7 @@ module CKB
         lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
         type: Types::Script.new(
           code_hash: api.dao_code_hash,
-          args: []
+          args: "0x"
         )
       )
       output_data = "0x"
@@ -247,7 +247,7 @@ module CKB
         outputs: outputs,
         outputs_data: outputs_data,
         witnesses: [
-          Types::Witness.new(data: ["0x0000000000000000"])
+          "0x0000000000000000"
         ]
       )
       tx.sign(key, tx.compute_hash)
@@ -305,7 +305,7 @@ args = #{lock.args}
           since: 0
         )
         inputs << input
-        witnesses << Types::Witness.new(data: [])
+        witnesses << "0x"
         input_capacities += cell.capacity.to_i
 
         diff = input_capacities - total_capacities
