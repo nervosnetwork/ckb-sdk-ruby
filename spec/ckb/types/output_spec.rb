@@ -3,7 +3,7 @@ RSpec.describe CKB::Types::Output do
     {
       "capacity": "0x174876e800",
       "lock": {
-          "args": ["0x36c329ed630d6ce750712a477543672adab57f4c"],
+          "args": "0x36c329ed630d6ce750712a477543672adab57f4c",
           "code_hash": "0x28e83a1277d48add8e72fadaa9248559e1b632bab2bd60b27955ebc4c03800a5",
           "hash_type": "data"
       },
@@ -40,7 +40,7 @@ RSpec.describe CKB::Types::Output do
 
     it "with type script" do
       type_script = CKB::Types::Script.new(
-        args: [],
+        args: "0x",
         code_hash: "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
       )
       output.instance_variable_set(:@type, type_script)
