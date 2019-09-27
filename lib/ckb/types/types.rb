@@ -30,6 +30,10 @@ require_relative "banned_address"
 require_relative "cell_dep"
 require_relative "cell_data"
 require_relative "cell_info"
+require_relative "uncle_template"
+require_relative "transaction_template"
+require_relative "cellbase_template"
+require_relative "block_template"
 
 module CKB
   module Types

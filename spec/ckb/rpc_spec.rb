@@ -1,8 +1,38 @@
+# frozen_string_literal: true
 RSpec.describe CKB::RPC do
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]
   end
-
+  let(:raw_block_h) do
+    { uncles: [],
+      proposals: [],
+      transactions: [{ version: "0x0",
+                       cell_deps: [],
+                       header_deps: [],
+                       inputs: [{ previous_output: { tx_hash: "0x0000000000000000000000000000000000000000000000000000000000000000", index: "0xffffffff" },
+                                  since: "0x1" }],
+                       outputs: [{ capacity: "0x2ca7071b9e",
+                                   lock: { code_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                                           args: [],
+                                           hash_type: "type" },
+                                   type: nil }],
+                       outputs_data: ["0x"],
+                       witnesses: [{ data: %w[0x1892ea40d82b53c678ff88312450bbb17e164d7a3e0a90941aa58839f56f8df201
+                                              0x3954acece65096bfa81258983ddb83915fc56bd8] }]}],
+      header: { difficulty: "0x100",
+                number: "0x1",
+                parent_hash: "0x6944997e76680c03a7b30fa8b1d30da9e77685de5b28796898b05c6e6e3f9ace",
+                nonce: "0xd20cf913474dbf0e",
+                timestamp: "0x16d6731e6e1",
+                transactions_root: "0x761909b19c96df2b38283bcd6ddf7162a1947e3fad2be70c32f3c7596ddcfad3",
+                proposals_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                uncles_count: "0x0",
+                uncles_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                version: "0x0",
+                witnesses_root: "0x4c1f2995e6507bd45f0295dd775b9d6c9cd21fc775f95582fe2a6ce0ed8ee00a",
+                epoch: "0x3e80001000000",
+                dao: "0x2c7ecb6d26870700f1d8f5e035872300683cb95e9a0000000094b5c67d7a0100" } }
+  end
   let(:rpc) { CKB::RPC.new }
   let(:lock_hash) { "0xd0e22f863da970a3ff51a937ae78ba490bbdcede7272d658a053b9f80e30305d" }
 
@@ -79,9 +109,9 @@ RSpec.describe CKB::RPC do
       outputs: []
     }
 
-    expect {
+    expect do
       rpc.send_transaction(tx)
-    }.to raise_error(CKB::RPCError, /:code=>-3/)
+    end.to raise_error(CKB::RPCError, /:code=>-3/)
   end
 
   it "local node info" do
@@ -144,7 +174,7 @@ RSpec.describe CKB::RPC do
   end
 
   it "set ban" do
-    params = ["192.168.0.2", "insert", 1840546800000, true, "test set_ban rpc"]
+    params = ["192.168.0.2", "insert", 1_840_546_800_000, true, "test set_ban rpc"]
     result = rpc.set_ban(*params)
     expect(result).to be nil
   end
@@ -152,5 +182,38 @@ RSpec.describe CKB::RPC do
   it "get banned addresses" do
     result = rpc.get_banned_addresses
     expect(result).not_to be nil
+  end
+
+  context "miner RPCs" do
+    it "get_block_template" do
+      result = rpc.get_block_template
+      expect(result).not_to be nil
+    end
+
+    it "get_block_template with bytes_limit" do
+      result = rpc.get_block_template(1000)
+      expect(result).not_to be nil
+    end
+
+    it "get_block_template with proposals_limit" do
+      result = rpc.get_block_template(1000)
+      expect(result).not_to be nil
+    end
+
+    it "get_block_template with max_version" do
+      result = rpc.get_block_template(1000)
+      expect(result).not_to be nil
+    end
+
+    it "get_block_template with bytes_limit, proposals_limit and max_version" do
+      result = rpc.get_block_template(1000)
+      expect(result).not_to be nil
+    end
+
+    # must use real data
+    it "submit_block" do
+      result = rpc.submit_block("test", raw_block_h)
+      expect(result).not_to be nil
+    end
   end
 end
