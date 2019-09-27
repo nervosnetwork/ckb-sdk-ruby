@@ -6,7 +6,7 @@ module CKB
       attr_accessor :code_hash, :args, :hash_type
 
       # @param code_hash [String]
-      # @param args [String[]]
+      # @param args [String]
       # @param hash_type [String] data/type
       def initialize(code_hash:, args:, hash_type: "data")
         @code_hash = code_hash
@@ -18,7 +18,9 @@ module CKB
       def calculate_bytesize
         bytesize = 1
         bytesize += Utils.hex_to_bin(@code_hash).bytesize if @code_hash
-        (@args || []).map { |arg| Utils.hex_to_bin(arg).bytesize }.reduce(bytesize, &:+)
+        bytesize += Utils.hex_to_bin(args).bytesize if args
+
+        bytesize
       end
 
       def to_h
@@ -50,9 +52,7 @@ module CKB
       def self.generate_lock(target_pubkey_blake160, secp_cell_type_hash, hash_type = "type")
         new(
           code_hash: secp_cell_type_hash,
-          args: [
-            target_pubkey_blake160
-          ],
+          args: target_pubkey_blake160,
           hash_type: hash_type
         )
       end

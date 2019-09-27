@@ -7,7 +7,7 @@ RSpec.describe CKB::Types::Script do
     )
     CKB::Types::Script.new(
       code_hash: code_hash,
-      args: []
+      args: "0x"
     )
   end
 
@@ -27,9 +27,9 @@ RSpec.describe CKB::Types::Script do
     end
 
     it "should build correct hash when there is only one arg" do
-      CKB::Types::Script.new(
+      script = CKB::Types::Script.new(
         code_hash: code_hash,
-        args: ["0x3954acece65096bfa81258983ddb83915fc56bd8"]
+        args: "0x3954acece65096bfa81258983ddb83915fc56bd8"
       )
 
       expect(
@@ -38,11 +38,10 @@ RSpec.describe CKB::Types::Script do
     end
 
     it "should build correct hash when args more than one" do
-      CKB::Types::Script.new(
+      script = CKB::Types::Script.new(
         code_hash: code_hash,
-        args: ["0x3954acece65096bfa81258983ddb83915fc56bd8",  "0x3954acece65096bfa81258983ddb83915fc56bd83232323"]
+        args: "0x3954acece65096bfa81258983ddb83915fc56bd83954acece65096bfa81258983ddb83915fc56bd8"
       )
-
       expect(
         script.compute_hash
       ).to eq api.compute_script_hash(script)
@@ -51,7 +50,7 @@ RSpec.describe CKB::Types::Script do
 
   context "calculate bytesize" do
     let(:code_hash) { "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08" }
-    let(:args) { ["0x36c329ed630d6ce750712a477543672adab57f4c"] }
+    let(:args) { "0x36c329ed630d6ce750712a477543672adab57f4c" }
 
     let(:lock_script) do
       CKB::Types::Script.new(
