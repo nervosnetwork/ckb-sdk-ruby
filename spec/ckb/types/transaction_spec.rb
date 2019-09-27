@@ -22,6 +22,27 @@ RSpec.describe CKB::Types::Transaction do
       witnesses: ["0x"] }
   end
 
+  let(:tx_to_sign_hash_use_data_hash) do
+    { version: "0x0",
+      cell_deps: [{ out_point: { tx_hash: "0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55", index: "0x1" },
+                    dep_type: "code" }],
+      header_deps: [],
+      inputs: [{ previous_output: { tx_hash: "0xa80a8e01d45b10e1cbc8a2557c62ba40edbdc36cd63a31fc717006ca7b157b50", index: "0x0" },
+                 since: "0x0" }],
+      outputs: [{ capacity: "0x174876e800",
+                  lock: { code_hash: "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
+                          args: "0xe2193df51d78411601796b35b17b4f8f2cd85bd0",
+                          hash_type: "data" },
+                  type: nil },
+                { capacity: "0x474dec26800",
+                  lock: { code_hash: "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
+                          args: "0x36c329ed630d6ce750712a477543672adab57f4c",
+                          hash_type: "data" },
+                  type: nil }],
+      outputs_data: %w[0x 0x],
+      witnesses: ["0x"] }
+  end
+
   it "sign" do
     tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
     key = CKB::Key.new("0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805")
@@ -30,6 +51,16 @@ RSpec.describe CKB::Types::Transaction do
 
     expect(signed_tx.to_h[:hash]).to eq(tx_hash)
     expect(signed_tx.to_h[:witnesses]).to eq(["0xf198c795adfc5aead05ad0ac9d979519b0a707e7987c5addb3a6be42669af7f86e3a76a3ce8c770a92915e2d5a0212b3417db1c2152f2107ee7683601a4ecb5001"])
+  end
+
+  it "sign with data hash" do
+    tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
+    key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
+    tx_hash = tx_to_sign.compute_hash
+    signed_tx = tx_to_sign.sign(key, tx_hash)
+
+    expect(signed_tx.to_h[:hash]).to eq(tx_hash)
+    expect(signed_tx.to_h[:witnesses]).to eq(["0x15edb4da91bd5beebf0aee82a9daa4d590ecdfc0895c6b010638573b2d1d502c50373e7d540e74eb8e3a3bd1dbd20c372c492fc7242592c8a04763be029325a900"])
   end
 
   context "multiple inputs sign" do
@@ -73,6 +104,35 @@ RSpec.describe CKB::Types::Transaction do
 
       expect(signed_tx.hash).to eq tx_hash
       expect(signed_tx.witnesses).to eq(%w[0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801])
+    end
+
+    let(:tx_to_sign_hash_use_data_hash) do
+      { version: "0x0",
+        cell_deps: [{ out_point: { tx_hash: "0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55", index: "0x1" },
+                      dep_type: "code" }],
+        header_deps: [],
+        inputs: [{ previous_output: { tx_hash: "0x91fcfd61f420c1090aeded6b6d91d5920a279fe53ec34353afccc59264eeddd4", index: "0x0" },
+                   since: "0x71" },
+                 { previous_output: { tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031", index: "0x0" },
+                   since: "0x0" }
+        ],
+        outputs: [{ capacity: "0x9184efca682",
+                    lock: { code_hash: "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd",
+                            args: "0x36c329ed630d6ce750712a477543672adab57f4c",
+                            hash_type: "data" },
+                    type: nil }],
+        outputs_data: %w[0x],
+        witnesses: %w(0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb 0x)}
+    end
+
+    it "sign2" do
+      tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
+      key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
+      tx_hash = tx_to_sign.compute_hash
+      signed_tx = tx_to_sign.sign(key, tx_hash)
+
+      expect(signed_tx.to_h[:hash]).to eq(tx_hash)
+      expect(signed_tx.to_h[:witnesses]).to eq(["0x2db8278bf806fb7eac778e56eb0b34deccb16bae68c2a088d277bded265d90da37fb995a1f629a9de7c9722640f2f9c67c5572e6b5fca1e831649484ba9a0b81004107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb", "0x014de9c721a5a33435a02d44580978ecdb794d2a7f3fe7d875e7f058ef8c961f2e983079400cfd8a2bbe34f2d1fd3f0a6e2c390bf7e45006c06c7831e4a67e8101"])
     end
   end
 
