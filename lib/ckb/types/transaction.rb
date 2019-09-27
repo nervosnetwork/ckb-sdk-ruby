@@ -12,7 +12,7 @@ module CKB
       # @param inputs [CKB::Types::Input[]]
       # @param outputs [CKB::Types::Output[]]
       # @param outputs_data [String[]]
-      # @param witnesses [CKB::Types::Witness[]]
+      # @param witnesses [String[]]
       def initialize(
         hash: nil,
         version: 0,
@@ -70,7 +70,7 @@ module CKB
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
           outputs_data: @outputs_data,
-          witnesses: @witnesses.map(&:to_h)
+          witnesses: @witnesses
         }
         hash[:hash] = @hash if @hash
         hash
@@ -84,7 +84,7 @@ module CKB
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
           outputs_data: @outputs_data,
-          witnesses: @witnesses.map(&:to_h)
+          witnesses: @witnesses
         }
       end
 
@@ -106,7 +106,7 @@ module CKB
           inputs: hash[:inputs].map { |input| Input.from_h(input) },
           outputs: hash[:outputs].map { |output| Output.from_h(output) },
           outputs_data: hash[:outputs_data],
-          witnesses: hash[:witnesses].map { |witness| Witness.from_h(witness) }
+          witnesses: hash[:witnesses]
         )
       end
     end
