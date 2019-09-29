@@ -17,7 +17,6 @@ RSpec.describe CKB::Types::UncleTemplate do
         :transactions_root=>"0x8ad0468383d0085e26d9c3b9b648623e4194efc53a03b7cd1a79e92700687f1e",
         :uncles_hash=>"0x0000000000000000000000000000000000000000000000000000000000000000",
         :version=>"0x0",
-        :witnesses_root=>"0x90445a0795a2d7d4af033ec0282a8a1f68f11ffb1cd091b95c2c5515a8336e9c"
       }
     }
   end

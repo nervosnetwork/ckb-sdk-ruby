@@ -13,7 +13,6 @@ RSpec.describe CKB::Types::BlockHeader do
       "transactions_root": "0x8ad0468383d0085e26d9c3b9b648623e4194efc53a03b7cd1a79e92700687f1e",
       "uncles_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
       "version": "0x0",
-      "witnesses_root": "0x90445a0795a2d7d4af033ec0282a8a1f68f11ffb1cd091b95c2c5515a8336e9c"
     }
   end
 
@@ -41,7 +40,7 @@ RSpec.describe CKB::Types::BlockHeader do
 
     api = CKB::API.new
     tip_header = api.get_tip_header
-    expected_attributes = %w(dao difficulty epoch hash nonce number parent_hash proposals_hash timestamp transactions_root uncles_hash version witnesses_root)
+    expected_attributes = %w(dao difficulty epoch hash nonce number parent_hash proposals_hash timestamp transactions_root uncles_hash version)
 
     expect(expected_attributes).to eq(tip_header.instance_variables.map { |attribute| attribute.to_s.gsub("@", "") }.sort)
   end

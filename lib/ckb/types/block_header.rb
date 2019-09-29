@@ -4,7 +4,7 @@ module CKB
   module Types
     class BlockHeader
       attr_accessor :difficulty, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
-                    :uncles_hash, :version, :witnesses_root, :epoch, :dao
+                    :uncles_hash, :version, :epoch, :dao
 
       # @param difficulty [String | Integer] integer or hex number
       # @param hash [String] 0x...
@@ -16,7 +16,6 @@ module CKB
       # @param proposals_hash [String] 0x...
       # @param uncles_hash [String] 0x...
       # @param version [String | Integer] integer or hex number
-      # @param witnesses_root [String] 0x...
       # @param epoch [String | Integer] integer or hex number
       # @param dao [String] 0x...
       def initialize(
@@ -30,7 +29,6 @@ module CKB
         proposals_hash:,
         uncles_hash:,
         version:,
-        witnesses_root:,
         epoch:,
         dao:
       )
@@ -44,7 +42,6 @@ module CKB
         @proposals_hash = proposals_hash
         @uncles_hash = uncles_hash
         @version = Utils.to_int(version)
-        @witnesses_root = witnesses_root
         @epoch = Utils.to_int(epoch)
         @dao = dao
       end
@@ -61,7 +58,6 @@ module CKB
           proposals_hash: @proposals_hash,
           uncles_hash: @uncles_hash,
           version: Utils.to_hex(@version),
-          witnesses_root: @witnesses_root,
           epoch: Utils.to_hex(@epoch),
           dao: @dao,
         }
@@ -81,7 +77,6 @@ module CKB
           proposals_hash: hash[:proposals_hash],
           uncles_hash: hash[:uncles_hash],
           version: hash[:version],
-          witnesses_root: hash[:witnesses_root],
           epoch: hash[:epoch],
           dao: hash[:dao],
         )

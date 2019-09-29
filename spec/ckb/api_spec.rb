@@ -35,7 +35,6 @@ RSpec.describe CKB::API do
                 proposals_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 uncles_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 version: "0x0",
-                witnesses_root: "0xbfdb7bd77c9be65784a070aef4b21628d930db5bcd6054d8856fd4c28c8aaa2a",
                 epoch: "0x3e80001000000",
                 dao: "0x2cd631702e870700a715aee035872300a804ad5e9a00000000ec1bc9857a0100" } }
   end
