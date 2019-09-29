@@ -4,7 +4,7 @@ module CKB
   module Types
     class BlockHeader
       attr_accessor :difficulty, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
-                  :uncles_count, :uncles_hash, :version, :witnesses_root, :epoch, :dao
+                    :uncles_hash, :version, :witnesses_root, :epoch, :dao
 
       # @param difficulty [String | Integer] integer or hex number
       # @param hash [String] 0x...
@@ -14,7 +14,6 @@ module CKB
       # @param timestamp [String | Integer] integer or hex number
       # @param transactions_root [String] 0x...
       # @param proposals_hash [String] 0x...
-      # @param uncles_count [String | Integer] integer or hex number
       # @param uncles_hash [String] 0x...
       # @param version [String | Integer] integer or hex number
       # @param witnesses_root [String] 0x...
@@ -29,7 +28,6 @@ module CKB
         timestamp:,
         transactions_root:,
         proposals_hash:,
-        uncles_count:,
         uncles_hash:,
         version:,
         witnesses_root:,
@@ -44,7 +42,6 @@ module CKB
         @timestamp = Utils.to_int(timestamp)
         @transactions_root = transactions_root
         @proposals_hash = proposals_hash
-        @uncles_count = Utils.to_int(uncles_count)
         @uncles_hash = uncles_hash
         @version = Utils.to_int(version)
         @witnesses_root = witnesses_root
@@ -62,7 +59,6 @@ module CKB
           timestamp: Utils.to_hex(@timestamp),
           transactions_root: @transactions_root,
           proposals_hash: @proposals_hash,
-          uncles_count: Utils.to_hex(@uncles_count),
           uncles_hash: @uncles_hash,
           version: Utils.to_hex(@version),
           witnesses_root: @witnesses_root,
@@ -83,7 +79,6 @@ module CKB
           timestamp: hash[:timestamp],
           transactions_root: hash[:transactions_root],
           proposals_hash: hash[:proposals_hash],
-          uncles_count: hash[:uncles_count],
           uncles_hash: hash[:uncles_hash],
           version: hash[:version],
           witnesses_root: hash[:witnesses_root],

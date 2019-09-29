@@ -25,7 +25,6 @@ RSpec.describe CKB::RPC do
                 timestamp: "0x16d70d9f580",
                 transactions_root: "0x249ba6cc038ccb16a18b1da03b994f87a6e32bf128b553a66a5805e9d6f36c50",
                 proposals_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                uncles_count: "0x0",
                 uncles_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 version: "0x0",
                 witnesses_root: "0xbfdb7bd77c9be65784a070aef4b21628d930db5bcd6054d8856fd4c28c8aaa2a",
