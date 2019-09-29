@@ -63,6 +63,16 @@ RSpec.describe CKB::Types::Transaction do
     expect(signed_tx.to_h[:witnesses]).to eq(["0x15edb4da91bd5beebf0aee82a9daa4d590ecdfc0895c6b010638573b2d1d502c50373e7d540e74eb8e3a3bd1dbd20c372c492fc7242592c8a04763be029325a900"])
   end
 
+  it "sign input" do
+    tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
+    key = CKB::Key.new("0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805")
+    tx_hash = "0x993e6e629be2f016bf72becaa9ad4b39f7fdd72357c9341335783f451010b94e"
+    signed_tx = tx_to_sign.sign_input(0, key)
+
+    expect(signed_tx.to_h[:hash]).to eq(tx_hash)
+    expect(signed_tx.to_h[:witnesses]).to eq(["0xf198c795adfc5aead05ad0ac9d979519b0a707e7987c5addb3a6be42669af7f86e3a76a3ce8c770a92915e2d5a0212b3417db1c2152f2107ee7683601a4ecb5001"])
+  end
+
   context "multiple inputs sign" do
     let(:tx_to_sign_hash) do
       { version: "0x0",

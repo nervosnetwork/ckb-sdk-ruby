@@ -42,31 +42,27 @@ module CKB
       @hash_type = hash_type
     end
 
+    # @param need_capacities [Integer | nil] capacity in shannon, nil means collect all
     # @return [CKB::Types::Output[]]
-    def get_unspent_cells
-      to = api.get_tip_block_number.to_i
-      results = []
-      current_from = 0
-      while current_from <= to
-        current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
-        if skip_data_and_type
-          cells.each do |cell|
-            live_cell = api.get_live_cell(cell.out_point, true)
-            output = live_cell.cell.output
-            output_data = live_cell.cell.data.content
-            results << cell if (output_data.nil? || output_data == "0x") && output.type.nil?
-          end
-        else
-          results.concat(cells)
-        end
-        current_from = current_to + 1
-      end
-      results
+    def get_unspent_cells(need_capacities: nil)
+      CellCollector.new(
+        @api,
+        skip_data_and_type: @skip_data_and_type,
+        hash_type: @hash_type
+      ).get_unspent_cells(
+        lock_hash,
+        need_capacities: need_capacities
+      )[:outputs]
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell.capacity.to_i }.reduce(0, &:+)
+      CellCollector.new(
+        @api,
+        skip_data_and_type: @skip_data_and_type,
+        hash_type: @hash_type
+      ).get_unspent_cells(
+        lock_hash
+      )[:total_capacities]
     end
 
     # @param target_address [String]
@@ -293,28 +289,17 @@ args = #{lock.args}
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
     def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
-      raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
-
-      total_capacities = capacity + fee
-      input_capacities = 0
-      inputs = []
-      witnesses = []
-      get_unspent_cells.each do |cell|
-        input = Types::Input.new(
-          previous_output: cell.out_point,
-          since: 0
-        )
-        inputs << input
-        witnesses << "0x"
-        input_capacities += cell.capacity.to_i
-
-        diff = input_capacities - total_capacities
-        break if diff >= min_change_capacity || diff.zero?
-      end
-
-      raise "Capacity not enough!" if input_capacities < total_capacities
-
-      OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
+      CellCollector.new(
+        @api,
+        skip_data_and_type: @skip_data_and_type,
+        hash_type: @hash_type
+      ).gather_inputs(
+        [lock_hash],
+        capacity,
+        min_capacity,
+        min_change_capacity,
+        fee
+      )
     end
 
     def code_hash

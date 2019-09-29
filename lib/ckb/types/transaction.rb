@@ -61,6 +61,26 @@ module CKB
         )
       end
 
+      # @param index [Integer]
+      # @param key [CKB::Key]
+      #
+      # @return [CKBP::Types::Transaction]
+      def sign_input(index, key)
+        @hash = @hash || compute_hash
+
+        witness = witnesses[index] || ""
+
+        blake2b = CKB::Blake2b.new
+        blake2b.update(Utils.hex_to_bin(@hash))
+        blake2b.update(Utils.hex_to_bin(witness))
+        message = blake2b.hexdigest
+        signed_witness = key.sign_recoverable(message) + witness[2..-1]
+
+        witnesses[index] = signed_witness
+
+        self
+      end
+
       def to_h
         hash = {
           version: Utils.to_hex(@version),
