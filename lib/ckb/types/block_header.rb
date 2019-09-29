@@ -3,10 +3,10 @@
 module CKB
   module Types
     class BlockHeader
-      attr_accessor :difficulty, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
-                  :uncles_count, :uncles_hash, :version, :witnesses_root, :epoch, :dao
+      attr_accessor :compact_target, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
+                    :uncles_hash, :version, :epoch, :dao
 
-      # @param difficulty [String | Integer] integer or hex number
+      # @param compact_target [String | Integer] integer or hex number
       # @param hash [String] 0x...
       # @param number [String | Integer] integer or hex number
       # @param parent_hash [String] 0x...
@@ -14,14 +14,12 @@ module CKB
       # @param timestamp [String | Integer] integer or hex number
       # @param transactions_root [String] 0x...
       # @param proposals_hash [String] 0x...
-      # @param uncles_count [String | Integer] integer or hex number
       # @param uncles_hash [String] 0x...
       # @param version [String | Integer] integer or hex number
-      # @param witnesses_root [String] 0x...
       # @param epoch [String | Integer] integer or hex number
       # @param dao [String] 0x...
       def initialize(
-        difficulty:,
+        compact_target:,
         hash:,
         number:,
         parent_hash:,
@@ -29,14 +27,12 @@ module CKB
         timestamp:,
         transactions_root:,
         proposals_hash:,
-        uncles_count:,
         uncles_hash:,
         version:,
-        witnesses_root:,
         epoch:,
         dao:
       )
-        @difficulty = Utils.to_int(difficulty)
+        @compact_target = Utils.to_int(compact_target)
         @hash = hash
         @number = Utils.to_int(number)
         @parent_hash = parent_hash
@@ -44,17 +40,15 @@ module CKB
         @timestamp = Utils.to_int(timestamp)
         @transactions_root = transactions_root
         @proposals_hash = proposals_hash
-        @uncles_count = Utils.to_int(uncles_count)
         @uncles_hash = uncles_hash
         @version = Utils.to_int(version)
-        @witnesses_root = witnesses_root
         @epoch = Utils.to_int(epoch)
         @dao = dao
       end
 
       def to_h
         {
-          difficulty: Utils.to_hex(@difficulty),
+          compact_target: Utils.to_hex(@compact_target),
           hash: @hash,
           number: Utils.to_hex(@number),
           parent_hash: parent_hash,
@@ -62,10 +56,8 @@ module CKB
           timestamp: Utils.to_hex(@timestamp),
           transactions_root: @transactions_root,
           proposals_hash: @proposals_hash,
-          uncles_count: Utils.to_hex(@uncles_count),
           uncles_hash: @uncles_hash,
           version: Utils.to_hex(@version),
-          witnesses_root: @witnesses_root,
           epoch: Utils.to_hex(@epoch),
           dao: @dao,
         }
@@ -75,7 +67,7 @@ module CKB
         return if hash.nil?
 
         new(
-          difficulty: hash[:difficulty],
+          compact_target: hash[:compact_target],
           hash: hash[:hash],
           number: hash[:number],
           parent_hash: hash[:parent_hash],
@@ -83,10 +75,8 @@ module CKB
           timestamp: hash[:timestamp],
           transactions_root: hash[:transactions_root],
           proposals_hash: hash[:proposals_hash],
-          uncles_count: hash[:uncles_count],
           uncles_hash: hash[:uncles_hash],
           version: hash[:version],
-          witnesses_root: hash[:witnesses_root],
           epoch: hash[:epoch],
           dao: hash[:dao],
         )

@@ -6,7 +6,7 @@ RSpec.describe CKB::Types::UncleTemplate do
       :proposals=>[],
       :header => {
         :dao=>"0x0100000000000000005827f2ba13b000d77fa3d595aa00000061eb7ada030000",
-        :difficulty=>"0x7a1200",
+        :compact_target=>"0x7a1200",
         :epoch=>"0x1",
         :hash=>"0xd629a10a08fb0f43fcb97e948fc2b6eb70ebd28536490fe3864b0e40d08397d1",
         :nonce=>"0x0",
@@ -15,10 +15,8 @@ RSpec.describe CKB::Types::UncleTemplate do
         :proposals_hash=>"0x0000000000000000000000000000000000000000000000000000000000000000",
         :timestamp=>"0x5cd2b117",
         :transactions_root=>"0x8ad0468383d0085e26d9c3b9b648623e4194efc53a03b7cd1a79e92700687f1e",
-        :uncles_count=>"0x0",
         :uncles_hash=>"0x0000000000000000000000000000000000000000000000000000000000000000",
         :version=>"0x0",
-        :witnesses_root=>"0x90445a0795a2d7d4af033ec0282a8a1f68f11ffb1cd091b95c2c5515a8336e9c"
       }
     }
   end

@@ -3,11 +3,11 @@
 module CKB
   module Types
     class BlockTemplate
-      attr_accessor :version, :difficulty, :current_time, :number, :epoch, :parent_hash, :cycles_limit,
+      attr_accessor :version, :compact_target, :current_time, :number, :epoch, :parent_hash, :cycles_limit,
                     :bytes_limit, :uncles_count_limit, :uncles, :transactions, :proposals, :cellbase, :work_id, :dao
 
       # @param version [String | Integer] integer or hex number
-      # @param difficulty [String | Integer] integer or hex number
+      # @param compact_target [String | Integer] integer or hex number
       # @param current_time [String | Integer] integer or hex number
       # @param number [String | Integer] integer or hex number
       # @param epoch [String | Integer] integer or hex number
@@ -23,7 +23,7 @@ module CKB
       # @param dao [String] 0x...
       def initialize(
         version:,
-        difficulty:,
+        compact_target:,
         current_time:,
         number:,
         epoch:,
@@ -39,7 +39,7 @@ module CKB
         dao:
       )
         @version =  Utils.to_int(version)
-        @difficulty = Utils.to_int(difficulty)
+        @compact_target = Utils.to_int(compact_target)
         @current_time = Utils.to_int(current_time)
         @number = Utils.to_int(number)
         @epoch = Utils.to_int(epoch)
@@ -58,7 +58,7 @@ module CKB
       def to_h
         {
           version: Utils.to_hex(version),
-          difficulty: Utils.to_hex(difficulty),
+          compact_target: Utils.to_hex(compact_target),
           current_time: Utils.to_hex(current_time),
           number: Utils.to_hex(number),
           epoch: Utils.to_hex(epoch),
@@ -80,7 +80,7 @@ module CKB
 
         new(
           version: hash[:version],
-          difficulty: hash[:difficulty],
+          compact_target: hash[:compact_target],
           current_time: hash[:current_time],
           number: hash[:number],
           epoch: hash[:epoch],
