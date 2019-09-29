@@ -6,7 +6,7 @@ RSpec.describe CKB::Types::UncleTemplate do
       :proposals=>[],
       :header => {
         :dao=>"0x0100000000000000005827f2ba13b000d77fa3d595aa00000061eb7ada030000",
-        :difficulty=>"0x7a1200",
+        :compact_target=>"0x7a1200",
         :epoch=>"0x1",
         :hash=>"0xd629a10a08fb0f43fcb97e948fc2b6eb70ebd28536490fe3864b0e40d08397d1",
         :nonce=>"0x0",

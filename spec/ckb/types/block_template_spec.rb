@@ -1,7 +1,7 @@
 RSpec.describe CKB::Types::BlockTemplate do
   let(:block_template_h) do
     {:version=>"0x0",
-     :difficulty=>"0x48",
+     :compact_target=>"0x48",
      :current_time=>"0x16d6b6111b3",
      :number=>"0xab3",
      :epoch=>"0x70806cb000001",
@@ -46,7 +46,7 @@ RSpec.describe CKB::Types::BlockTemplate do
   end
 
   it "block_template's attributes value should equal with block_template_h" do
-    number_keys = %i(version difficulty current_time number epoch parent_hash cycles_limit bytes_limit uncles_count_limit uncles transactions proposals cellbase work_id dao)
+    number_keys = %i(version compact_target current_time number epoch parent_hash cycles_limit bytes_limit uncles_count_limit uncles transactions proposals cellbase work_id dao)
     number_keys.each do |key|
       expect(block_template.to_h[key]).to eq block_template_h[key]
     end
@@ -63,7 +63,7 @@ RSpec.describe CKB::Types::BlockTemplate do
 
     api = CKB::API.new
     block_template = api.get_block_template
-    expected_attributes = %w(version difficulty current_time number epoch parent_hash cycles_limit bytes_limit uncles_count_limit uncles transactions proposals cellbase work_id dao).sort
+    expected_attributes = %w(version compact_target current_time number epoch parent_hash cycles_limit bytes_limit uncles_count_limit uncles transactions proposals cellbase work_id dao).sort
 
     expect(expected_attributes).to eq(block_template.instance_variables.map { |attribute| attribute.to_s.gsub("@", "") }.sort)
   end

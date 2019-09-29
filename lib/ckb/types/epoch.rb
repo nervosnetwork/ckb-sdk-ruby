@@ -3,19 +3,19 @@
 module CKB
   module Types
     class Epoch
-      attr_accessor :difficulty, :length, :number, :start_number
+      attr_accessor :compact_target, :length, :number, :start_number
 
-      # @param difficulty [String | Integer] integer or hex number
+      # @param compact_target [String | Integer] integer or hex number
       # @param length [String | Integer] integer or hex number
       # @param number [String | Integer] integer or hex number
       # @param start_number [String | Integer] integer or hex number
       def initialize(
-        difficulty:,
+        compact_target:,
         length:,
         number:,
         start_number:
       )
-        @difficulty = Utils.to_int(difficulty)
+        @compact_target = Utils.to_int(compact_target)
         @length = Utils.to_int(length)
         @number = Utils.to_int(number)
         @start_number = Utils.to_int(start_number)
@@ -23,7 +23,7 @@ module CKB
 
       def to_h
         {
-          difficulty: Utils.to_hex(@difficulty),
+          compact_target: Utils.to_hex(@compact_target),
           length: Utils.to_hex(@length),
           number: Utils.to_hex(@number),
           start_number: Utils.to_hex(@start_number)
@@ -34,7 +34,7 @@ module CKB
         return if hash.nil?
 
         new(
-          difficulty: hash[:difficulty],
+          compact_target: hash[:compact_target],
           length: hash[:length],
           number: hash[:number],
           start_number: hash[:start_number]

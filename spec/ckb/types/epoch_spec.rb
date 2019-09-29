@@ -1,7 +1,7 @@
 RSpec.describe CKB::Types::Epoch do
   let(:epoch_h) do
     {
-      "difficulty": "0x7a1200",
+      "compact_target": "0x7a1200",
       "length": "0x708",
       "number": "0x1",
       "start_number": "0x3e8"

@@ -3,10 +3,10 @@
 module CKB
   module Types
     class BlockHeader
-      attr_accessor :difficulty, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
+      attr_accessor :compact_target, :hash, :number, :parent_hash, :nonce, :timestamp, :transactions_root, :proposals_hash, \
                     :uncles_hash, :version, :epoch, :dao
 
-      # @param difficulty [String | Integer] integer or hex number
+      # @param compact_target [String | Integer] integer or hex number
       # @param hash [String] 0x...
       # @param number [String | Integer] integer or hex number
       # @param parent_hash [String] 0x...
@@ -19,7 +19,7 @@ module CKB
       # @param epoch [String | Integer] integer or hex number
       # @param dao [String] 0x...
       def initialize(
-        difficulty:,
+        compact_target:,
         hash:,
         number:,
         parent_hash:,
@@ -32,7 +32,7 @@ module CKB
         epoch:,
         dao:
       )
-        @difficulty = Utils.to_int(difficulty)
+        @compact_target = Utils.to_int(compact_target)
         @hash = hash
         @number = Utils.to_int(number)
         @parent_hash = parent_hash
@@ -48,7 +48,7 @@ module CKB
 
       def to_h
         {
-          difficulty: Utils.to_hex(@difficulty),
+          compact_target: Utils.to_hex(@compact_target),
           hash: @hash,
           number: Utils.to_hex(@number),
           parent_hash: parent_hash,
@@ -67,7 +67,7 @@ module CKB
         return if hash.nil?
 
         new(
-          difficulty: hash[:difficulty],
+          compact_target: hash[:compact_target],
           hash: hash[:hash],
           number: hash[:number],
           parent_hash: hash[:parent_hash],

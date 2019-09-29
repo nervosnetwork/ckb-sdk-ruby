@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 RSpec.describe CKB::RPC do
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]
@@ -17,13 +18,13 @@ RSpec.describe CKB::RPC do
                                            hash_type: "type" },
                                    type: nil }],
                        outputs_data: ["0x"],
-                       witnesses: ["0x490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce801140000003954acece65096bfa81258983ddb83915fc56bd8"]}],
-      header: { difficulty: "0x100",
+                       witnesses: ["0x490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce801140000003954acece65096bfa81258983ddb83915fc56bd8"] }],
+      header: { compact_target: "0x20010000",
                 number: "0x1",
-                parent_hash: "0xe10b8035540bf0976aa991dbcc1dfb2237a81706e6848596aca8773a69efb85c",
-                nonce: "0x58df949326a72a42",
-                timestamp: "0x16d70d9f580",
-                transactions_root: "0x249ba6cc038ccb16a18b1da03b994f87a6e32bf128b553a66a5805e9d6f36c50",
+                parent_hash: "0x70396940ae2e81bd2627a8e0e75f3d277585bb1afd78839cfd8f2c54e8697bbc",
+                nonce: "0x3a7937c78d7ae069",
+                timestamp: "0x16d7ad5d9de",
+                transactions_root: "0xfcf1ec1c5da7f80b23ad81e72885d381ee04ad58c79003100d38ad285ae44959",
                 proposals_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 uncles_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 version: "0x0",
