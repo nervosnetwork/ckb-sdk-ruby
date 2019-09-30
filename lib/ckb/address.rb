@@ -45,7 +45,7 @@ module CKB
     end
 
     # Generates full payload format address
-    # payload = 0x02/0x04 | code_hash | len(arg[0]) | arg[0] | ...
+    # payload = 0x02/0x04 | code_hash | args
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     # @param [String | Integer]  format_type
     # @param [String]  code_hash
@@ -55,18 +55,9 @@ module CKB
       prefix = prefix(mode: mode)
       format_type = Utils.to_hex(format_type)[2..-1].rjust(2, '0')
       raise InvalidFormatTypeError.new("Invalid format type") unless TYPES[1..-1].include?(format_type)
-      raise InvalidArgsTypeError.new("Args should be an array") unless args.is_a?(Array)
+      raise InvalidArgsTypeError.new("Args should be a hex string") unless CKB::Utils.valid_hex_string?(args)
 
-      payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(code_hash)
-      args.each do |arg|
-        arg_bytes = CKB::Utils.hex_to_bin(arg)
-        arg_len = arg_bytes.bytesize
-        if arg_len > 256
-          raise InvalidArgSizeError.new("The maximum size of arg is 256")
-        else
-          payload += [arg_len].pack("C") + arg_bytes
-        end
-      end
+      payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(code_hash) + CKB::Utils.hex_to_bin(args)
 
       CKB::ConvertAddress.encode(prefix, payload)
     end
@@ -99,19 +90,11 @@ module CKB
 
       offset = 1
       code_hash_size = 32
-      code_hash = "0x#{data.slice(offset..code_hash_size).unpack("H*").first}"
-      offset += 32
-      data_size = data.bytesize
-      args = []
-      while offset < data_size
-        arg_len = data[offset].unpack("C").first.to_i
-        offset += 1
-        arg = data[offset...offset + arg_len]
-        args << arg
-        offset += arg_len
-      end
+      code_hash = "0x#{data.slice(1..code_hash_size).unpack("H*").first}"
+      offset += code_hash_size
+      args = data[offset..-1]
 
-      ["0x#{format_type}", code_hash, args.map { |item| CKB::Utils.bin_to_hex(item) }]
+      ["0x#{format_type}", code_hash, CKB::Utils.bin_to_hex(args)]
     end
 
     def self.parse(address, mode: DEFAULT_MODE)
