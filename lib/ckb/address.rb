@@ -55,7 +55,7 @@ module CKB
       prefix = prefix(mode: mode)
       format_type = Utils.to_hex(format_type)[2..-1].rjust(2, '0')
       raise InvalidFormatTypeError.new("Invalid format type") unless TYPES[1..-1].include?(format_type)
-      raise InvalidArgsTypeError.new("Args should be an hex string") unless CKB::Utils.valid_hex_string?(args)
+      raise InvalidArgsTypeError.new("Args should be a hex string") unless CKB::Utils.valid_hex_string?(args)
 
       payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(code_hash) + CKB::Utils.hex_to_bin(args)
 
