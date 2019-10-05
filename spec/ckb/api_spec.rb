@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe CKB::API do
   Types = CKB::Types
 
@@ -7,6 +9,29 @@ RSpec.describe CKB::API do
 
   let(:api) { CKB::API.new }
   let(:lock_hash) { "0xe94e4b509d5946c54ea9bc7500af12fd35eebe0d47a6b3e502127f94d34997ac" }
+  let(:block_h) do
+    { uncles: [],
+      proposals: [],
+      transactions: [{ version: "0x0",
+                       cell_deps: [],
+                       header_deps: [],
+                       inputs: [{ previous_output: { tx_hash: "0x0000000000000000000000000000000000000000000000000000000000000000", index: "0xffffffff" },
+                                  since: "0x1" }],
+                       outputs: [],
+                       outputs_data: [],
+                       witnesses: ["0x590000000c00000055000000490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8011400000036c329ed630d6ce750712a477543672adab57f4c00000000"] }],
+      header: { compact_target: "0x20010000",
+                number: "0x1",
+                parent_hash: "0xe49352ee4984694d88eb3c1493a33d69d61c786dc5b0a32c4b3978d4fad64379",
+                nonce: "0x7622c91cd47ca43fa63f7db0ee0fd3ef",
+                timestamp: "0x16d7ad5d9de",
+                transactions_root: "0x29c04a85c4b686ec8a78615d193d64d4416dbc428f9e4631f27c62419926110f",
+                proposals_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                uncles_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                version: "0x0",
+                epoch: "0x3e80001000000",
+                dao: "0x04d0a006e1840700df5d55f5358723001206877a0b00000000e3bad4847a0100" } }
+  end
 
   it "genesis block" do
     expect(api.genesis_block).to be_a(Types::Block)
@@ -72,9 +97,9 @@ RSpec.describe CKB::API do
       outputs: []
     )
 
-    expect {
+    expect do
       api.send_transaction(tx)
-    }.to raise_error(CKB::RPCError, /:code=>-3/)
+    end.to raise_error(CKB::RPCError, /:code=>-3/)
   end
 
   it "get current epoch" do
@@ -178,7 +203,7 @@ RSpec.describe CKB::API do
   end
 
   it "set ban" do
-    params = ["192.168.0.2", "insert", 1840546800000, true, "test set_ban rpc"]
+    params = ["192.168.0.2", "insert", 1_840_546_800_000, true, "test set_ban rpc"]
     result = api.set_ban(*params)
     expect(result).to be nil
   end
@@ -187,5 +212,39 @@ RSpec.describe CKB::API do
     result = api.get_banned_addresses
     expect(result).not_to be nil
     expect(result).to all(be_a(Types::BannedAddress))
+  end
+
+  context "miner APIs" do
+    it "get_block_template" do
+      result = api.get_block_template
+      expect(result).not_to be nil
+    end
+
+    it "get_block_template with bytes_limit" do
+      result = api.get_block_template(bytes_limit: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "get_block_template with proposals_limit" do
+      result = api.get_block_template(proposals_limit: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "get_block_template with max_version" do
+      result = api.get_block_template(max_version: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "get_block_template with bytes_limit, proposals_limit and max_version" do
+      result = api.get_block_template(max_version: 1000)
+      expect(result).to be_a(Types::BlockTemplate)
+    end
+
+    it "submit_block should return block hash" do
+      block_h[:header][:parent_hash] = api.genesis_block_hash
+      block = Types::Block.from_h(block_h)
+      result = api.submit_block(work_id: "test", raw_block_h: block.to_raw_block_h)
+      expect(result).to be_a(String)
+    end
   end
 end

@@ -1,6 +1,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.22.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.21.0...v0.22.0) (2019-10-05)
+
+
+### Features
+
+* add `CellCollector` ([c5fd7f8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c5fd7f8))
+* add CellOutputWithOutPoint type and add block_hash ([2ab7217](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2ab7217))
+* add sign_input for transaction ([27498fa](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/27498fa))
+* add submit_block api ([60443f7](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/60443f7))
+* add template related types ([46bec62](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/46bec62))
+* change args type to string ([ca1a6b8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ca1a6b8))
+* change witnesses to String[] ([f946c9d](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/f946c9d))
+* get_block_template api ([942d525](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/942d525))
+* get_block_template rpc ([ecfe65e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ecfe65e))
+* remove uncles_count from block header ([5508b9e](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5508b9e))
+* remove witnesses_root from block header ([ca6417f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ca6417f))
+* replace difficulty with compact_target ([a88ef6b](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a88ef6b))
+* submit_block rpc ([2a10a7a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2a10a7a))
+* update args serializer ([c59691a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c59691a))
+* update expected code_hash and type_hash ([78f3f59](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/78f3f59))
+* update full payload address generator ([c985667](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c985667))
+* update NervosDAO lock period to 180 epochs ([8ecb8f2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8ecb8f2))
+* update witnesses type ([3838fd8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3838fd8))
+
+
 # [v0.21.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.20.0...v0.21.0) (2019-09-21)
 
 

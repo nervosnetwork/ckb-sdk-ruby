@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module CKB
-  DAO_LOCK_PERIOD_BLOCKS = 10
+  DAO_LOCK_PERIOD_EPOCHS = 180
   DAO_MATURITY_BLOCKS = 5
 
   class Wallet
@@ -42,31 +42,27 @@ module CKB
       @hash_type = hash_type
     end
 
+    # @param need_capacities [Integer | nil] capacity in shannon, nil means collect all
     # @return [CKB::Types::Output[]]
-    def get_unspent_cells
-      to = api.get_tip_block_number.to_i
-      results = []
-      current_from = 0
-      while current_from <= to
-        current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
-        if skip_data_and_type
-          cells.each do |cell|
-            live_cell = api.get_live_cell(cell.out_point, true)
-            output = live_cell.cell.output
-            output_data = live_cell.cell.data.content
-            results << cell if (output_data.nil? || output_data == "0x") && output.type.nil?
-          end
-        else
-          results.concat(cells)
-        end
-        current_from = current_to + 1
-      end
-      results
+    def get_unspent_cells(need_capacities: nil)
+      CellCollector.new(
+        @api,
+        skip_data_and_type: @skip_data_and_type,
+        hash_type: @hash_type
+      ).get_unspent_cells(
+        lock_hash,
+        need_capacities: need_capacities
+      )[:outputs]
     end
 
     def get_balance
-      get_unspent_cells.map { |cell| cell.capacity.to_i }.reduce(0, &:+)
+      CellCollector.new(
+        @api,
+        skip_data_and_type: @skip_data_and_type,
+        hash_type: @hash_type
+      ).get_unspent_cells(
+        lock_hash
+      )[:total_capacities]
     end
 
     # @param target_address [String]
@@ -144,8 +140,9 @@ module CKB
         capacity: capacity,
         lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
         type: Types::Script.new(
-          code_hash: api.dao_code_hash,
-          args: []
+          code_hash: api.dao_type_hash,
+          args: "0x",
+          hash_type: "type"
         )
       )
       output_data = "0x"
@@ -206,17 +203,26 @@ module CKB
         raise "Transaction is not commtted yet!"
       end
       deposit_block = api.get_block(tx.tx_status.block_hash).header
+      deposit_epoch = self.class.parse_epoch(deposit_block.epoch)
       deposit_block_number = deposit_block.number
       current_block = api.get_tip_header
+      current_epoch = self.class.parse_epoch(current_block.epoch)
       current_block_number = current_block.number
 
       if deposit_block_number == current_block_number
         raise "You need to at least wait for 1 block before generating DAO withdraw transaction!"
       end
 
-      windowleft = DAO_LOCK_PERIOD_BLOCKS - (current_block_number - deposit_block_number) % DAO_LOCK_PERIOD_BLOCKS
-      windowleft = DAO_MATURITY_BLOCKS if windowleft < DAO_MATURITY_BLOCKS
-      since = current_block_number + windowleft + 1
+      withdraw_fraction = current_epoch.index * deposit_epoch.length
+      deposit_fraction = deposit_epoch.index * current_epoch.length
+      deposited_epoches = current_epoch.number - deposit_epoch.number
+      deposited_epoches +=1 if withdraw_fraction > deposit_fraction
+      lock_epochs = (deposited_epoches + (DAO_LOCK_PERIOD_EPOCHS - 1)) / DAO_LOCK_PERIOD_EPOCHS * DAO_LOCK_PERIOD_EPOCHS
+      minimal_since_epoch_number = deposit_epoch.number + lock_epochs
+      minimal_since_epoch_index = deposit_epoch.index
+      minimal_since_epoch_length = deposit_epoch.length
+
+      minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index, minimal_since_epoch_number)
 
       # a hex string
       output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash)
@@ -242,15 +248,28 @@ module CKB
           deposit_block.hash
         ],
         inputs: [
-          Types::Input.new(previous_output: new_out_point, since: since)
+          Types::Input.new(previous_output: new_out_point, since: minimal_since)
         ],
         outputs: outputs,
         outputs_data: outputs_data,
         witnesses: [
-          Types::Witness.new(data: ["0x0000000000000000"])
+          "0x0000000000000000"
         ]
       )
       tx.sign(key, tx.compute_hash)
+    end
+
+    # @param epoch [Integer]
+    def self.parse_epoch(epoch)
+      OpenStruct.new(
+        length: (epoch >> 40) & 0xFFFF,
+        index: (epoch >> 24) & 0xFFFF,
+        number: (epoch) & 0xFFFFFF
+      )
+    end
+
+    def self.epoch_since(length, index, number)
+      (0x20 << 56) + (length << 40) + (index << 24) + number
     end
 
     # @param hash_hex [String] "0x..."
@@ -293,28 +312,17 @@ args = #{lock.args}
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
     def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
-      raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
-
-      total_capacities = capacity + fee
-      input_capacities = 0
-      inputs = []
-      witnesses = []
-      get_unspent_cells.each do |cell|
-        input = Types::Input.new(
-          previous_output: cell.out_point,
-          since: 0
-        )
-        inputs << input
-        witnesses << Types::Witness.new(data: [])
-        input_capacities += cell.capacity.to_i
-
-        diff = input_capacities - total_capacities
-        break if diff >= min_change_capacity || diff.zero?
-      end
-
-      raise "Capacity not enough!" if input_capacities < total_capacities
-
-      OpenStruct.new(inputs: inputs, capacities: input_capacities, witnesses: witnesses)
+      CellCollector.new(
+        @api,
+        skip_data_and_type: @skip_data_and_type,
+        hash_type: @hash_type
+      ).gather_inputs(
+        [lock_hash],
+        capacity,
+        min_capacity,
+        min_change_capacity,
+        fee
+      )
     end
 
     def code_hash

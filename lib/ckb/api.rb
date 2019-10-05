@@ -14,13 +14,14 @@ module CKB
     attr_reader :secp_cell_code_hash
     attr_reader :dao_out_point
     attr_reader :dao_code_hash
+    attr_reader :dao_type_hash
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176"
-        expected_type_hash = "0x1892ea40d82b53c678ff88312450bbb17e164d7a3e0a90941aa58839f56f8df2"
+        expected_code_hash = "0xc8b0772347016713ee8039d6b1d2f4b02803abdc4ea4e95677b0c5e8ff52ea3b"
+        expected_type_hash = "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -47,8 +48,9 @@ module CKB
         )
         dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[2])
         dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
+        dao_type_hash = system_cell_transaction.outputs[2].type.compute_hash
 
-        set_dao_dep(dao_out_point, dao_code_hash)
+        set_dao_dep(dao_out_point, dao_code_hash, dao_type_hash)
       end
     end
 
@@ -59,9 +61,10 @@ module CKB
       @secp_cell_type_hash = secp_cell_type_hash
     end
 
-    def set_dao_dep(out_point, code_hash)
+    def set_dao_dep(out_point, code_hash, type_hash)
       @dao_out_point = out_point
       @dao_code_hash = code_hash
+      @dao_type_hash = type_hash
     end
 
     def genesis_block
@@ -108,10 +111,10 @@ module CKB
     # @param from [String | Integer]
     # @param to [String | Integer]
     #
-    # @return [CKB::Types::Output[]]
+    # @return [CKB::Types::CellOutputWithOutPoint[]]
     def get_cells_by_lock_hash(hash, from, to)
       outputs = rpc.get_cells_by_lock_hash(hash, from, to)
-      outputs.map { |output| Types::Output.from_h(output) }
+      outputs.map { |output| Types::CellOutputWithOutPoint.from_h(output) }
     end
 
     # @param tx_hash [String]
@@ -288,6 +291,23 @@ module CKB
     def get_banned_addresses
       result = rpc.get_banned_addresses
       result.map { |addr| Types::BannedAddress.from_h(addr) }
+    end
+
+    # @param bytes_limit [String | Integer] integer or hex number
+    # @param proposals_limit [String | Integer] integer or hex number
+    # @param max_version [String | Integer] integer or hex number
+    # @return block_template [BlockTemplate]
+    def get_block_template(bytes_limit: nil, proposals_limit: nil, max_version: nil)
+      block_template_h = rpc.get_block_template(bytes_limit, proposals_limit, max_version)
+      Types::BlockTemplate.from_h(block_template_h)
+    end
+
+
+    # @param work_id [String | Integer] integer or hex number
+    # @param raw_block_h [hash]
+    # @return block_hash [String]
+    def submit_block(work_id: nil, raw_block_h: nil)
+      rpc.submit_block(work_id, raw_block_h)
     end
 
     def inspect

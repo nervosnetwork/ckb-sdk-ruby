@@ -1,118 +1,111 @@
+# frozen_string_literal: true
+
 RSpec.describe CKB::Types::Transaction do
   let(:tx_to_sign_hash) do
-    {
-      "version": "0x0",
-      "cell_deps":[],
-      "header_deps":[],
-      "inputs": [
-        {
-          "args": [],
-          "previous_output": {
-            "tx_hash": "0xa80a8e01d45b10e1cbc8a2557c62ba40edbdc36cd63a31fc717006ca7b157b50",
-            "index": "0x0"
-          },
-          "since": "0x0"
-        }
-      ],
-      "outputs": [
-        {
-          "capacity": "0x174876e800",
-          "lock": {
-            "code_hash": "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
-            "args": [
-              "0xe2193df51d78411601796b35b17b4f8f2cd85bd0"
-            ]
-          },
-          "type": nil,
-          "data": "0x"
-        },
-        {
-          "capacity": "0x474dec26800",
-          "lock": {
-            "code_hash": "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
-            "args": [
-              "0x36c329ed630d6ce750712a477543672adab57f4c"
-            ]
-          },
-          "type": nil,
-          "data": "0x"
-        }
-      ],
-      "witnesses": [
-        {
-          data: []
-        }
-      ]
-    }
+    { version: "0x0",
+      cell_deps: [{ out_point: { tx_hash: "0xe7d5ddd093bcc5909a6f441882e58906062eaf66a6ac1bcf7d7411931bc9ab72", index: "0x0" },
+                    dep_type: "dep_group" }],
+      header_deps: [],
+      inputs: [{ previous_output: { tx_hash: "0x650b8f3fcb2627b5500c308a9b0485b806e256886c36d641517eec53707bbcf9", index: "0x0" },
+                 since: "0x0" }],
+      outputs: [{ capacity: "0x174876e800",
+                  lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                          args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                          hash_type: "type" },
+                  type: nil },
+                { capacity: "0x182ca202c9",
+                  lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                          args: "0x3954acece65096bfa81258983ddb83915fc56bd8",
+                          hash_type: "type" },
+                  type: nil }],
+      outputs_data: %w[0x 0x],
+      witnesses: ["0x"] }
+  end
+
+  let(:tx_to_sign_hash_use_data_hash) do
+    { version: "0x0",
+      cell_deps: [{ out_point: { tx_hash: "0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55", index: "0x1" },
+                    dep_type: "code" }],
+      header_deps: [],
+      inputs: [{ previous_output: { tx_hash: "0xa80a8e01d45b10e1cbc8a2557c62ba40edbdc36cd63a31fc717006ca7b157b50", index: "0x0" },
+                 since: "0x0" }],
+      outputs: [{ capacity: "0x174876e800",
+                  lock: { code_hash: "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
+                          args: "0xe2193df51d78411601796b35b17b4f8f2cd85bd0",
+                          hash_type: "data" },
+                  type: nil },
+                { capacity: "0x474dec26800",
+                  lock: { code_hash: "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
+                          args: "0x36c329ed630d6ce750712a477543672adab57f4c",
+                          hash_type: "data" },
+                  type: nil }],
+      outputs_data: %w[0x 0x],
+      witnesses: ["0x"] }
   end
 
   it "sign" do
     tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
-    key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
-    tx_hash = "0xac1bb95455cdfb89b6e977568744e09b6b80e08cab9477936a09c4ca07f5b8ab"
+    key = CKB::Key.new("0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805")
+    tx_hash = "0x993e6e629be2f016bf72becaa9ad4b39f7fdd72357c9341335783f451010b94e"
     signed_tx = tx_to_sign.sign(key, tx_hash)
 
     expect(signed_tx.to_h[:hash]).to eq(tx_hash)
-    expect(signed_tx.to_h[:witnesses]).to eq([
-      {
-        data: [
-          "0x2c643579e47045be050d3842ed9270151af8885e33954bddad0e53e81d1c2dbe2dc637877a8302110846ebc6a16d9148c106e25f945063ad1c4d4db2b695240800",
-        ]
-      }
-    ])
+    expect(signed_tx.to_h[:witnesses]).to eq(["0xf198c795adfc5aead05ad0ac9d979519b0a707e7987c5addb3a6be42669af7f86e3a76a3ce8c770a92915e2d5a0212b3417db1c2152f2107ee7683601a4ecb5001"])
   end
 
-  context "sign with witness (dao tx)" do
+  it "sign with data hash" do
+    tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
+    key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
+    tx_hash = tx_to_sign.compute_hash
+    signed_tx = tx_to_sign.sign(key, tx_hash)
+
+    expect(signed_tx.to_h[:hash]).to eq(tx_hash)
+    expect(signed_tx.to_h[:witnesses]).to eq(["0x15edb4da91bd5beebf0aee82a9daa4d590ecdfc0895c6b010638573b2d1d502c50373e7d540e74eb8e3a3bd1dbd20c372c492fc7242592c8a04763be029325a900"])
+  end
+
+  it "sign input" do
+    tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
+    key = CKB::Key.new("0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805")
+    tx_hash = "0x993e6e629be2f016bf72becaa9ad4b39f7fdd72357c9341335783f451010b94e"
+    signed_tx = tx_to_sign.sign_input(0, key)
+
+    expect(signed_tx.to_h[:hash]).to eq(tx_hash)
+    expect(signed_tx.to_h[:witnesses]).to eq(["0xf198c795adfc5aead05ad0ac9d979519b0a707e7987c5addb3a6be42669af7f86e3a76a3ce8c770a92915e2d5a0212b3417db1c2152f2107ee7683601a4ecb5001"])
+  end
+
+  context "multiple inputs sign" do
     let(:tx_to_sign_hash) do
-      {
-        version: "0x0",
-        cell_deps:[],
-        header_deps:[],
-        inputs: [
-        {
-          previous_output: {
-            tx_hash: "0x91fcfd61f420c1090aeded6b6d91d5920a279fe53ec34353afccc59264eeddd4",
-            index: "0x0"
-          },
-          since: "0x71"
-        },
-        {
-          previous_output: {
-            tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031",
-            index: "0x0"
-          },
-          since: "0x0"
-        }
-      ],
-      outputs: [
-      {
-        capacity: "0x9184efca682",
-            lock: {
-          code_hash: "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd",
-               args: [
-            "0x36c329ed630d6ce750712a477543672adab57f4c"
-          ]
-        },
-            type: nil,
-            data: "0x"
-      }
-      ],
-      witnesses: [
-        {
-          data: [
-            "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb"
-          ]
-        },
-        {
-          data: []
-        }
-      ]
-    }
+      { version: "0x0",
+        cell_deps: [{ out_point: { tx_hash: "0xe7d5ddd093bcc5909a6f441882e58906062eaf66a6ac1bcf7d7411931bc9ab72", index: "0x0" },
+                      dep_type: "dep_group" }],
+        header_deps: [],
+        inputs: [{ previous_output: { tx_hash: "0xa31b9b8d105c62d69b7fbfc09bd700f3a1d6659232ffcfaa12a048ee5d7b7f2d", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0xec5e63e19ec0161092ba78a841e9ead5deb30e56c2d98752ed974f2f2b4aeff2", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0x5ad2600cb884572f9d8f568822c0447f6f49eb63b53257c20d0d8559276bf4e2", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0xf21e34224e90c1ab47f42e2977ea455445d22ba3aaeb4bd2fcb2075704f330ff", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0xc8212696d516c63bced000d3008c4a8c27c72c03f4becb40f0bf24a31063271f", index: "0x0" },
+                   since: "0x0" }],
+        outputs: [{ capacity: "0xe8d4a51000",
+                    lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                            args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                            hash_type: "type" },
+                    type: nil },
+                  { capacity: "0x47345dea3",
+                    lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                            args: "0x3954acece65096bfa81258983ddb83915fc56bd8",
+                            hash_type: "type" },
+                    type: nil }],
+        outputs_data: %w[0x 0x],
+        witnesses: %w[0x 0x 0x 0x 0x] }
     end
 
-    let(:tx_hash) { "0x985772e541c23d4e7dbf9844a9b9d93fcdc62273fa1f4ae1ae82703962dc1a4e" }
+    let(:tx_hash) { "0x03aea57404a99c685b098b7ee96469f0c5db57fa49aaef27cf7c080960da4b19" }
 
-    let(:private_key) { "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3" }
+    let(:private_key) { "0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805" }
     let(:key) { CKB::Key.new(private_key) }
 
     it "sign" do
@@ -120,176 +113,140 @@ RSpec.describe CKB::Types::Transaction do
       signed_tx = tx_to_sign.sign(key, tx_hash)
 
       expect(signed_tx.hash).to eq tx_hash
-      expect(signed_tx.witnesses.map(&:to_h)).to eq([
-        {
-          data: [
-            "0x68a57373f4e98aecfb9501ec1cc4a78c048361332e4b6706bdc1469d30bd52ea42feca657dd1de1eff384e6ed24a6910b011d49d855bd1ed209f5ce77d8116ac01",
-            "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb"
-          ]
-        },
-        {
-          data: [
-            "0x3b13c362f254e7becb0e731e4756e742bfddbf2f5d7c16cd609ba127d2b7e07f1d588c3a7132fc20c478e2de14f6370fbb9e4402d240e4b32c8d671177e1f31101"
-          ]
-        }
-      ])
+      expect(signed_tx.witnesses).to eq(%w[0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801 0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801])
+    end
+
+    let(:tx_to_sign_hash_use_data_hash) do
+      { version: "0x0",
+        cell_deps: [{ out_point: { tx_hash: "0xa76801d09a0eabbfa545f1577084b6f3bafb0b6250e7f5c89efcfd4e3499fb55", index: "0x1" },
+                      dep_type: "code" }],
+        header_deps: [],
+        inputs: [{ previous_output: { tx_hash: "0x91fcfd61f420c1090aeded6b6d91d5920a279fe53ec34353afccc59264eeddd4", index: "0x0" },
+                   since: "0x71" },
+                 { previous_output: { tx_hash: "0x00000000000000000000000000004e4552564f5344414f494e50555430303031", index: "0x0" },
+                   since: "0x0" }
+        ],
+        outputs: [{ capacity: "0x9184efca682",
+                    lock: { code_hash: "0xf1951123466e4479842387a66fabfd6b65fc87fd84ae8e6cd3053edb27fff2fd",
+                            args: "0x36c329ed630d6ce750712a477543672adab57f4c",
+                            hash_type: "data" },
+                    type: nil }],
+        outputs_data: %w[0x],
+        witnesses: %w(0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb 0x)}
+    end
+
+    it "sign2" do
+      tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
+      key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
+      tx_hash = tx_to_sign.compute_hash
+      signed_tx = tx_to_sign.sign(key, tx_hash)
+
+      expect(signed_tx.to_h[:hash]).to eq(tx_hash)
+      expect(signed_tx.to_h[:witnesses]).to eq(["0x2db8278bf806fb7eac778e56eb0b34deccb16bae68c2a088d277bded265d90da37fb995a1f629a9de7c9722640f2f9c67c5572e6b5fca1e831649484ba9a0b81004107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb", "0x014de9c721a5a33435a02d44580978ecdb794d2a7f3fe7d875e7f058ef8c961f2e983079400cfd8a2bbe34f2d1fd3f0a6e2c390bf7e45006c06c7831e4a67e8101"])
     end
   end
 
   context "generate tx_hash" do
     let(:specific_tx_h) do
-      {
-        :version=>"0x0",
-        :cell_deps=>[],
-        :header_deps=>[],
-        :inputs=>
-          [{:previous_output=>
-              {:tx_hash=>"0x0000000000000000000000000000000000000000000000000000000000000000", :index=>"0xffffffff"},
-            :since=>"0x3e8"}],
-        :outputs=>
-          [{:capacity=>"0x1d37af3e8a",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0x0001acc717d6424ee6efdd84e0c5befb8e44a89c"],
-               :hash_type=>"type"},
-            :type=>nil}],
-        :outputs_data=>["0x48656c6c6f2c204b652057616e67212120456e6a6f7921"],
-        :witnesses=>
-          [{:data=>
-              ["0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e8801", "0x0001acc717d6424ee6efdd84e0c5befb8e44a89c"]}],
-        :hash=>"0xc6da9fd9f29b269b302b388f59329c16131c7f4487f5c59d01094bd5db7c9847"
-      }
+      { version: "0x0",
+        cell_deps: [],
+        header_deps: [],
+        inputs: [{ previous_output: { tx_hash: "0x0000000000000000000000000000000000000000000000000000000000000000", index: "0xffffffff" },
+                   since: "0xa" }],
+        outputs: [{ capacity: "0x2ca7071b9e",
+                    lock: { code_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
+                            args: "0x",
+                            hash_type: "type" },
+                    type: nil }],
+        outputs_data: ["0x"],
+        witnesses: ["0x490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce801140000003954acece65096bfa81258983ddb83915fc56bd8"],
+        hash: "0x1c9e75323c160a52e18b8e7deaa09b31af600e4e942c7fa4934059a8f4a64d61" }
     end
 
     let(:one_cell_dep_tx_h) do
-      {
-        :version=>"0x0",
-        :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
-            :dep_type=>"dep_group"}],
-        :header_deps=>[],
-        :inputs=>
-          [{:previous_output=>
-              {:tx_hash=>"0x1a565d7d24705b65aea74e7c5cdbbdf43f00c1a0b9f7e11e4bde0f54321bb429", :index=>"0x1"},
-            :since=>"0x0"}],
-        :outputs=>
-          [{:capacity=>"0x174876e800",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0xf485c551e77fc77750115a36b7d2033fbab00951"],
-               :hash_type=>"type"},
-            :type=>nil},
-           {:capacity=>"0x59b2b07c8000",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
-               :hash_type=>"type"},
-            :type=>nil}],
-        :outputs_data=>["0x", "0x"],
-        :witnesses=>
-          [{:data=>
-              ["0x7d31e525720fd16d5500aad97f92ee87a97e9510259621c77776f75f8703b90618bd07ff2d5a447553df272d1203ce090dd11f236fbd60f992a49445ff09d8fd01"]}],
-        :hash=>"0x5cf2f68d5d22a0f58465564490a4fe4e88af2d1d3592c4033cb27a2450c6c27e"
-      }
+      { version: "0x0",
+        cell_deps: [{ out_point: { tx_hash: "0xe7d5ddd093bcc5909a6f441882e58906062eaf66a6ac1bcf7d7411931bc9ab72", index: "0x0" },
+                      dep_type: "dep_group" }],
+        header_deps: [],
+        inputs: [{ previous_output: { tx_hash: "0xa31b9b8d105c62d69b7fbfc09bd700f3a1d6659232ffcfaa12a048ee5d7b7f2d", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0xec5e63e19ec0161092ba78a841e9ead5deb30e56c2d98752ed974f2f2b4aeff2", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0x5ad2600cb884572f9d8f568822c0447f6f49eb63b53257c20d0d8559276bf4e2", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0xf21e34224e90c1ab47f42e2977ea455445d22ba3aaeb4bd2fcb2075704f330ff", index: "0x0" },
+                   since: "0x0" },
+                 { previous_output: { tx_hash: "0xc8212696d516c63bced000d3008c4a8c27c72c03f4becb40f0bf24a31063271f", index: "0x0" },
+                   since: "0x0" }],
+        outputs: [{ capacity: "0xe8d4a51000",
+                    lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                            args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                            hash_type: "type" },
+                    type: nil },
+                  { capacity: "0x47345dea3",
+                    lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                            args: "0x3954acece65096bfa81258983ddb83915fc56bd8",
+                            hash_type: "type" },
+                    type: nil }],
+        outputs_data: %w[0x 0x],
+        witnesses: %w[0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801
+                      0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801
+                      0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801
+                      0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801
+                      0xc5fb0574026cb74a8633bc2c67a32db701025ea5e3f4438c713daaa31539183d719a079a06e426036fc95d5ac97bcde84374a4b7002480d63f1bfc7dc5ee0d4801],
+        hash: "0x03aea57404a99c685b098b7ee96469f0c5db57fa49aaef27cf7c080960da4b19" }
     end
 
     let(:multiple_cell_dep_tx_h) do
-      {
-        :version=>"0x0",
-        :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
-            :dep_type=>"dep_group"}],
-        :header_deps=>[],
-        :inputs=>
-          [{:previous_output=>
-              {:tx_hash=>"0x1a565d7d24705b65aea74e7c5cdbbdf43f00c1a0b9f7e11e4bde0f54321bb429", :index=>"0x1"},
-            :since=>"0x0"}],
-        :outputs=>
-          [{:capacity=>"0x174876e800",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0xf485c551e77fc77750115a36b7d2033fbab00951"],
-               :hash_type=>"type"},
-            :type=>nil},
-           {:capacity=>"0x59b2b07c8000",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
-               :hash_type=>"type"},
-            :type=>nil}],
-        :outputs_data=>["0x", "0x"],
-        :witnesses=>
-          [{:data=>
-              ["0x7d31e525720fd16d5500aad97f92ee87a97e9510259621c77776f75f8703b90618bd07ff2d5a447553df272d1203ce090dd11f236fbd60f992a49445ff09d8fd01"]}],
-        :hash=>"0x5cf2f68d5d22a0f58465564490a4fe4e88af2d1d3592c4033cb27a2450c6c27e"
-      }
-    end
-
-    let(:code_dep_type_tx_h) do
-      {
-        :version=>"0x0",
-        :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0x0fb4945d52baf91e0dee2a686cdd9d84cad95b566a1d7409b970ee0a0f364f60", :index=>"0x2"},
-            :dep_type=>"code"},
-           {:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
-            :dep_type=>"dep_group"}],
-        :header_deps=>
-          ["0x28a548494dfc02a952f5ae25bf2886abb7ba5a8092bd139700641b4979a57217", "0x3bff5d655b9e309f0d0bfea2b792e720a88df702a5724dbb9beef92516827b3f"],
-        :inputs=>
-          [{:previous_output=>
-              {:tx_hash=>"0x9d1bf801b235ce62812844f01381a070c0cc72876364861e00492eac1d8b54e7", :index=>"0x0"},
-            :since=>"0x108a0"}],
-        :outputs=>
-          [{:capacity=>"0x1768454ed7",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
-               :hash_type=>"type"},
-            :type=>nil}],
-        :outputs_data=>["0x"],
-        :witnesses=>
-          [{:data=>
-              ["0x25d094fdab0bfbb0261f4d665a340bfcfca1cc33be317b654dd1ea2a9c42b05847cfe13ce5eae67335858295e456ebc3d40bf44f98e862974799890d6401215300",
-               "0x0000000000000000"]}],
-        :hash=>"0x3d1624dada9eafe506f8d0a44531993a41a91b496e5ce3ea18e16322ec997944"
-      }
+      { version: "0x0",
+        cell_deps: [{ out_point: { tx_hash: "0xe7d5ddd093bcc5909a6f441882e58906062eaf66a6ac1bcf7d7411931bc9ab72", index: "0x0" },
+                      dep_type: "dep_group" },
+                    { out_point: { tx_hash: "0x50b9240d466800a6d0b2d07e10151b3a48f44c801a0f7f22e4e033419bd69b8e", index: "0x2" },
+                      dep_type: "code" }],
+        header_deps: [],
+        inputs: [{ previous_output: { tx_hash: "0x3c515d38292bff5068eeddc94fa4aaea0f60f78a9c565ea3fb5835c8c395febf", index: "0x0" },
+                   since: "0x0" }],
+        outputs: [{ capacity: "0x9502f9000",
+                    lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                            args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                            hash_type: "type" },
+                    type: { code_hash: "0x88af2314293c7799a11a8ce3b551fb632d5ffa21b42d04326b051f580ca55f6a",
+                            args: "0x",
+                            hash_type: "data" } },
+                  { capacity: "0xdf8475800",
+                    lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                            args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                            hash_type: "type" },
+                    type: nil }],
+        outputs_data: %w[0x 0x],
+        witnesses: ["0x7da70e8d0d529afb5f9193a5063463a757c305a4af0e882f6dbacc7cbe74096f1b14aabac84990e7902f28f40e2c8dd70f8dd06a600185c4e89090c25a7bf61700"],
+        hash: "0xb4d2204035bf8df2ecec1ef9b632b5fc91a245555a96eb0812ed0b29b3f4039a" }
     end
 
     let(:has_type_script_tx_h) do
-      {
-        :version=>"0x0",
-        :cell_deps=>
-          [{:out_point=>{:tx_hash=>"0xc12386705b5cbb312b693874f3edf45c43a274482e27b8df0fd80c8d3f5feb8b", :index=>"0x0"},
-            :dep_type=>"dep_group"},
-           {:out_point=>{:tx_hash=>"0x0fb4945d52baf91e0dee2a686cdd9d84cad95b566a1d7409b970ee0a0f364f60", :index=>"0x2"},
-            :dep_type=>"code"}],
-        :header_deps=>[],
-        :inputs=>
-          [{:previous_output=>
-              {:tx_hash=>"0x31f695263423a4b05045dd25ce6692bb55d7bba2965d8be16b036e138e72cc65", :index=>"0x1"},
-            :since=>"0x0"}],
-        :outputs=>
-          [{:capacity=>"0x174876e800",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
-               :hash_type=>"type"},
-            :type=>
-              {:code_hash=>"0xece45e0979030e2f8909f76258631c42333b1e906fd9701ec3600a464a90b8f6",
-               :args=>[],
-               :hash_type=>"data"}},
-           {:capacity=>"0x59e1416a5000",
-            :lock=>
-              {:code_hash=>"0x68d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e88",
-               :args=>["0x59a27ef3ba84f061517d13f42cf44ed020610061"],
-               :hash_type=>"type"},
-            :type=>nil}],
-        :outputs_data=>["0x", "0x"],
-        :witnesses=>
-          [{:data=>
-              ["0x82df73581bcd08cb9aa270128d15e79996229ce8ea9e4f985b49fbf36762c5c37936caf3ea3784ee326f60b8992924fcf496f9503c907982525a3436f01ab32900"]}],
-        :hash=>"0x09ce2223304a5f48d5ce2b6ee2777d96503591279671460fa39ae894ea9e2b87"
-      }
+      { version: "0x0",
+                       cell_deps: [{ out_point: { tx_hash: "0xe7d5ddd093bcc5909a6f441882e58906062eaf66a6ac1bcf7d7411931bc9ab72", index: "0x0" },
+                                     dep_type: "dep_group" },
+                                   { out_point: { tx_hash: "0x50b9240d466800a6d0b2d07e10151b3a48f44c801a0f7f22e4e033419bd69b8e", index: "0x2" },
+                                     dep_type: "code" }],
+                       header_deps: [],
+                       inputs: [{ previous_output: { tx_hash: "0x3c515d38292bff5068eeddc94fa4aaea0f60f78a9c565ea3fb5835c8c395febf", index: "0x0" },
+                                  since: "0x0" }],
+                       outputs: [{ capacity: "0x9502f9000",
+                                   lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                                           args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                                           hash_type: "type" },
+                                   type: { code_hash: "0x88af2314293c7799a11a8ce3b551fb632d5ffa21b42d04326b051f580ca55f6a",
+                                           args: "0x",
+                                           hash_type: "data" } },
+                                 { capacity: "0xdf8475800",
+                                   lock: { code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                                           args: "0x59a27ef3ba84f061517d13f42cf44ed020610061",
+                                           hash_type: "type" },
+                                   type: nil }],
+                       outputs_data: %w[0x 0x],
+                       witnesses: ["0x7da70e8d0d529afb5f9193a5063463a757c305a4af0e882f6dbacc7cbe74096f1b14aabac84990e7902f28f40e2c8dd70f8dd06a600185c4e89090c25a7bf61700"],
+                       hash: "0xb4d2204035bf8df2ecec1ef9b632b5fc91a245555a96eb0812ed0b29b3f4039a" }
     end
 
     it "should build correct hash for specific transaction" do
@@ -310,14 +267,6 @@ RSpec.describe CKB::Types::Transaction do
 
     it "should build correct hash when tx has multiple cell_deps" do
       tx = CKB::Types::Transaction.from_h(multiple_cell_dep_tx_h)
-
-      expect(
-        tx.compute_hash
-      ).to eq tx.hash
-    end
-
-    it "should build correct hash when has dep_type is code cell_dep" do
-      tx = CKB::Types::Transaction.from_h(code_dep_type_tx_h)
 
       expect(
         tx.compute_hash
@@ -357,14 +306,6 @@ RSpec.describe CKB::Types::Transaction do
 
       it "should build correct hash when tx has multiple cell_deps" do
         tx = CKB::Types::Transaction.from_h(multiple_cell_dep_tx_h)
-
-        expect(
-          tx.compute_hash
-        ).to eq api.compute_transaction_hash(tx)
-      end
-
-      it "should build correct hash when has dep_type is code cell_dep" do
-        tx = CKB::Types::Transaction.from_h(code_dep_type_tx_h)
 
         expect(
           tx.compute_hash
