@@ -14,6 +14,7 @@ module CKB
     attr_reader :secp_cell_code_hash
     attr_reader :dao_out_point
     attr_reader :dao_code_hash
+    attr_reader :dao_type_hash
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
@@ -47,8 +48,9 @@ module CKB
         )
         dao_cell_data = CKB::Utils.hex_to_bin(system_cell_transaction.outputs_data[2])
         dao_code_hash = CKB::Blake2b.hexdigest(dao_cell_data)
+        dao_type_hash = system_cell_transaction.outputs[2].type.compute_hash
 
-        set_dao_dep(dao_out_point, dao_code_hash)
+        set_dao_dep(dao_out_point, dao_code_hash, dao_type_hash)
       end
     end
 
@@ -59,9 +61,10 @@ module CKB
       @secp_cell_type_hash = secp_cell_type_hash
     end
 
-    def set_dao_dep(out_point, code_hash)
+    def set_dao_dep(out_point, code_hash, type_hash)
       @dao_out_point = out_point
       @dao_code_hash = code_hash
+      @dao_type_hash = type_hash
     end
 
     def genesis_block

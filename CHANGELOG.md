@@ -21,6 +21,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * submit_block rpc ([2a10a7a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2a10a7a))
 * update args serializer ([c59691a](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c59691a))
 * update expected code_hash and type_hash ([78f3f59](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/78f3f59))
+* update full payload address generator ([c985667](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c985667))
+* update NervosDAO lock period to 180 epochs ([8ecb8f2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/8ecb8f2))
 * update witnesses type ([3838fd8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3838fd8))
 
 

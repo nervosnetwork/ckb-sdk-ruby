@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module CKB
-  DAO_LOCK_PERIOD_BLOCKS = 10
+  DAO_LOCK_PERIOD_EPOCHS = 180
   DAO_MATURITY_BLOCKS = 5
 
   class Wallet
@@ -140,8 +140,9 @@ module CKB
         capacity: capacity,
         lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
         type: Types::Script.new(
-          code_hash: api.dao_code_hash,
-          args: "0x"
+          code_hash: api.dao_type_hash,
+          args: "0x",
+          hash_type: "type"
         )
       )
       output_data = "0x"
@@ -202,17 +203,26 @@ module CKB
         raise "Transaction is not commtted yet!"
       end
       deposit_block = api.get_block(tx.tx_status.block_hash).header
+      deposit_epoch = self.class.parse_epoch(deposit_block.epoch)
       deposit_block_number = deposit_block.number
       current_block = api.get_tip_header
+      current_epoch = self.class.parse_epoch(current_block.epoch)
       current_block_number = current_block.number
 
       if deposit_block_number == current_block_number
         raise "You need to at least wait for 1 block before generating DAO withdraw transaction!"
       end
 
-      windowleft = DAO_LOCK_PERIOD_BLOCKS - (current_block_number - deposit_block_number) % DAO_LOCK_PERIOD_BLOCKS
-      windowleft = DAO_MATURITY_BLOCKS if windowleft < DAO_MATURITY_BLOCKS
-      since = current_block_number + windowleft + 1
+      withdraw_fraction = current_epoch.index * deposit_epoch.length
+      deposit_fraction = deposit_epoch.index * current_epoch.length
+      deposited_epoches = current_epoch.number - deposit_epoch.number
+      deposited_epoches +=1 if withdraw_fraction > deposit_fraction
+      lock_epochs = (deposited_epoches + (DAO_LOCK_PERIOD_EPOCHS - 1)) / DAO_LOCK_PERIOD_EPOCHS * DAO_LOCK_PERIOD_EPOCHS
+      minimal_since_epoch_number = deposit_epoch.number + lock_epochs
+      minimal_since_epoch_index = deposit_epoch.index
+      minimal_since_epoch_length = deposit_epoch.length
+
+      minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index, minimal_since_epoch_number)
 
       # a hex string
       output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash)
@@ -238,7 +248,7 @@ module CKB
           deposit_block.hash
         ],
         inputs: [
-          Types::Input.new(previous_output: new_out_point, since: since)
+          Types::Input.new(previous_output: new_out_point, since: minimal_since)
         ],
         outputs: outputs,
         outputs_data: outputs_data,
@@ -247,6 +257,19 @@ module CKB
         ]
       )
       tx.sign(key, tx.compute_hash)
+    end
+
+    # @param epoch [Integer]
+    def self.parse_epoch(epoch)
+      OpenStruct.new(
+        length: (epoch >> 40) & 0xFFFF,
+        index: (epoch >> 24) & 0xFFFF,
+        number: (epoch) & 0xFFFFFF
+      )
+    end
+
+    def self.epoch_since(length, index, number)
+      (0x20 << 56) + (length << 40) + (index << 24) + number
     end
 
     # @param hash_hex [String] "0x..."
