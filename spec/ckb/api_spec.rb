@@ -17,26 +17,20 @@ RSpec.describe CKB::API do
                        header_deps: [],
                        inputs: [{ previous_output: { tx_hash: "0x0000000000000000000000000000000000000000000000000000000000000000", index: "0xffffffff" },
                                   since: "0x1" }],
-                       outputs: [{ capacity: "0x2ca7071b9e",
-                                   lock: { code_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                                           args: "0x",
-                                           hash_type: "type" },
-                                   type: nil }],
-                       outputs_data: ["0x"],
-                       witnesses: ["0x490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce801140000003954acece65096bfa81258983ddb83915fc56bd8"],
-                       hash: "0x249ba6cc038ccb16a18b1da03b994f87a6e32bf128b553a66a5805e9d6f36c50" }],
+                       outputs: [],
+                       outputs_data: [],
+                       witnesses: ["0x590000000c00000055000000490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8011400000036c329ed630d6ce750712a477543672adab57f4c00000000"] }],
       header: { compact_target: "0x20010000",
-                hash: "0x22946a72d17b745d950ae1b67326d77f708ba5c0411cbf424c7f4df04c1ac317",
                 number: "0x1",
-                parent_hash: "0x70396940ae2e81bd2627a8e0e75f3d277585bb1afd78839cfd8f2c54e8697bbc",
-                nonce: "0x3a7937c78d7ae069",
+                parent_hash: "0xe49352ee4984694d88eb3c1493a33d69d61c786dc5b0a32c4b3978d4fad64379",
+                nonce: "0x7622c91cd47ca43fa63f7db0ee0fd3ef",
                 timestamp: "0x16d7ad5d9de",
-                transactions_root: "0xfcf1ec1c5da7f80b23ad81e72885d381ee04ad58c79003100d38ad285ae44959",
+                transactions_root: "0x29c04a85c4b686ec8a78615d193d64d4416dbc428f9e4631f27c62419926110f",
                 proposals_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 uncles_hash: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 version: "0x0",
                 epoch: "0x3e80001000000",
-                dao: "0x2cd631702e870700a715aee035872300a804ad5e9a00000000ec1bc9857a0100" } }
+                dao: "0x04d0a006e1840700df5d55f5358723001206877a0b00000000e3bad4847a0100" } }
   end
 
   it "genesis block" do
@@ -247,6 +241,7 @@ RSpec.describe CKB::API do
     end
 
     it "submit_block should return block hash" do
+      block_h[:header][:parent_hash] = api.genesis_block_hash
       block = Types::Block.from_h(block_h)
       result = api.submit_block(work_id: "test", raw_block_h: block.to_raw_block_h)
       expect(result).to be_a(String)
