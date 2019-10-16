@@ -114,6 +114,11 @@ module CKB
         blake2b.hexdigest
       end
 
+      def size
+        transaction_serializer = CKB::Serializers::TransactionSerializer.new(self)
+        Utils.hex_to_bin(transaction_serializer.serialize).bytesize + 4
+      end
+
       def self.from_h(hash)
         return if hash.nil?
 

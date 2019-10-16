@@ -26,6 +26,8 @@ require_relative "out_point_index_serializer"
 require_relative "out_point_serializer"
 require_relative "output_data_serializer"
 require_relative "raw_transaction_serializer"
+require_relative "witness_serializer"
+require_relative "transaction_serializer"
 
 module CKB
   module Serializers
