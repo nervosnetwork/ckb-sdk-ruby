@@ -88,7 +88,7 @@ RSpec.describe CKB::Types::Transaction do
     it "eq tx.serialized_tx_fee" do
       size_without_witness =
         CKB::TransactionSize.base_size +
-        CKB::TransactionSize.every_cell_deps * 2 +
+        CKB::TransactionSize.every_cell_dep * 2 +
         CKB::TransactionSize.every_input +
         transaction.outputs.map { |output| CKB::TransactionSize.every_output(output) }.reduce(:+) +
         transaction.outputs_data.map { |data| CKB::TransactionSize.every_outputs_data(data) }.reduce(:+)

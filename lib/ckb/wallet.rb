@@ -74,7 +74,7 @@ module CKB
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee_rate: 0)
       key = get_key(key)
 
-      tx_size = TransactionSize.base_size + TransactionSize.every_cell_deps
+      tx_size = TransactionSize.base_size + TransactionSize.every_cell_dep
 
       output = Types::Output.new(
         capacity: capacity,
@@ -143,7 +143,7 @@ module CKB
     def deposit_to_dao(capacity, key: nil, fee_rate: 0)
       key = get_key(key)
 
-      tx_size = TransactionSize.base_size + TransactionSize.every_cell_deps * 2
+      tx_size = TransactionSize.base_size + TransactionSize.every_cell_dep * 2
 
       output = Types::Output.new(
         capacity: capacity,
@@ -253,8 +253,8 @@ module CKB
 
       tx_size =
         TransactionSize.base_size +
-        TransactionSize.every_cell_deps * 2 +
-        TransactionSize.every_header_deps * 2 +
+        TransactionSize.every_cell_dep * 2 +
+        TransactionSize.every_header_dep * 2 +
         TransactionSize.every_input +
         TransactionSize.every_output(output) +
         outputs_data.map { |data| TransactionSize.every_outputs_data(data) }.reduce(:+) +

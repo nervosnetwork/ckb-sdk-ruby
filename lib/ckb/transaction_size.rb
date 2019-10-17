@@ -9,11 +9,11 @@ module CKB
         68 + SERIALIZED_OFFSET_BYTESIZE
       end
 
-      def every_cell_deps
+      def every_cell_dep
         37
       end
 
-      def every_header_deps
+      def every_header_dep
         32
       end
 
