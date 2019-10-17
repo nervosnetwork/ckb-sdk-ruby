@@ -116,7 +116,8 @@ module CKB
 
       def serialized_size_in_block
         transaction_serializer = CKB::Serializers::TransactionSerializer.new(self)
-        Utils.hex_to_bin(transaction_serializer.serialize).bytesize + 4
+        serialized_tx_offset_bytesize = 4 // 4 bytes for the tx offset cost with molecule array (transactions)
+        Utils.hex_to_bin(transaction_serializer.serialize).bytesize + serialized_tx_offset_bytesize
       end
 
       def self.from_h(hash)
