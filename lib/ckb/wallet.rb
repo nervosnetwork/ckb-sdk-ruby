@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "bigdecimal"
 
 module CKB
   DAO_LOCK_PERIOD_EPOCHS = 180
@@ -70,8 +71,10 @@ module CKB
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0)
+    def generate_tx(target_address, capacity, data = "0x", key: nil, fee_rate: 0)
       key = get_key(key)
+
+      tx_size = TransactionSize.base_size + TransactionSize.every_cell_deps
 
       output = Types::Output.new(
         capacity: capacity,
@@ -82,24 +85,28 @@ module CKB
         )
       )
       output_data = data
+      tx_size += TransactionSize.every_output(output)
+      tx_size += TransactionSize.every_outputs_data(data)
 
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
       change_output_data = "0x"
+      tx_size += TransactionSize.every_output(change_output)
+      tx_size += TransactionSize.every_outputs_data(change_output_data)
 
       i = gather_inputs(
-        capacity,
+        capacity + tx_size * fee_rate / BigDecimal(1000),
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        fee
+        fee_rate
       )
       input_capacities = i.capacities
 
       outputs = [output]
       outputs_data = [output_data]
-      change_output.capacity = input_capacities - (capacity + fee)
+      change_output.capacity = (input_capacities - (capacity + tx_size * fee_rate / BigDecimal(1000) + i.need_fee)).floor
       if change_output.capacity.to_i > 0
         outputs << change_output
         outputs_data << change_output_data
@@ -124,8 +131,8 @@ module CKB
     # @param data [String] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0)
-      tx = generate_tx(target_address, capacity, data, key: key, fee: fee)
+    def send_capacity(target_address, capacity, data = "0x", key: nil, fee_rate: 0)
+      tx = generate_tx(target_address, capacity, data, key: key, fee_rate: fee_rate)
       send_transaction(tx)
     end
 
@@ -133,8 +140,10 @@ module CKB
     # @param key [CKB::Key | String] Key or private key hex string
     #
     # @return [CKB::Type::OutPoint]
-    def deposit_to_dao(capacity, key: nil)
+    def deposit_to_dao(capacity, key: nil, fee_rate: 0)
       key = get_key(key)
+
+      tx_size = TransactionSize.base_size + TransactionSize.every_cell_deps * 2
 
       output = Types::Output.new(
         capacity: capacity,
@@ -146,24 +155,28 @@ module CKB
         )
       )
       output_data = "0x"
+      tx_size += TransactionSize.every_output(output)
+      tx_size += TransactionSize.every_outputs_data(output_data)
 
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
       change_output_data = "0x"
+      tx_size += TransactionSize.every_output(change_output)
+      tx_size += TransactionSize.every_outputs_data(change_output_data)
 
       i = gather_inputs(
         capacity,
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        0
+        fee_rate
       )
       input_capacities = i.capacities
 
       outputs = [output]
       outputs_data = [output_data]
-      change_output.capacity = input_capacities - capacity
+      change_output.capacity = (input_capacities - (capacity + tx_size * fee_rate / BigDecimal(1000) + i.need_fee)).floor
       if change_output.capacity.to_i > 0
         outputs << change_output
         outputs_data << change_output_data
@@ -191,7 +204,7 @@ module CKB
     # @param key [CKB::Key | String] Key or private key hex string
     #
     # @return [CKB::Type::Transaction]
-    def generate_withdraw_from_dao_transaction(out_point, key: nil)
+    def generate_withdraw_from_dao_transaction(out_point, key: nil, fee_rate: 0)
       key = get_key(key)
 
       cell_status = api.get_live_cell(out_point)
@@ -233,10 +246,23 @@ module CKB
         index: dup_out_point.index
       )
 
-      outputs = [
-        Types::Output.new(capacity: output_capacity, lock: lock)
-      ]
+      output = Types::Output.new(capacity: output_capacity, lock: lock)
+      outputs = [output]
       outputs_data = ["0x"]
+      witness = "0x0000000000000000" + "0" * 65 * 2
+
+      tx_size =
+        TransactionSize.base_size +
+        TransactionSize.every_cell_deps * 2 +
+        TransactionSize.every_header_deps * 2 +
+        TransactionSize.every_input +
+        TransactionSize.every_output(output) +
+        outputs_data.map { |data| TransactionSize.every_outputs_data(data) }.reduce(:+) +
+        TransactionSize.every_witness(witness)
+
+      fee = Types::Transaction.fee(tx_size, fee_rate)
+      output.capacity = output.capacity - fee
+
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [
@@ -252,9 +278,7 @@ module CKB
         ],
         outputs: outputs,
         outputs_data: outputs_data,
-        witnesses: [
-          "0x0000000000000000"
-        ]
+        witnesses: [witness]
       )
       tx.sign(key, tx.compute_hash)
     end
@@ -311,8 +335,8 @@ args = #{lock.args}
     # @param min_capacity [Integer]
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
-    def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
-      CellCollector.new(
+    def gather_inputs(capacity, min_capacity, min_change_capacity, fee_rate)
+      CellCollectorByFeeRate.new(
         @api,
         skip_data_and_type: @skip_data_and_type,
         hash_type: @hash_type
@@ -321,7 +345,7 @@ args = #{lock.args}
         capacity,
         min_capacity,
         min_change_capacity,
-        fee
+        fee_rate
       )
     end
 

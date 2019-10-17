@@ -66,4 +66,35 @@ RSpec.describe CKB::Types::Transaction do
   it "compute size" do
     expect(transaction.serialized_size_in_block).to eq 536
   end
+
+  context "self.fee" do
+    it "carry" do
+      fee = CKB::Types::Transaction.fee(1035, 900)
+      expect(fee).to eq 932
+    end
+
+    it "no carry" do
+      fee = CKB::Types::Transaction.fee(1035, 1000)
+      expect(fee).to eq 1035
+    end
+  end
+
+  it "fee" do
+    fee = transaction.fee(1000)
+    expect(fee).to eq 536
+  end
+
+  context "TransactionSize" do
+    it "eq tx.serialized_tx_fee" do
+      size_without_witness =
+        CKB::TransactionSize.base_size +
+        CKB::TransactionSize.every_cell_deps * 2 +
+        CKB::TransactionSize.every_input +
+        transaction.outputs.map { |output| CKB::TransactionSize.every_output(output) }.reduce(:+) +
+        transaction.outputs_data.map { |data| CKB::TransactionSize.every_outputs_data(data) }.reduce(:+)
+
+      expect(size_without_witness + transaction.witnesses.map { |witness| CKB::TransactionSize.every_witness(witness) }.reduce(:+)).to eq transaction.serialized_size_in_block
+      expect(size_without_witness + CKB::TransactionSize.every_secp_witness).to eq transaction.serialized_size_in_block
+    end
+  end
 end

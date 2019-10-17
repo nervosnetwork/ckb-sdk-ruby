@@ -120,6 +120,21 @@ module CKB
         Utils.hex_to_bin(transaction_serializer.serialize).bytesize + serialized_tx_offset_bytesize
       end
 
+      # @param tx_size [Integer] in Bytes
+      # fee_rate [Integer] shannons/KB
+      def self.fee(tx_serialized_size_in_block, fee_rate)
+        base = tx_serialized_size_in_block * fee_rate
+        result = base / 1000
+        return result + 1 if base % 1000 > 0
+
+        result
+      end
+
+      # @param fee_rate [Integer]
+      def fee(fee_rate)
+        self.class.fee(self.serialized_size_in_block, fee_rate)
+      end
+
       def self.from_h(hash)
         return if hash.nil?
 
