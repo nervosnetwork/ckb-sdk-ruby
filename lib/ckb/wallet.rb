@@ -249,7 +249,7 @@ module CKB
       output = Types::Output.new(capacity: output_capacity, lock: lock)
       outputs = [output]
       outputs_data = ["0x"]
-      witness = "0x0000000000000000" + "0" * 65 * 2
+      witness = "0x0000000000000000"
 
       tx_size =
         TransactionSize.base_size +
@@ -258,7 +258,7 @@ module CKB
         TransactionSize.every_input +
         TransactionSize.every_output(output) +
         outputs_data.map { |data| TransactionSize.every_outputs_data(data) }.reduce(:+) +
-        TransactionSize.every_witness(witness)
+        TransactionSize.every_secp_witness(witness)
 
       fee = Types::Transaction.fee(tx_size, fee_rate)
       output.capacity = output.capacity - fee

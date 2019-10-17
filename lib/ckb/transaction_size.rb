@@ -29,8 +29,11 @@ module CKB
         SERIALIZED_OFFSET_BYTESIZE + CKB::Utils.hex_to_bin(CKB::Serializers::WitnessSerializer.new(witness).serialize).bytesize
       end
 
-      def every_secp_witness
-        SERIALIZED_OFFSET_BYTESIZE + 69
+      def every_secp_witness(extra_data = nil)
+        base = SERIALIZED_OFFSET_BYTESIZE + 69
+        return base if extra_data.nil?
+
+        base + CKB::Utils.hex_to_bin(extra_data).bytesize
       end
 
       def every_outputs_data(data)
