@@ -74,7 +74,15 @@ module CKB
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee_rate: 0, use_dep_group: true)
       key = get_key(key)
 
-      tx_size = TransactionSize.base_size + TransactionSize.every_cell_dep
+      cell_deps = []
+      if use_dep_group
+        cell_deps << Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
+      else
+        cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
+        cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
+      end
+
+      tx_size = TransactionSize.base_size + TransactionSize.every_cell_dep * cell_deps.size
 
       output = Types::Output.new(
         capacity: capacity,
@@ -114,19 +122,12 @@ module CKB
 
       tx = Types::Transaction.new(
         version: 0,
-        cell_deps: [],
+        cell_deps: cell_deps,
         inputs: i.inputs,
         outputs: outputs,
         outputs_data: outputs_data,
         witnesses: i.witnesses
       )
-
-      if use_dep_group
-        tx.cell_deps << Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
-      else
-        tx.cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
-        tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
-      end
 
       tx.sign(key, tx.compute_hash)
     end
