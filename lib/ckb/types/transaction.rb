@@ -114,7 +114,7 @@ module CKB
         blake2b.hexdigest
       end
 
-      def size
+      def serialized_size_in_block
         transaction_serializer = CKB::Serializers::TransactionSerializer.new(self)
         Utils.hex_to_bin(transaction_serializer.serialize).bytesize + 4
       end

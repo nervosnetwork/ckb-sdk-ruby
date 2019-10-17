@@ -64,6 +64,6 @@ RSpec.describe CKB::Types::Transaction do
   let(:transaction) { CKB::Types::Transaction.from_h(transaction_h) }
 
   it "compute size" do
-    expect(transaction.size).to eq 536
+    expect(transaction.serialized_size_in_block).to eq 536
   end
 end
