@@ -14,6 +14,7 @@ require "ckb/wallet"
 require "ckb/address"
 require "ckb/key"
 require "ckb/serializers/serializers"
+require "ckb/mock_transaction_dumper"
 
 module CKB
   class Error < StandardError; end
