@@ -70,7 +70,7 @@ module CKB
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0)
+    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true)
       key = get_key(key)
 
       output = Types::Output.new(
@@ -107,14 +107,19 @@ module CKB
 
       tx = Types::Transaction.new(
         version: 0,
-        cell_deps: [
-          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
-        ],
+        cell_deps: [],
         inputs: i.inputs,
         outputs: outputs,
         outputs_data: outputs_data,
         witnesses: i.witnesses
       )
+
+      if use_dep_group
+        tx.cell_deps << Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
+      else
+        tx.cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
+        tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
+      end
 
       tx.sign(key, tx.compute_hash)
     end
