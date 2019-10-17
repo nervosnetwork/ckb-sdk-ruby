@@ -82,16 +82,9 @@ module CKB
       end
 
       def to_h
-        hash = {
-          version: Utils.to_hex(@version),
-          cell_deps: @cell_deps.map(&:to_h),
-          header_deps: @header_deps,
-          inputs: @inputs.map(&:to_h),
-          outputs: @outputs.map(&:to_h),
-          outputs_data: @outputs_data,
-          witnesses: @witnesses
-        }
+        hash = to_raw_transaction_h
         hash[:hash] = @hash if @hash
+
         hash
       end
 
