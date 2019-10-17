@@ -10,6 +10,8 @@ module CKB
   class API
     attr_reader :rpc
     attr_reader :secp_group_out_point
+    attr_reader :secp_code_out_point
+    attr_reader :secp_data_out_point
     attr_reader :secp_cell_type_hash
     attr_reader :secp_cell_code_hash
     attr_reader :dao_out_point
@@ -31,6 +33,15 @@ module CKB
         raise "System script code_hash error!" unless code_hash == expected_code_hash
 
         @secp_cell_code_hash = code_hash
+
+        @secp_code_out_point = Types::OutPoint.new(
+          tx_hash: system_cell_transaction.hash,
+          index: 1
+        )
+        @secp_data_out_point = Types::OutPoint.new(
+          tx_hash: system_cell_transaction.hash,
+          index: 3
+        )
 
         secp_group_cell_transaction = genesis_block.transactions[1]
         secp_group_out_point = Types::OutPoint.new(
