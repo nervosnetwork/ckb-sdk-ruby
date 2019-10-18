@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "bigdecimal"
 
 module CKB
@@ -29,7 +30,7 @@ module CKB
       @addr = Address.from_pubkey(@pubkey)
       @address = @addr.to_s
       @skip_data_and_type = skip_data_and_type
-      raise "Wrong hash_type, hash_type should be `data` or `type`" unless %w(data type).include?(hash_type)
+      raise "Wrong hash_type, hash_type should be `data` or `type`" unless %w[data type].include?(hash_type)
 
       @hash_type = hash_type
     end
@@ -70,10 +71,17 @@ module CKB
     # @param capacity [Integer]
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
-    # @param fee_rate [Integer] shannons per KB
+    # @param fee [Integere]
+    # @param fee_rate [Integer] shannons per KB, using fee first
     # @param use_dep_group [Boolean] use dep_group or not
-    def generate_tx(target_address, capacity, data = "0x", key: nil, fee_rate: 0, use_dep_group: true)
+    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, fee_rate: 0, use_dep_group: true)
       key = get_key(key)
+
+      mode = if fee == 0 && fee_rate > 0
+               :fee_rate
+             else
+               :fee
+             end
 
       cell_deps = []
       if use_dep_group
@@ -106,16 +114,22 @@ module CKB
       tx_size += TransactionSize.every_outputs_data(change_output_data)
 
       i = gather_inputs(
-        capacity + tx_size * fee_rate / BigDecimal(1000),
+        capacity,
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        fee_rate
+        fee: fee,
+        fee_rate: fee_rate,
+        extra_fee: tx_size * fee_rate / BigDecimal(1000)
       )
       input_capacities = i.capacities
 
       outputs = [output]
       outputs_data = [output_data]
-      change_output.capacity = (input_capacities - (capacity + tx_size * fee_rate / BigDecimal(1000) + i.need_fee)).floor
+      change_output.capacity = if mode == :fee_rate
+                                 (input_capacities - (capacity + tx_size * fee_rate / BigDecimal(1000) + i.need_fee)).floor
+                               else
+                                 input_capacities - (capacity + fee)
+                               end
       if change_output.capacity.to_i > 0
         outputs << change_output
         outputs_data << change_output_data
@@ -137,19 +151,27 @@ module CKB
     # @param capacity [Integer]
     # @param data [String] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
-    # @param fee_rate [Integer] shannons per KB
-    def send_capacity(target_address, capacity, data = "0x", key: nil, fee_rate: 0)
-      tx = generate_tx(target_address, capacity, data, key: key, fee_rate: fee_rate)
+    # @param fee [Integer] shannons
+    # @param fee_rate [Integer] shannons per KB, using fee first
+    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0, fee_rate: 0)
+      tx = generate_tx(target_address, capacity, data, key: key, fee: fee, fee_rate: fee_rate)
       send_transaction(tx)
     end
 
     # @param capacity [Integer]
     # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee [Integer] shannons
     # @param fee_rate [Integer] shannons per KB
     #
     # @return [CKB::Type::OutPoint]
-    def deposit_to_dao(capacity, key: nil, fee_rate: 0)
+    def deposit_to_dao(capacity, key: nil, fee: 0, fee_rate: 0)
       key = get_key(key)
+
+      mode = if fee == 0 && fee_rate > 0
+               :fee_rate
+             else
+               :fee
+             end
 
       tx_size = TransactionSize.base_size + TransactionSize.every_cell_dep * 2
 
@@ -178,13 +200,19 @@ module CKB
         capacity,
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        fee_rate
+        fee: fee,
+        fee_rate: fee_rate,
+        extra_fee: tx_size * fee_rate / BigDecimal(1000)
       )
       input_capacities = i.capacities
 
       outputs = [output]
       outputs_data = [output_data]
-      change_output.capacity = (input_capacities - (capacity + tx_size * fee_rate / BigDecimal(1000) + i.need_fee)).floor
+      change_output.capacity = if mode == :fee_rate
+                                 (input_capacities - (capacity + tx_size * fee_rate / BigDecimal(1000) + i.need_fee)).floor
+                               else
+                                 input_capacities - (capacity + fee)
+                               end
       if change_output.capacity.to_i > 0
         outputs << change_output
         outputs_data << change_output_data
@@ -210,20 +238,25 @@ module CKB
 
     # @param out_point [CKB::Type::OutPoint]
     # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee [Integer] shannons
     # @param fee_rate [Integer] shannons per KB
     #
     # @return [CKB::Type::Transaction]
-    def generate_withdraw_from_dao_transaction(out_point, key: nil, fee_rate: 0)
+    def generate_withdraw_from_dao_transaction(out_point, key: nil, fee: 0, fee_rate: 0)
       key = get_key(key)
 
+      mode = if fee == 0 && fee_rate > 0
+               :fee_rate
+             else
+               :fee
+             end
+
       cell_status = api.get_live_cell(out_point)
-      unless cell_status.status == "live"
-        raise "Cell is not yet live!"
-      end
+      raise "Cell is not yet live!" unless cell_status.status == "live"
+
       tx = api.get_transaction(out_point.tx_hash)
-      unless tx.tx_status.status == "committed"
-        raise "Transaction is not commtted yet!"
-      end
+      raise "Transaction is not commtted yet!" unless tx.tx_status.status == "committed"
+
       deposit_block = api.get_block(tx.tx_status.block_hash).header
       deposit_epoch = self.class.parse_epoch(deposit_block.epoch)
       deposit_block_number = deposit_block.number
@@ -238,7 +271,7 @@ module CKB
       withdraw_fraction = current_epoch.index * deposit_epoch.length
       deposit_fraction = deposit_epoch.index * current_epoch.length
       deposited_epoches = current_epoch.number - deposit_epoch.number
-      deposited_epoches +=1 if withdraw_fraction > deposit_fraction
+      deposited_epoches += 1 if withdraw_fraction > deposit_fraction
       lock_epochs = (deposited_epoches + (DAO_LOCK_PERIOD_EPOCHS - 1)) / DAO_LOCK_PERIOD_EPOCHS * DAO_LOCK_PERIOD_EPOCHS
       minimal_since_epoch_number = deposit_epoch.number + lock_epochs
       minimal_since_epoch_index = deposit_epoch.index
@@ -260,17 +293,20 @@ module CKB
       outputs_data = ["0x"]
       witness = "0x0000000000000000"
 
-      tx_size =
-        TransactionSize.base_size +
-        TransactionSize.every_cell_dep * 2 +
-        TransactionSize.every_header_dep * 2 +
-        TransactionSize.every_input +
-        TransactionSize.every_output(output) +
-        outputs_data.map { |data| TransactionSize.every_outputs_data(data) }.reduce(:+) +
-        TransactionSize.every_secp_witness(witness)
-
-      fee = Types::Transaction.fee(tx_size, fee_rate)
-      output.capacity = output.capacity - fee
+      computed_fee = if mode == :fee
+                       fee
+                     else
+                       tx_size =
+                         TransactionSize.base_size +
+                         TransactionSize.every_cell_dep * 2 +
+                         TransactionSize.every_header_dep * 2 +
+                         TransactionSize.every_input +
+                         TransactionSize.every_output(output) +
+                         outputs_data.map { |data| TransactionSize.every_outputs_data(data) }.reduce(:+) +
+                         TransactionSize.every_secp_witness(witness)
+                       Types::Transaction.fee(tx_size, fee_rate)
+                     end
+      output.capacity = output.capacity - computed_fee
 
       tx = Types::Transaction.new(
         version: 0,
@@ -297,7 +333,7 @@ module CKB
       OpenStruct.new(
         length: (epoch >> 40) & 0xFFFF,
         index: (epoch >> 24) & 0xFFFF,
-        number: (epoch) & 0xFFFFFF
+        number: epoch & 0xFFFFFF
       )
     end
 
@@ -343,19 +379,35 @@ args = #{lock.args}
     # @param capacity [Integer]
     # @param min_capacity [Integer]
     # @param min_change_capacity [Integer]
-    # @param fee_rate [Integer] shannons per KB
-    def gather_inputs(capacity, min_capacity, min_change_capacity, fee_rate)
-      CellCollectorByFeeRate.new(
-        @api,
-        skip_data_and_type: @skip_data_and_type,
-        hash_type: @hash_type
-      ).gather_inputs(
-        [lock_hash],
-        capacity,
-        min_capacity,
-        min_change_capacity,
-        fee_rate
-      )
+    # @param fee [Integer]
+    # @param fee_rate [Integer] shannons per KB, using fee firstly
+    # @param extra_fee [Integer | BigDecimal] fee for extra size except inputs when using fee_rate
+    def gather_inputs(capacity, min_capacity, min_change_capacity, fee: 0, fee_rate: 0, extra_fee: 0)
+      if fee_rate > 0 && fee == 0
+        CellCollectorByFeeRate.new(
+          @api,
+          skip_data_and_type: @skip_data_and_type,
+          hash_type: @hash_type
+        ).gather_inputs(
+          [lock_hash],
+          capacity + extra_fee,
+          min_capacity,
+          min_change_capacity,
+          fee_rate
+        )
+      else
+        CellCollector.new(
+          @api,
+          skip_data_and_type: @skip_data_and_type,
+          hash_type: @hash_type
+        ).gather_inputs(
+          [lock_hash],
+          capacity,
+          min_capacity,
+          min_change_capacity,
+          fee
+        )
+      end
     end
 
     def code_hash

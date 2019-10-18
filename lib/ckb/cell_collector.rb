@@ -83,7 +83,7 @@ module CKB
       input_capacities = 0
       inputs = []
       witnesses = []
-      get_unspent_cells_by_lock_hashes(lock_hashes, need_capacities: total_capacities)[:outputs].each do |cell|
+      get_unspent_cells_by_lock_hashes(lock_hashes, need_capacities: total_capacities + 61 * 10**8)[:outputs].each do |cell|
         input = Types::Input.new(
           previous_output: cell.out_point,
           since: 0
