@@ -70,7 +70,8 @@ module CKB
     # @param capacity [Integer]
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
-    # @param fee [Integer] transaction fee, in shannon
+    # @param fee_rate [Integer] shannons per KB
+    # @param use_dep_group [Boolean] use dep_group or not
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee_rate: 0, use_dep_group: true)
       key = get_key(key)
 
@@ -136,7 +137,7 @@ module CKB
     # @param capacity [Integer]
     # @param data [String] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
-    # @param fee [Integer] transaction fee, in shannon
+    # @param fee_rate [Integer] shannons per KB
     def send_capacity(target_address, capacity, data = "0x", key: nil, fee_rate: 0)
       tx = generate_tx(target_address, capacity, data, key: key, fee_rate: fee_rate)
       send_transaction(tx)
@@ -144,6 +145,7 @@ module CKB
 
     # @param capacity [Integer]
     # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee_rate [Integer] shannons per KB
     #
     # @return [CKB::Type::OutPoint]
     def deposit_to_dao(capacity, key: nil, fee_rate: 0)
@@ -208,6 +210,7 @@ module CKB
 
     # @param out_point [CKB::Type::OutPoint]
     # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee_rate [Integer] shannons per KB
     #
     # @return [CKB::Type::Transaction]
     def generate_withdraw_from_dao_transaction(out_point, key: nil, fee_rate: 0)
@@ -340,7 +343,7 @@ args = #{lock.args}
     # @param capacity [Integer]
     # @param min_capacity [Integer]
     # @param min_change_capacity [Integer]
-    # @param fee [Integer]
+    # @param fee_rate [Integer] shannons per KB
     def gather_inputs(capacity, min_capacity, min_change_capacity, fee_rate)
       CellCollectorByFeeRate.new(
         @api,

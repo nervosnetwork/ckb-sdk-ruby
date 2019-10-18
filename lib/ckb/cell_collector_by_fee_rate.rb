@@ -13,6 +13,7 @@ module CKB
     end
 
     # @param lock_hash [String]
+    # @param fee_rate [Integer] shannons per KB
     # @param need_capacities [Integer | nil] capacity in shannon, nil means collect all
     #
     # @return [Hash]
@@ -58,6 +59,7 @@ module CKB
     end
 
     # @param lock_hashes [String[]]
+    # @param fee_rate [Integer] shannons per KB
     # @param need_capacities [Integer | nil] capacity in shannon, nil means collect all
     #
     # @return [Hash]
@@ -88,7 +90,7 @@ module CKB
     # @param capacity [Integer]
     # @param min_capacity [Integer]
     # @param min_change_capacity [Integer]
-    # @param fee [Integer]
+    # @param fee_rate [Integer] shannons per KB
     def gather_inputs(lock_hashes, capacity, min_capacity, min_change_capacity, fee_rate)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
