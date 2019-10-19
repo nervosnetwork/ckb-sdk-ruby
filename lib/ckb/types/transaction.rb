@@ -82,16 +82,9 @@ module CKB
       end
 
       def to_h
-        hash = {
-          version: Utils.to_hex(@version),
-          cell_deps: @cell_deps.map(&:to_h),
-          header_deps: @header_deps,
-          inputs: @inputs.map(&:to_h),
-          outputs: @outputs.map(&:to_h),
-          outputs_data: @outputs_data,
-          witnesses: @witnesses
-        }
+        hash = to_raw_transaction_h
         hash[:hash] = @hash if @hash
+
         hash
       end
 
@@ -112,6 +105,12 @@ module CKB
         blake2b = CKB::Blake2b.new
         blake2b << Utils.hex_to_bin(raw_transaction_serializer.serialize)
         blake2b.hexdigest
+      end
+
+      def serialized_size_in_block
+        transaction_serializer = CKB::Serializers::TransactionSerializer.new(self)
+        serialized_tx_offset_bytesize = 4 # 4 bytes for the tx offset cost with molecule array (transactions)
+        Utils.hex_to_bin(transaction_serializer.serialize).bytesize + serialized_tx_offset_bytesize
       end
 
       def self.from_h(hash)
