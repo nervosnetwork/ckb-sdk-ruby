@@ -77,11 +77,7 @@ module CKB
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, fee_rate: 0, use_dep_group: true)
       key = get_key(key)
 
-      mode = if fee == 0 && fee_rate > 0
-               :fee_rate
-             else
-               :fee
-             end
+      mode = check_mode(fee, fee_rate)
 
       cell_deps = []
       if use_dep_group
@@ -167,11 +163,7 @@ module CKB
     def deposit_to_dao(capacity, key: nil, fee: 0, fee_rate: 0)
       key = get_key(key)
 
-      mode = if fee == 0 && fee_rate > 0
-               :fee_rate
-             else
-               :fee
-             end
+      mode = check_mode(fee, fee_rate)
 
       tx_size = TransactionSize.base_size + TransactionSize.every_cell_dep * 2
 
@@ -245,11 +237,7 @@ module CKB
     def generate_withdraw_from_dao_transaction(out_point, key: nil, fee: 0, fee_rate: 0)
       key = get_key(key)
 
-      mode = if fee == 0 && fee_rate > 0
-               :fee_rate
-             else
-               :fee
-             end
+      mode = check_mode(fee, fee_rate)
 
       cell_status = api.get_live_cell(out_point)
       raise "Cell is not yet live!" unless cell_status.status == "live"
@@ -370,6 +358,15 @@ args = #{lock.args}
     end
 
     private
+
+    # @return [Symbol] :fee | :fee_rate
+    def check_mode(fee, fee_rate)
+      if fee == 0 && fee_rate > 0
+        :fee_rate
+      else
+        :fee
+      end
+    end
 
     # @param transaction [CKB::Transaction]
     def send_transaction(transaction)
