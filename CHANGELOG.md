@@ -1,6 +1,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.23.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.22.0...v0.23.0) (2019-10-19)
+
+
+### Bug Fixes
+
+* comment symbol ([3b3682b](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3b3682bb5ad2ba40f28443591994dcf650773a8f))
+
+
+### Features
+
+* Add MockTransactionDumper ([5a48827](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5a4882722c83584122535872ea8ed8dbcdc30f22))
+* calculate transaction size ([df1f304](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/df1f304e0f0387acec36aad8399c9ca43d4f96c6))
+
+
 # [v0.22.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.21.0...v0.22.0) (2019-10-05)
 
 
