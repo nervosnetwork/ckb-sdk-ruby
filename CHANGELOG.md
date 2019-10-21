@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.23.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.23.0...v0.23.1) (2019-10-21)
+
+
+### Bug Fixes
+
+* add fee to dao ([c5a8ee4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c5a8ee4b2e7b0e501bdde60550668c9dc7867199))
+
+
 # [v0.23.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.22.0...v0.23.0) (2019-10-19)
 
 
