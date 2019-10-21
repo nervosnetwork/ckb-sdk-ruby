@@ -136,9 +136,10 @@ module CKB
 
     # @param capacity [Integer]
     # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee [Integer]
     #
     # @return [CKB::Type::OutPoint]
-    def deposit_to_dao(capacity, key: nil)
+    def deposit_to_dao(capacity, key: nil, fee: 0)
       key = get_key(key)
 
       output = Types::Output.new(
@@ -162,13 +163,13 @@ module CKB
         capacity,
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        0
+        fee
       )
       input_capacities = i.capacities
 
       outputs = [output]
       outputs_data = [output_data]
-      change_output.capacity = input_capacities - capacity
+      change_output.capacity = input_capacities - (capacity + fee)
       if change_output.capacity.to_i > 0
         outputs << change_output
         outputs_data << change_output_data
@@ -194,9 +195,10 @@ module CKB
 
     # @param out_point [CKB::Type::OutPoint]
     # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee [Integer]
     #
     # @return [CKB::Type::Transaction]
-    def generate_withdraw_from_dao_transaction(out_point, key: nil)
+    def generate_withdraw_from_dao_transaction(out_point, key: nil, fee: 0)
       key = get_key(key)
 
       cell_status = api.get_live_cell(out_point)
@@ -230,7 +232,7 @@ module CKB
       minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index, minimal_since_epoch_number)
 
       # a hex string
-      output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash)
+      output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash).hex
 
       dup_out_point = out_point.dup
       new_out_point = Types::OutPoint.new(
@@ -239,7 +241,7 @@ module CKB
       )
 
       outputs = [
-        Types::Output.new(capacity: output_capacity, lock: lock)
+        Types::Output.new(capacity: output_capacity - fee, lock: lock)
       ]
       outputs_data = ["0x"]
       tx = Types::Transaction.new(
