@@ -6,7 +6,7 @@ module CKB
       attr_accessor :fee_rate
 
       # @param fee_rate [String | Integer] integer or hex number
-      def initialize(cycles:)
+      def initialize(fee_rate:)
         @fee_rate = Utils.to_int(fee_rate)
       end
 
