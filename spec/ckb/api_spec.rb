@@ -214,6 +214,15 @@ RSpec.describe CKB::API do
     expect(result).to all(be_a(Types::BannedAddress))
   end
 
+  it "estimate fee rate" do
+    begin
+      result = api.estimate_fee_rate(4)
+      expect(result).not_to be_a Types::EstimateResult
+    rescue Exception => e
+      expect(e).to be_a CKB::RPCError
+    end
+  end
+
   context "miner APIs" do
     it "get_block_template" do
       result = api.get_block_template
