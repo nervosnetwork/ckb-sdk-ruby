@@ -33,6 +33,7 @@ require_relative "uncle_template"
 require_relative "transaction_template"
 require_relative "cellbase_template"
 require_relative "block_template"
+require_relative "estimate_result"
 
 module CKB
   module Types
