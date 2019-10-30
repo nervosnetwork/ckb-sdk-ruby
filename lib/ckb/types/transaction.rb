@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 module CKB
   module Types
     class Transaction
@@ -38,16 +37,25 @@ module CKB
       def sign(key, tx_hash)
         raise "Invalid number of witnesses!" if witnesses.length < inputs.length
 
-        signed_witnesses = witnesses.map do |witness|
-          old_datum = witness
-          blake2b = CKB::Blake2b.new
-          blake2b.update(Utils.hex_to_bin(tx_hash))
-          blake2b.update(Utils.hex_to_bin(old_datum))
-          message = blake2b.hexdigest
-          data = key.sign_recoverable(message) + old_datum[2..-1]
+        dummy_witness_for_input_lock = "0x#{'0' * 130}"
+        witness_args_serializer = CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: dummy_witness_for_input_lock)
+        serialized_witness_args = witness_args_serializer.serialize
 
-          data
+        blake2b = CKB::Blake2b.new
+        blake2b.update(Utils.hex_to_bin(tx_hash))
+        witness_len_bytes = "0x#{[witness_args_serializer.capacity].pack("V").unpack("H*").first}"
+        blake2b.update(Utils.hex_to_bin(witness_len_bytes))
+        blake2b.update(Utils.hex_to_bin(serialized_witness_args))
+
+        signed_witnesses = witnesses[1..-1].map do |witness|
+          old_datum = witness
+          witness_len_bytes = "0x#{[Utils.hex_to_bin(old_datum).bytesize].pack("V").unpack("H*").first}"
+          blake2b.update(Utils.hex_to_bin(witness_len_bytes))
+          blake2b.update(Utils.hex_to_bin(old_datum))
         end
+        message = blake2b.hexdigest
+        signature = key.sign_recoverable(message)
+        signed_witnesses.unshift CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: signature).serialize
 
         self.class.new(
           hash: tx_hash, # using real tx_hash instead
