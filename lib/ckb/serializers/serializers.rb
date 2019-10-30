@@ -28,6 +28,8 @@ require_relative "output_data_serializer"
 require_relative "raw_transaction_serializer"
 require_relative "witness_serializer"
 require_relative "transaction_serializer"
+require_relative "bytes_opt_serializer"
+require_relative "witness_args_serializer"
 
 module CKB
   module Serializers
