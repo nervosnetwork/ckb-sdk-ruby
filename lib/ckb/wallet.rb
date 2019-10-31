@@ -262,7 +262,7 @@ module CKB
     # @param fee [Integer]
     #
     # @return [CKB::Type::Transaction]
-    def generate_withdraw_from_dao_transaction(withdrawing_out_point, key: nil, fee: 0)
+    def generate_withdraw_from_dao_transaction(deposit_out_point, withdrawing_out_point, key: nil, fee: 0)
       key = get_key(key)
 
       cell_status = api.get_live_cell(withdrawing_out_point, true)
@@ -293,7 +293,7 @@ module CKB
       minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index, minimal_since_epoch_number)
 
       # a hex string
-      output_capacity = api.calculate_dao_maximum_withdraw(withdrawing_out_point.dup, withdraw_block.hash).hex
+      output_capacity = api.calculate_dao_maximum_withdraw(deposit_out_point.dup, withdraw_block.hash).hex
 
       outputs = [
         Types::Output.new(capacity: output_capacity - fee, lock: lock)
