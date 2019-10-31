@@ -43,13 +43,13 @@ module CKB
 
         blake2b = CKB::Blake2b.new
         blake2b.update(Utils.hex_to_bin(tx_hash))
-        witness_len_bytes = "0x#{[witness_args_serializer.capacity].pack("V").unpack("H*").first}"
+        witness_len_bytes = "0x#{[witness_args_serializer.capacity].pack("Q<").unpack("H*").first}"
         blake2b.update(Utils.hex_to_bin(witness_len_bytes))
         blake2b.update(Utils.hex_to_bin(serialized_witness_args))
 
         signed_witnesses = witnesses[1..-1].map do |witness|
           old_datum = witness
-          witness_len_bytes = "0x#{[Utils.hex_to_bin(old_datum).bytesize].pack("V").unpack("H*").first}"
+          witness_len_bytes = "0x#{[Utils.hex_to_bin(old_datum).bytesize].pack("Q<").unpack("H*").first}"
           blake2b.update(Utils.hex_to_bin(witness_len_bytes))
           blake2b.update(Utils.hex_to_bin(old_datum))
         end
