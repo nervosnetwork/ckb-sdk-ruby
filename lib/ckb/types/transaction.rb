@@ -35,7 +35,7 @@ module CKB
       # @param key [CKB::Key]
       # @param tx_hash [String] 0x...
       def sign(key, tx_hash)
-        raise "Invalid number of witnesses!" if witnesses.length < inputs.length
+        raise "Need at least one witness! " if witnesses.empty?
 
         dummy_witness_for_input_lock = "0x#{'0' * 130}"
         witness_args_serializer = CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: dummy_witness_for_input_lock)
