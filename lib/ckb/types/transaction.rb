@@ -47,7 +47,7 @@ module CKB
         blake2b.update(Utils.hex_to_bin(witness_len_bytes))
         blake2b.update(Utils.hex_to_bin(serialized_witness_args))
 
-        signed_witnesses = witnesses[1..-1].map do |witness|
+        witnesses[1..-1].each do |witness|
           old_datum = witness
           witness_len_bytes = "0x#{[Utils.hex_to_bin(old_datum).bytesize].pack("Q<").unpack("H*").first}"
           blake2b.update(Utils.hex_to_bin(witness_len_bytes))
@@ -55,7 +55,7 @@ module CKB
         end
         message = blake2b.hexdigest
         signature = key.sign_recoverable(message)
-        signed_witnesses.unshift CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: signature).serialize
+        witnesses[0] = CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: signature).serialize
 
         self.class.new(
           hash: tx_hash, # using real tx_hash instead
@@ -65,7 +65,7 @@ module CKB
           inputs: inputs,
           outputs: outputs,
           outputs_data: outputs_data,
-          witnesses: signed_witnesses
+          witnesses: witnesses
         )
       end
 
