@@ -14,6 +14,12 @@ module CKB
         @items_count = 3
       end
 
+      def self.from(witness)
+        self.new(witness_for_input_lock: witness.lock,
+                 witness_for_input_type: witness.input_type,
+                 witness_for_output_type: witness.output_type)
+      end
+
       private
 
       attr_reader :witness_for_input_lock_serializer, :witness_for_input_type_serializer, :witness_for_output_type_serializer, :items_count

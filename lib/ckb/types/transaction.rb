@@ -36,26 +36,32 @@ module CKB
       # @param tx_hash [String] 0x...
       def sign(key, tx_hash)
         raise "Need at least one witness! " if witnesses.empty?
+        raise "First witness must be of Witness type!" unless witnesses[0].instance_of?(CKB::Types::Witness)
 
-        dummy_witness_for_input_lock = "0x#{'0' * 130}"
-        witness_args_serializer = CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: dummy_witness_for_input_lock)
-        serialized_witness_args = witness_args_serializer.serialize
+        emptied_witness = witnesses[0].dup
+        emptied_witness.lock = "0x#{'0' * 130}"
+        emptied_witness_data_binary = Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(emptied_witness).serialize)
+        emptied_witness_data_size = emptied_witness_data_binary.bytesize
 
         blake2b = CKB::Blake2b.new
         blake2b.update(Utils.hex_to_bin(tx_hash))
-        witness_len_bytes = "0x#{[witness_args_serializer.capacity].pack("Q<").unpack("H*").first}"
-        blake2b.update(Utils.hex_to_bin(witness_len_bytes))
-        blake2b.update(Utils.hex_to_bin(serialized_witness_args))
+        blake2b.update([emptied_witness_data_size].pack("Q<"))
+        blake2b.update(emptied_witness_data_binary)
 
         witnesses[1..-1].each do |witness|
-          old_datum = witness
-          witness_len_bytes = "0x#{[Utils.hex_to_bin(old_datum).bytesize].pack("Q<").unpack("H*").first}"
-          blake2b.update(Utils.hex_to_bin(witness_len_bytes))
-          blake2b.update(Utils.hex_to_bin(old_datum))
+          data_binary = case witness
+          when CKB::Types::Witness
+            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(witness).serialize)
+          else
+            Utils.hex_to_bin(witness)
+          end
+          data_size = data_binary.bytesize
+
+          blake2b.update([data_size].pack("Q<"))
+          blake2b.update(data_binary)
         end
         message = blake2b.hexdigest
-        signature = key.sign_recoverable(message)
-        witnesses[0] = CKB::Serializers::WitnessArgsSerializer.new(witness_for_input_lock: signature).serialize
+        witnesses[0].lock = key.sign_recoverable(message)
 
         self.class.new(
           hash: tx_hash, # using real tx_hash instead
@@ -67,26 +73,6 @@ module CKB
           outputs_data: outputs_data,
           witnesses: witnesses
         )
-      end
-
-      # @param index [Integer]
-      # @param key [CKB::Key]
-      #
-      # @return [CKBP::Types::Transaction]
-      def sign_input(index, key)
-        @hash = @hash || compute_hash
-
-        witness = witnesses[index] || ""
-
-        blake2b = CKB::Blake2b.new
-        blake2b.update(Utils.hex_to_bin(@hash))
-        blake2b.update(Utils.hex_to_bin(witness))
-        message = blake2b.hexdigest
-        signed_witness = key.sign_recoverable(message) + witness[2..-1]
-
-        witnesses[index] = signed_witness
-
-        self
       end
 
       def to_h
@@ -104,7 +90,14 @@ module CKB
           inputs: @inputs.map(&:to_h),
           outputs: @outputs.map(&:to_h),
           outputs_data: @outputs_data,
-          witnesses: @witnesses
+          witnesses: @witnesses.map do |witness|
+            case witness
+            when CKB::Types::Witness
+              CKB::Serializers::WitnessArgsSerializer.from(witness).serialize
+            else
+              witness
+            end
+          end
         }
       end
 
