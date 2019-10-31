@@ -19,7 +19,7 @@ RSpec.describe CKB::Types::Transaction do
                           hash_type: "type" },
                   type: nil }],
       outputs_data: %w[0x 0x],
-      witnesses: ["0x"] }
+      witnesses: [CKB::Types::Witness.new] }
   end
 
   let(:tx_to_sign_hash_use_data_hash) do
@@ -40,7 +40,7 @@ RSpec.describe CKB::Types::Transaction do
                           hash_type: "data" },
                   type: nil }],
       outputs_data: %w[0x 0x],
-      witnesses: ["0x"] }
+      witnesses: [CKB::Types::Witness.new] }
   end
 
   it "sign" do
@@ -61,16 +61,6 @@ RSpec.describe CKB::Types::Transaction do
 
     expect(signed_tx.to_h[:hash]).to eq(tx_hash)
     expect(signed_tx.to_h[:witnesses]).to eq(["0x55000000100000005500000055000000410000007a360306c20f1f0081d27feff5c59fb9b4307b25876543848010614fb78ea21d165f48f67ae3357eeafbad2033b1e53cd737d4e670de60e1081d514b1e05cf5100"])
-  end
-
-  it "sign input" do
-    tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
-    key = CKB::Key.new("0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805")
-    tx_hash = "0x993e6e629be2f016bf72becaa9ad4b39f7fdd72357c9341335783f451010b94e"
-    signed_tx = tx_to_sign.sign_input(0, key)
-
-    expect(signed_tx.to_h[:hash]).to eq(tx_hash)
-    expect(signed_tx.to_h[:witnesses]).to eq(["0xf198c795adfc5aead05ad0ac9d979519b0a707e7987c5addb3a6be42669af7f86e3a76a3ce8c770a92915e2d5a0212b3417db1c2152f2107ee7683601a4ecb5001"])
   end
 
   context "multiple inputs sign" do
@@ -100,7 +90,7 @@ RSpec.describe CKB::Types::Transaction do
                             hash_type: "type" },
                     type: nil }],
         outputs_data: %w[0x 0x],
-        witnesses: %w[0x 0x 0x 0x 0x] }
+        witnesses: [CKB::Types::Witness.new, "0x", "0x", "0x", "0x"] }
     end
 
     let(:tx_hash) { "0x03aea57404a99c685b098b7ee96469f0c5db57fa49aaef27cf7c080960da4b19" }
@@ -111,9 +101,9 @@ RSpec.describe CKB::Types::Transaction do
     it "sign" do
       tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
       signed_tx = tx_to_sign.sign(key, tx_hash)
-
       expect(signed_tx.hash).to eq tx_hash
-      expect(signed_tx.witnesses).to eq(%w[0x550000001000000055000000550000004100000090cdaca0b898586ef68c02e8514087e620d3b19767137baf2fbc8dee28c83ac047be76c76d7f5098a759f3d417c1daedf534a3772aa29159d807d948ed1f8c3a00 0x 0x 0x 0x])
+      tx_to_sign.witnesses.first.lock = "0x550000001000000055000000550000004100000090cdaca0b898586ef68c02e8514087e620d3b19767137baf2fbc8dee28c83ac047be76c76d7f5098a759f3d417c1daedf534a3772aa29159d807d948ed1f8c3a00"
+      expect(signed_tx.witnesses).to eq(tx_to_sign.witnesses)
     end
 
     let(:tx_to_sign_hash_use_data_hash) do
@@ -132,7 +122,7 @@ RSpec.describe CKB::Types::Transaction do
                             hash_type: "data" },
                     type: nil }],
         outputs_data: %w[0x],
-        witnesses: %w(0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb 0x)}
+        witnesses: [CKB::Types::Witness.new(lock: "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb"), "0x"]}
     end
 
     it "sign2" do
