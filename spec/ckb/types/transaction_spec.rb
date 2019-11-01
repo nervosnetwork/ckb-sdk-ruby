@@ -101,8 +101,7 @@ RSpec.describe CKB::Types::Transaction do
       tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
       signed_tx = tx_to_sign.sign(key, tx_hash)
       expect(signed_tx.hash).to eq tx_hash
-      tx_to_sign.witnesses.first.lock = "0x550000001000000055000000550000004100000090cdaca0b898586ef68c02e8514087e620d3b19767137baf2fbc8dee28c83ac047be76c76d7f5098a759f3d417c1daedf534a3772aa29159d807d948ed1f8c3a00"
-      expect(signed_tx.witnesses).to eq(tx_to_sign.witnesses)
+      expect(signed_tx.to_raw_transaction_h[:witnesses]).to eq(%w(0x550000001000000055000000550000004100000090cdaca0b898586ef68c02e8514087e620d3b19767137baf2fbc8dee28c83ac047be76c76d7f5098a759f3d417c1daedf534a3772aa29159d807d948ed1f8c3a00 0x 0x 0x 0x))
     end
 
     let(:tx_to_sign_hash_use_data_hash) do
@@ -121,7 +120,7 @@ RSpec.describe CKB::Types::Transaction do
                             hash_type: "data" },
                     type: nil }],
         outputs_data: %w[0x],
-        witnesses: [CKB::Types::Witness.new(lock: "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb", input_type: "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb", output_type: "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6cb"), "0x"]}
+        witnesses: [CKB::Types::Witness.new(lock: "0x4107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb", input_type: "0x99caa8d7efdaab11c2bb7e45f4f385d0405f0fa2e8d3ba48496c28a2443e607d", output_type: "0xa6d5e23a77f4d7940aeb88764eebf8146185138641ac43b233e1c9b3daa170fa"), "0x"]}
     end
 
     it "sign2" do
@@ -131,7 +130,7 @@ RSpec.describe CKB::Types::Transaction do
       signed_tx = tx_to_sign.sign(key, tx_hash)
 
       expect(signed_tx.to_h[:hash]).to eq(tx_hash)
-      expect(signed_tx.to_h[:witnesses]).to eq(%w(0x9d00000010000000550000007900000041000000e30777db6a6d605c04f6e0b399a3286b64a2a3f69efb6f21d94a9fe58ac422414eaa2033479375e04dbbdb80df3b472a7a047728440a18b2c0baee443b5e09d700200000004107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6fb200000004107bd23eedb9f2a2a749108f6bb9720d745d50f044cc4814bafe189a01fe6cb 0x))
+      expect(signed_tx.to_h[:witnesses]).to eq(%w(0x9d00000010000000550000007900000041000000d896d67ddda97ab2d15cd13098b40e4a2b6d6c66ad465d987df9a28b0a038f4a18dbebbc702a1a0b2056aa9e4290a3640a4d73dd1f6483e6f8e0cd2784b4a78b002000000099caa8d7efdaab11c2bb7e45f4f385d0405f0fa2e8d3ba48496c28a2443e607d20000000a6d5e23a77f4d7940aeb88764eebf8146185138641ac43b233e1c9b3daa170fa 0x))
     end
   end
 
