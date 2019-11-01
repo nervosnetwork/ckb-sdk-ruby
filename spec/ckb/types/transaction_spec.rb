@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'pry'
 RSpec.describe CKB::Types::Transaction do
   let(:tx_to_sign_hash) do
     { version: "0x0",
