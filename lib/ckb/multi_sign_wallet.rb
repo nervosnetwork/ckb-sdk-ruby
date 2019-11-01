@@ -20,7 +20,7 @@ module CKB
       CKB::Utils.bin_to_hex(
         [0, require_n, threshold, pubkeys.length].pack("CCCC") +
         pubkeys.map do |pubkey|
-          CKB::Utils.hex_to_bin(pubkey)
+          CKB::Blake2b.digest(CKB::Utils.hex_to_bin(pubkey))[0..20]
         end.reduce(&:+)
       )
     end
