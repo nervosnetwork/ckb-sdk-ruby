@@ -78,7 +78,7 @@ module CKB
       raise InvalidFormatTypeError.new("Invalid format type") if format_type != TYPES[0]
       raise InvalidCodeHashIndexError.new("Invalid code hash index") unless CODE_HASH_INDEXES.include?(code_hash_index)
 
-      CKB::Utils.bin_to_hex(data.slice(2..-1))
+      { format_type: "0x#{format_type}", code_hash_index: "0x#{code_hash_index}", arg: CKB::Utils.bin_to_hex(data.slice(2..-1)) }
     end
 
     def self.parse_full_payload_address(address, mode: DEFAULT_MODE)
@@ -94,7 +94,7 @@ module CKB
       offset += code_hash_size
       args = data[offset..-1]
 
-      ["0x#{format_type}", code_hash, CKB::Utils.bin_to_hex(args)]
+      { format_type: "0x#{format_type}", code_hash: code_hash, arg: CKB::Utils.bin_to_hex(args) }
     end
 
     def self.parse(address, mode: DEFAULT_MODE)

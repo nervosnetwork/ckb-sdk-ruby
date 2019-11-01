@@ -72,12 +72,19 @@ module CKB
     # @param fee [Integer] transaction fee, in shannon
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true)
       key = get_key(key)
-
+      result = addr.parse(target_address)
+      code_hash =
+        case result[:format_type][2..-1]
+        when CKB::Address::TYPES[0]
+          result[:code_hash_index][2..-1] == CKB::Address::CODE_HASH_INDEXES[0] ? api.secp_cell_type_hash : api.multi_sign_secp_cell_type_hash
+        when CKB::Address::TYPES[1], CKB::Address::TYPES[2]
+          result[:code_hash]
+        end
       output = Types::Output.new(
         capacity: capacity,
         lock: Types::Script.generate_lock(
-          addr.parse(target_address),
-          api.secp_cell_type_hash,
+          result[:arg],
+          code_hash,
           "type"
         )
       )
@@ -116,6 +123,7 @@ module CKB
 
       if use_dep_group
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
+        tx.cell_deps << Types::CellDep.new(out_point: api.multi_sign_secp_group_out_point, dep_type: "dep_group")
       else
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
