@@ -31,16 +31,16 @@ module CKB
     end
 
     # Generates short payload format address
-    # payload = type(01) | code hash index(01) | pubkey hash160
+    # payload = type(01) | code hash index(01) | multisig
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     # @param [String] hash160
     # @return [String]
-    def self.generate_short_payload_hash160_address(hash160, mode: DEFAULT_MODE)
+    def self.generate_short_payload_multisig_address(multisig_script_hash, mode: DEFAULT_MODE)
       prefix = prefix(mode: mode)
-      hash160_bin = [hash160[2..-1]].pack("H*")
+      blake160_bin = [multisig_script_hash[2..-1]].pack("H*")
       type = [TYPES[0]].pack("H*")
       code_hash_index = [CODE_HASH_INDEXES[1]].pack("H*")
-      payload = type + code_hash_index + hash160_bin
+      payload = type + code_hash_index + blake160_bin
       ConvertAddress.encode(prefix, payload)
     end
 
