@@ -86,38 +86,42 @@ RSpec.describe CKB::Address do
 
     it "parse short payload blake160 address" do
       expect(
-        addr.parse(short_payload_blake160_address)
+        addr.parse(short_payload_blake160_address)[:arg]
       ).to eq pubkey_blake160
     end
 
     it "parse short payload hash160 address" do
       expect(
-        addr.parse(short_payload_multisig_address)
+        addr.parse(short_payload_multisig_address)[:arg]
       ).to eq multisig_script_hash
     end
 
     it "parse full payload data address" do
+      result = { format_type: "0x02", code_hash: data_hash, arg: pubkey_blake160 }
       expect(
         addr.parse(full_payload_data_address)
-      ).to eq ["0x02", data_hash, pubkey_blake160]
+      ).to eq result
     end
 
     it "parse full payload type address" do
+      result = { format_type: "0x04", code_hash: type_hash, arg: pubkey_blake160 }
       expect(
         addr.parse(full_payload_type_address)
-      ).to eq ["0x04", type_hash, pubkey_blake160]
+      ).to eq result
     end
 
     it "parse full payload data address with multiple args" do
+      result = { format_type: "0x02", code_hash: data_hash, arg: multiple_args }
       expect(
         addr.parse(full_payload_data_address_with_multiple_args)
-      ).to eq ["0x02", data_hash, multiple_args]
+      ).to eq result
     end
 
     it "parse full payload type address with multiple args" do
+      result = { format_type: "0x04", code_hash: type_hash, arg: multiple_args }
       expect(
         addr.parse(full_payload_type_address_with_multiple_args)
-      ).to eq ["0x04", type_hash, multiple_args]
+      ).to eq result
     end
   end
 
@@ -162,45 +166,49 @@ RSpec.describe CKB::Address do
 
     it "parse short payload blake160 address" do
       expect(
-        addr.parse(short_payload_blake160_address)
+        addr.parse(short_payload_blake160_address)[:arg]
       ).to eq pubkey_blake160
     end
 
     it "parse short payload hash160 address" do
       expect(
-        addr.parse(short_payload_multisig_address)
+        addr.parse(short_payload_multisig_address)[:arg]
       ).to eq multisig_script_hash
     end
 
     it "parse full payload data address" do
+      result = { format_type: "0x02", code_hash: data_hash, arg: pubkey_blake160 }
       expect(
         addr.parse(full_payload_data_address)
-      ).to eq ["0x02", data_hash, pubkey_blake160]
+      ).to eq result
     end
 
     it "parse full payload type address" do
+      result = { format_type: "0x04", code_hash: type_hash, arg: pubkey_blake160 }
       expect(
         addr.parse(full_payload_type_address)
-      ).to eq ["0x04", type_hash, pubkey_blake160]
+      ).to eq result
     end
 
     it "parse full payload data address with multiple args" do
+      result = { format_type: "0x02", code_hash: data_hash, arg: multiple_args }
       expect(
         addr.parse(full_payload_data_address_with_multiple_args)
-      ).to eq ["0x02", data_hash, multiple_args]
+      ).to eq result
     end
 
     it "parse full payload type address with multiple args" do
+      result = { format_type: "0x04", code_hash: type_hash, arg: multiple_args }
       expect(
         addr.parse(full_payload_type_address_with_multiple_args)
-      ).to eq ["0x04", type_hash, multiple_args]
+      ).to eq result
     end
   end
 
   context "self.parse" do
     it "parse short payload blake160 address" do
       expect(
-        CKB::Address.parse(short_payload_blake160_address)
+        CKB::Address.parse(short_payload_blake160_address)[:arg]
       ).to eq pubkey_blake160
     end
 

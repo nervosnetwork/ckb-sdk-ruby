@@ -197,7 +197,7 @@ RSpec.describe CKB::API do
   end
 
   it "get block reward by block hash" do
-    block_hash = api.get_block_hash(1)
+    block_hash = api.get_block_hash(12)
     result = api.get_cellbase_output_capacity_details(block_hash)
     expect(result).to be_a(Types::BlockReward)
   end
