@@ -197,7 +197,7 @@ RSpec.describe CKB::API do
   end
 
   it "get block reward by block hash" do
-    block_hash = api.get_block_hash(1)
+    block_hash = api.get_block_hash(12)
     result = api.get_cellbase_output_capacity_details(block_hash)
     expect(result).to be_a(Types::BlockReward)
   end
@@ -212,6 +212,15 @@ RSpec.describe CKB::API do
     result = api.get_banned_addresses
     expect(result).not_to be nil
     expect(result).to all(be_a(Types::BannedAddress))
+  end
+
+  it "estimate fee rate" do
+    begin
+      result = api.estimate_fee_rate(4)
+      expect(result).not_to be_a Types::EstimateResult
+    rescue Exception => e
+      expect(e).to be_a CKB::RPCError
+    end
   end
 
   context "miner APIs" do

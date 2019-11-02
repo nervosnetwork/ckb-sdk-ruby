@@ -18,11 +18,14 @@ module CKB
     attr_reader :dao_code_hash
     attr_reader :dao_type_hash
 
+    attr_reader :multi_sign_secp_cell_type_hash
+    attr_reader :multi_sign_secp_group_out_point
+
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
         # Testnet system script code_hash
-        expected_code_hash = "0xc8b0772347016713ee8039d6b1d2f4b02803abdc4ea4e95677b0c5e8ff52ea3b"
+        expected_code_hash = "0x973bdb373cbb1d752b4ac006e2bb5bdcb63431ed2b6e394b22721c8906a2ad72"
         expected_type_hash = "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
@@ -62,6 +65,12 @@ module CKB
         dao_type_hash = system_cell_transaction.outputs[2].type.compute_hash
 
         set_dao_dep(dao_out_point, dao_code_hash, dao_type_hash)
+
+        @multi_sign_secp_cell_type_hash = system_cell_transaction.outputs[4].type.compute_hash
+        @multi_sign_secp_group_out_point = Types::OutPoint.new(
+          tx_hash: secp_group_cell_transaction.hash,
+          index: 1
+        )
       end
     end
 
@@ -302,6 +311,12 @@ module CKB
     def get_banned_addresses
       result = rpc.get_banned_addresses
       result.map { |addr| Types::BannedAddress.from_h(addr) }
+    end
+
+    # @param expect_confirm_blocks [Integer]
+    def estimate_fee_rate(expect_confirm_blocks)
+      result = rpc.estimate_fee_rate(expect_confirm_blocks)
+      Types::EstimateResult.from_h(result)
     end
 
     # @param bytes_limit [String | Integer] integer or hex number

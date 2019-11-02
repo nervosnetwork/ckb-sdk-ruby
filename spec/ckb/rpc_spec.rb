@@ -162,7 +162,7 @@ RSpec.describe CKB::RPC do
   end
 
   it "get block reward by block hash" do
-    block_hash = rpc.get_block_hash(1)
+    block_hash = rpc.get_block_hash(12)
     result = rpc.get_cellbase_output_capacity_details(block_hash)
     expect(result).not_to be nil
   end
@@ -176,6 +176,15 @@ RSpec.describe CKB::RPC do
   it "get banned addresses" do
     result = rpc.get_banned_addresses
     expect(result).not_to be nil
+  end
+
+  it "estimate fee rate" do
+    begin
+      result = rpc.estimate_fee_rate(4)
+      expect(result).not_to be nil
+    rescue Exception => e
+      expect(e).to be_a CKB::RPCError
+    end
   end
 
   context "miner RPCs" do
