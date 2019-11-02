@@ -1,6 +1,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.24.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.23.1...v0.24.0) (2019-11-02)
+
+
+### Bug Fixes
+
+* Use correct deposit out point to calculate withdraws ([5f39400](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5f39400fc799ccd5d167497e4f725d776ca89990))
+* Witness processing ([7a20ee1](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/7a20ee18bd2f0dea31fe79fa93c9fc2d80e5fe30))
+
+
+### Features
+
+* adapt new sign logic ([477b5dd](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/477b5ddd1cd994d8f5248d5d03e1b9935ad14234))
+* Adapt to latest 2-phase Nervos DAO ([f30f244](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/f30f244432d535eefc3aa46d1ec4a784a2709abf))
+* add `estimate_fee_rate` RPC ([13a6e04](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/13a6e04f7d611aee8d3fb523a8ac5bb386ddb674))
+* Add basic multi sign wallet ([684dd8c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/684dd8c69d573187487e74e5284648a95033a3b0))
+* Add blake160 hash to multi-sign pubkeys ([5367be2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5367be26f216be92793b38a0ed3c690d5d66745c))
+* add bytes opt and witness args serializers ([a1f8dbe](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a1f8dbeca5c8d8a76b5fee9ff123a1e289f42b2c))
+* support send capacity to multisig address ([a730fae](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a730fae44a064a042c7dcfd8c85af136542b4bdf))
+* update expected code hash ([6087c22](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/6087c2256ea263029f8cbb560b58dabef1adecd7))
+
+
 # [v0.23.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.23.0...v0.23.1) (2019-10-21)
 
 
