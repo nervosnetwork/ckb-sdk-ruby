@@ -31,16 +31,16 @@ module CKB
     end
 
     # Generates short payload format address
-    # payload = type(01) | code hash index(01) | pubkey hash160
+    # payload = type(01) | code hash index(01) | multisig
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     # @param [String] hash160
     # @return [String]
-    def self.generate_short_payload_hash160_address(hash160, mode: DEFAULT_MODE)
+    def self.generate_short_payload_multisig_address(multisig_script_hash, mode: DEFAULT_MODE)
       prefix = prefix(mode: mode)
-      hash160_bin = [hash160[2..-1]].pack("H*")
+      blake160_bin = [multisig_script_hash[2..-1]].pack("H*")
       type = [TYPES[0]].pack("H*")
       code_hash_index = [CODE_HASH_INDEXES[1]].pack("H*")
-      payload = type + code_hash_index + hash160_bin
+      payload = type + code_hash_index + blake160_bin
       ConvertAddress.encode(prefix, payload)
     end
 
@@ -78,7 +78,7 @@ module CKB
       raise InvalidFormatTypeError.new("Invalid format type") if format_type != TYPES[0]
       raise InvalidCodeHashIndexError.new("Invalid code hash index") unless CODE_HASH_INDEXES.include?(code_hash_index)
 
-      CKB::Utils.bin_to_hex(data.slice(2..-1))
+      { format_type: "0x#{format_type}", code_hash_index: "0x#{code_hash_index}", arg: CKB::Utils.bin_to_hex(data.slice(2..-1)) }
     end
 
     def self.parse_full_payload_address(address, mode: DEFAULT_MODE)
@@ -94,7 +94,7 @@ module CKB
       offset += code_hash_size
       args = data[offset..-1]
 
-      ["0x#{format_type}", code_hash, CKB::Utils.bin_to_hex(args)]
+      { format_type: "0x#{format_type}", code_hash: code_hash, arg: CKB::Utils.bin_to_hex(args) }
     end
 
     def self.parse(address, mode: DEFAULT_MODE)

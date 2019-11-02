@@ -16,6 +16,10 @@ module CKB
       [hex[2..-1]].pack("H*")
     end
 
+    def self.hex_concat(a, b)
+      bin_to_hex(hex_to_bin(a) + hex_to_bin(b))
+    end
+
     # @param capacity [Integer] Byte
     #
     # @return [Integer] shannon

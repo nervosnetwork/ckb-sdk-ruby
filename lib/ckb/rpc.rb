@@ -172,6 +172,11 @@ module CKB
       rpc_request("get_banned_addresses")
     end
 
+    # @param expect_confirm_blocks [Integer]
+    def estimate_fee_rate(expect_confirm_blocks)
+      rpc_request("estimate_fee_rate", params: [Utils.to_hex(expect_confirm_blocks)])
+    end
+
     # @param bytes_limit [String | Integer] integer or hex number
     # @param proposals_limit [String | Integer] integer or hex number
     # @param max_version [String | Integer] integer or hex number
