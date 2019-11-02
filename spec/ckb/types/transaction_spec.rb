@@ -46,7 +46,7 @@ RSpec.describe CKB::Types::Transaction do
     tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
     key = CKB::Key.new("0x845b781a1a094057b972714a2b09b85de4fc2eb205351c3e5179aabd264f3805")
     tx_hash = "0x993e6e629be2f016bf72becaa9ad4b39f7fdd72357c9341335783f451010b94e"
-    signed_tx = tx_to_sign.sign(key, tx_hash)
+    signed_tx = tx_to_sign.sign(key)
 
     expect(signed_tx.to_h[:hash]).to eq(tx_hash)
     expect(signed_tx.to_h[:witnesses]).to eq(["0x5500000010000000550000005500000041000000c664d7ccd7fd42810bbdaeaeb760f8d6450689665d2cade9476e50e1cf7b20186bc14aa874a8d166e2435ada65a05d870d006cdb51ed759ad00272b287f2d26c00"])
@@ -56,7 +56,7 @@ RSpec.describe CKB::Types::Transaction do
     tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
     key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
     tx_hash = tx_to_sign.compute_hash
-    signed_tx = tx_to_sign.sign(key, tx_hash)
+    signed_tx = tx_to_sign.sign(key)
 
     expect(signed_tx.to_h[:hash]).to eq(tx_hash)
     expect(signed_tx.to_h[:witnesses]).to eq(["0x55000000100000005500000055000000410000007a360306c20f1f0081d27feff5c59fb9b4307b25876543848010614fb78ea21d165f48f67ae3357eeafbad2033b1e53cd737d4e670de60e1081d514b1e05cf5100"])
@@ -99,7 +99,7 @@ RSpec.describe CKB::Types::Transaction do
 
     it "sign" do
       tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
-      signed_tx = tx_to_sign.sign(key, tx_hash)
+      signed_tx = tx_to_sign.sign(key)
       expect(signed_tx.hash).to eq tx_hash
       expect(signed_tx.to_raw_transaction_h[:witnesses]).to eq(%w(0x550000001000000055000000550000004100000090cdaca0b898586ef68c02e8514087e620d3b19767137baf2fbc8dee28c83ac047be76c76d7f5098a759f3d417c1daedf534a3772aa29159d807d948ed1f8c3a00 0x 0x 0x 0x))
     end
@@ -127,7 +127,7 @@ RSpec.describe CKB::Types::Transaction do
       tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
       key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
       tx_hash = tx_to_sign.compute_hash
-      signed_tx = tx_to_sign.sign(key, tx_hash)
+      signed_tx = tx_to_sign.sign(key)
 
       expect(signed_tx.to_h[:hash]).to eq(tx_hash)
       expect(signed_tx.to_h[:witnesses]).to eq(%w(0x9d00000010000000550000007900000041000000d896d67ddda97ab2d15cd13098b40e4a2b6d6c66ad465d987df9a28b0a038f4a18dbebbc702a1a0b2056aa9e4290a3640a4d73dd1f6483e6f8e0cd2784b4a78b002000000099caa8d7efdaab11c2bb7e45f4f385d0405f0fa2e8d3ba48496c28a2443e607d20000000a6d5e23a77f4d7940aeb88764eebf8146185138641ac43b233e1c9b3daa170fa 0x))

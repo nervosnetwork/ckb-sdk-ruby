@@ -33,11 +33,10 @@ module CKB
       end
 
       # @param key [CKB::Key]
-      # @param tx_hash [String] 0x...
-      def sign(key, tx_hash)
+      def sign(key)
         raise "Need at least one witness! " if witnesses.empty?
         raise "First witness must be of Witness type!" unless witnesses[0].instance_of?(CKB::Types::Witness)
-
+        tx_hash = compute_hash
         emptied_witness = witnesses[0].dup
         emptied_witness.lock = "0x#{'0' * 130}"
         emptied_witness_data_binary = Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(emptied_witness).serialize)

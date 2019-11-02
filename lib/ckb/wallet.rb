@@ -129,7 +129,7 @@ module CKB
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
       end
 
-      tx.sign(key, tx.compute_hash)
+      tx.sign(key)
     end
 
     # @param target_address [String]
@@ -196,7 +196,7 @@ module CKB
       )
 
       tx_hash = tx.compute_hash
-      send_transaction(tx.sign(key, tx_hash))
+      send_transaction(tx.sign(key))
 
       Types::OutPoint.new(tx_hash: tx_hash, index: 0)
     end
@@ -260,12 +260,13 @@ module CKB
       )
 
       tx_hash = tx.compute_hash
-      send_transaction(tx.sign(key, tx_hash))
+      send_transaction(tx.sign(key))
 
       Types::OutPoint.new(tx_hash: tx_hash, index: 0)
     end
 
-    # @param out_point [CKB::Type::OutPoint]
+    # @param deposit_out_point [CKB::Type::OutPoint]
+    # @param withdrawing_out_point [CKB::Type::OutPoint]
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer]
     #
@@ -326,7 +327,7 @@ module CKB
           Types::Witness.new(input_type: "0x0000000000000000")
         ]
       )
-      tx.sign(key, tx.compute_hash)
+      tx.sign(key)
     end
 
     # @param epoch [Integer]
