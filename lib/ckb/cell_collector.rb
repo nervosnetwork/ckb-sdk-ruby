@@ -89,12 +89,13 @@ module CKB
           since: 0
         )
         inputs << input
-        witnesses << "0x"
+        witnesses << CKB::Types::Witness.new
         input_capacities += cell.capacity.to_i
 
         diff = input_capacities - total_capacities
         break if diff >= min_change_capacity || diff.zero?
       end
+      witnesses[0].lock = "0x#{'0' * 130}"
 
       raise "Capacity not enough!" if input_capacities < total_capacities
 

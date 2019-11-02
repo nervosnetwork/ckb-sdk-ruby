@@ -18,6 +18,9 @@ module CKB
     attr_reader :dao_code_hash
     attr_reader :dao_type_hash
 
+    attr_reader :multi_sign_secp_cell_type_hash
+    attr_reader :multi_sign_secp_group_out_point
+
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
       if mode == MODE::TESTNET
@@ -62,6 +65,12 @@ module CKB
         dao_type_hash = system_cell_transaction.outputs[2].type.compute_hash
 
         set_dao_dep(dao_out_point, dao_code_hash, dao_type_hash)
+
+        @multi_sign_secp_cell_type_hash = system_cell_transaction.outputs[4].type.compute_hash
+        @multi_sign_secp_group_out_point = Types::OutPoint.new(
+          tx_hash: secp_group_cell_transaction.hash,
+          index: 1
+        )
       end
     end
 

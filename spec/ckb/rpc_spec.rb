@@ -162,7 +162,7 @@ RSpec.describe CKB::RPC do
   end
 
   it "get block reward by block hash" do
-    block_hash = rpc.get_block_hash(1)
+    block_hash = rpc.get_block_hash(12)
     result = rpc.get_cellbase_output_capacity_details(block_hash)
     expect(result).not_to be nil
   end

@@ -34,6 +34,7 @@ require_relative "transaction_template"
 require_relative "cellbase_template"
 require_relative "block_template"
 require_relative "estimate_result"
+require_relative "witness"
 
 module CKB
   module Types

@@ -72,12 +72,19 @@ module CKB
     # @param fee [Integer] transaction fee, in shannon
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true)
       key = get_key(key)
-
+      result = addr.parse(target_address)
+      code_hash =
+        case result[:format_type][2..-1]
+        when CKB::Address::TYPES[0]
+          result[:code_hash_index][2..-1] == CKB::Address::CODE_HASH_INDEXES[0] ? api.secp_cell_type_hash : api.multi_sign_secp_cell_type_hash
+        when CKB::Address::TYPES[1], CKB::Address::TYPES[2]
+          result[:code_hash]
+        end
       output = Types::Output.new(
         capacity: capacity,
         lock: Types::Script.generate_lock(
-          addr.parse(target_address),
-          api.secp_cell_type_hash,
+          result[:arg],
+          code_hash,
           "type"
         )
       )
@@ -116,12 +123,13 @@ module CKB
 
       if use_dep_group
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
+        tx.cell_deps << Types::CellDep.new(out_point: api.multi_sign_secp_group_out_point, dep_type: "dep_group")
       else
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
       end
 
-      tx.sign(key, tx.compute_hash)
+      tx.sign(key)
     end
 
     # @param target_address [String]
@@ -151,7 +159,7 @@ module CKB
           hash_type: "type"
         )
       )
-      output_data = "0x"
+      output_data = "0x0000000000000000"
 
       change_output = Types::Output.new(
         capacity: 0,
@@ -188,17 +196,12 @@ module CKB
       )
 
       tx_hash = tx.compute_hash
-      send_transaction(tx.sign(key, tx_hash))
+      send_transaction(tx.sign(key))
 
       Types::OutPoint.new(tx_hash: tx_hash, index: 0)
     end
 
-    # @param out_point [CKB::Type::OutPoint]
-    # @param key [CKB::Key | String] Key or private key hex string
-    # @param fee [Integer]
-    #
-    # @return [CKB::Type::Transaction]
-    def generate_withdraw_from_dao_transaction(out_point, key: nil, fee: 0)
+    def start_withdrawing_from_dao(out_point, key: nil, fee: 0)
       key = get_key(key)
 
       cell_status = api.get_live_cell(out_point)
@@ -209,21 +212,88 @@ module CKB
       unless tx.tx_status.status == "committed"
         raise "Transaction is not commtted yet!"
       end
-      deposit_block = api.get_block(tx.tx_status.block_hash).header
-      deposit_epoch = self.class.parse_epoch(deposit_block.epoch)
-      deposit_block_number = deposit_block.number
-      current_block = api.get_tip_header
-      current_epoch = self.class.parse_epoch(current_block.epoch)
-      current_block_number = current_block.number
 
-      if deposit_block_number == current_block_number
-        raise "You need to at least wait for 1 block before generating DAO withdraw transaction!"
+      deposit_block = api.get_block(tx.tx_status.block_hash).header
+      deposit_block_number = deposit_block.number
+
+      output = cell_status.cell.output.dup
+      output_data = CKB::Utils.bin_to_hex([deposit_block_number].pack("Q<"))
+
+      change_output = Types::Output.new(
+        capacity: 0,
+        lock: lock
+      )
+      change_output_data = "0x"
+
+      i = gather_inputs(
+        0,
+        0,
+        change_output.calculate_min_capacity(change_output_data),
+        fee
+      )
+
+      outputs = [output]
+      outputs_data = [output_data]
+
+      change_output.capacity = i.capacities - fee
+      if change_output.capacity.to_i > 0
+        outputs << change_output
+        outputs_data << change_output_data
       end
 
-      withdraw_fraction = current_epoch.index * deposit_epoch.length
-      deposit_fraction = deposit_epoch.index * current_epoch.length
-      deposited_epoches = current_epoch.number - deposit_epoch.number
-      deposited_epoches +=1 if withdraw_fraction > deposit_fraction
+      inputs = [Types::Input.new(previous_output: out_point.dup)] + i.inputs
+      witnesses = [Types::Witness.new] + i.witnesses
+
+      tx = Types::Transaction.new(
+        version: 0,
+        cell_deps: [
+          Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group"),
+          Types::CellDep.new(out_point: api.dao_out_point)
+        ],
+        header_deps: [
+          deposit_block.hash
+        ],
+        inputs: inputs,
+        outputs: outputs,
+        outputs_data: outputs_data,
+        witnesses: witnesses
+      )
+
+      tx_hash = tx.compute_hash
+      send_transaction(tx.sign(key))
+
+      Types::OutPoint.new(tx_hash: tx_hash, index: 0)
+    end
+
+    # @param deposit_out_point [CKB::Type::OutPoint]
+    # @param withdrawing_out_point [CKB::Type::OutPoint]
+    # @param key [CKB::Key | String] Key or private key hex string
+    # @param fee [Integer]
+    #
+    # @return [CKB::Type::Transaction]
+    def generate_withdraw_from_dao_transaction(deposit_out_point, withdrawing_out_point, key: nil, fee: 0)
+      key = get_key(key)
+
+      cell_status = api.get_live_cell(withdrawing_out_point, true)
+      unless cell_status.status == "live"
+        raise "Cell is not yet live!"
+      end
+      tx = api.get_transaction(withdrawing_out_point.tx_hash)
+      unless tx.tx_status.status == "committed"
+        raise "Transaction is not commtted yet!"
+      end
+
+      deposit_block_number = CKB::Utils.hex_to_bin(cell_status.cell.data.content).unpack("Q<")[0]
+      deposit_block = api.get_block_by_number(deposit_block_number).header
+      deposit_epoch = self.class.parse_epoch(deposit_block.epoch)
+
+      withdraw_block = api.get_block(tx.tx_status.block_hash).header
+      withdraw_epoch = self.class.parse_epoch(withdraw_block.epoch)
+
+      withdraw_fraction = withdraw_epoch.index * deposit_epoch.length
+      deposit_fraction = deposit_epoch.index * withdraw_epoch.length
+      deposited_epoches = withdraw_epoch.number - deposit_epoch.number
+      deposited_epoches += 1 if withdraw_fraction > deposit_fraction
       lock_epochs = (deposited_epoches + (DAO_LOCK_PERIOD_EPOCHS - 1)) / DAO_LOCK_PERIOD_EPOCHS * DAO_LOCK_PERIOD_EPOCHS
       minimal_since_epoch_number = deposit_epoch.number + lock_epochs
       minimal_since_epoch_index = deposit_epoch.index
@@ -232,13 +302,7 @@ module CKB
       minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index, minimal_since_epoch_number)
 
       # a hex string
-      output_capacity = api.calculate_dao_maximum_withdraw(out_point, current_block.hash).hex
-
-      dup_out_point = out_point.dup
-      new_out_point = Types::OutPoint.new(
-        tx_hash: dup_out_point.tx_hash,
-        index: dup_out_point.index
-      )
+      output_capacity = api.calculate_dao_maximum_withdraw(deposit_out_point.dup, withdraw_block.hash).hex
 
       outputs = [
         Types::Output.new(capacity: output_capacity - fee, lock: lock)
@@ -251,19 +315,19 @@ module CKB
           Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
         ],
         header_deps: [
-          current_block.hash,
-          deposit_block.hash
+          deposit_block.hash,
+          withdraw_block.hash
         ],
         inputs: [
-          Types::Input.new(previous_output: new_out_point, since: minimal_since)
+          Types::Input.new(previous_output: withdrawing_out_point.dup, since: minimal_since)
         ],
         outputs: outputs,
         outputs_data: outputs_data,
         witnesses: [
-          "0x0000000000000000"
+          Types::Witness.new(input_type: "0x0000000000000000")
         ]
       )
-      tx.sign(key, tx.compute_hash)
+      tx.sign(key)
     end
 
     # @param epoch [Integer]
