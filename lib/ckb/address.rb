@@ -37,30 +37,14 @@ module CKB
 
     alias to_s generate
 
-    def self.blake160(pubkey)
-      pubkey = pubkey[2..-1] if pubkey.start_with?("0x")
-      pubkey_bin = [pubkey].pack("H*")
-      hash_bin = CKB::Blake2b.digest(pubkey_bin)
-      Utils.bin_to_hex(hash_bin[0...20])
-    end
-
-    def self.hash160(pubkey)
-      pubkey = pubkey[2..-1] if pubkey.start_with?("0x")
-      pub_key_sha256 = Digest::SHA256.hexdigest(pubkey)
-
-      "0x#{Digest::RMD160.hexdigest(pub_key_sha256)}"
-    end
-
-    def self.from_pubkey(pubkey, mode: DEFAULT_MODE)
-      new(blake160(pubkey), mode: mode)
-    end
-
     def self.prefix(mode: DEFAULT_MODE)
       case mode
       when MODE::TESTNET
         PREFIX_TESTNET
       when MODE::MAINNET
         PREFIX_MAINNET
+      else
+        raise InvalidModeError.new("Invalid mode")
       end
     end
 
@@ -102,5 +86,7 @@ module CKB
 
       CKB::ConvertAddress.encode(prefix, payload)
     end
+
+    class InvalidModeError < StandardError; end
   end
 end
