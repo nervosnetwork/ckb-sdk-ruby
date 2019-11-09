@@ -17,6 +17,7 @@ require "ckb/multi_sign_wallet"
 require "ckb/key"
 require "ckb/serializers/serializers"
 require "ckb/mock_transaction_dumper"
+require "ckb/system_code_hash"
 
 module CKB
   class Error < StandardError; end

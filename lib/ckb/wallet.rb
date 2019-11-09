@@ -12,7 +12,6 @@ module CKB
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
     def initialize(api, key, skip_data_and_type: true, hash_type: "type", mode: MODE::TESTNET)
-      raise "Api can't be nil" if api.nil?
       raise "Wrong hash_type, hash_type should be `data` or `type`" unless CKB::Types::Script::HASH_TYPES.include?(hash_type)
 
       @api = api
@@ -385,7 +384,7 @@ args = #{lock.args}
     end
 
     def code_hash
-      hash_type == "data" ? api.secp_cell_code_hash : api.secp_cell_type_hash
+      hash_type == "data" ? SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_DATA_HASH : SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
     end
 
     # @param [CKB::Key | String | nil]

@@ -76,9 +76,9 @@ module CKB
     def parse_code_hash(code_hash_index)
       case code_hash_index
       when Address::CODE_HASH_INDEXES[0]
-        Address::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
+        SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
       when Address::CODE_HASH_INDEXES[1]
-        Address::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH
+        SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH
       else
         raise InvalidCodeHashIndexError.new("Invalid code hash index")
       end

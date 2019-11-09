@@ -9,8 +9,6 @@ module CKB
     DEFAULT_MODE = MODE::TESTNET
     TYPES = %w(01 02 04)
     CODE_HASH_INDEXES = %w(00 01)
-    SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH = "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"
-    SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH = "0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"
 
     # @param script [CKB::Types::Script]
     # @param mode [String]
@@ -26,9 +24,9 @@ module CKB
     def generate
       return generate_full_payload_address unless CKB::Types::Script::TYPE == script.hash_type && CKB::Utils.hex_to_bin(script.args).bytesize == 20
 
-      if(SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash)
+      if(SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash)
         generate_short_payload_singlesig_address
-      elsif SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
+      elsif SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_multisig_address
       else
         generate_full_payload_address
