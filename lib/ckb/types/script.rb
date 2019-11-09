@@ -4,7 +4,7 @@ module CKB
   module Types
     class Script
       attr_accessor :code_hash, :args, :hash_type
-
+      HASH_TYPES = [TYPE = "type", DATA = "data"]
       # @param code_hash [String]
       # @param args [String]
       # @param hash_type [String] data/type
@@ -12,6 +12,8 @@ module CKB
         @code_hash = code_hash
         @args = args
         @hash_type = hash_type
+
+        raise InvalidHashTypeError.new("Invalid hash type error") unless HASH_TYPES.include?(hash_type)
       end
 
       # @return [Integer] Byte
@@ -56,6 +58,8 @@ module CKB
           hash_type: hash_type
         )
       end
+
+      class InvalidHashTypeError < StandardError; end
     end
   end
 end
