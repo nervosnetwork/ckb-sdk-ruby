@@ -61,7 +61,7 @@ module CKB
     end
 
     def address
-      payload = [CKB::Address::TYPES[2]].pack("H*") + CKB::Utils.hex_to_bin(api.multi_sign_secp_cell_type_hash) + CKB::Utils.hex_to_bin(configuration.lock_args)
+      payload = [CKB::Address::FULL_TYPE_FORMAT].pack("H*") + CKB::Utils.hex_to_bin(api.multi_sign_secp_cell_type_hash) + CKB::Utils.hex_to_bin(configuration.lock_args)
       ConvertAddress.encode(prefix, payload)
     end
 
@@ -86,19 +86,12 @@ module CKB
     def generate_tx(target_address, capacity, private_keys, data: "0x", fee: 0)
       raise "Invalid number of keys" if private_keys.length != configuration.threshold
 
-      parsed_address = Address.parse(target_address)
-      if parsed_address[:format_type] != "0x" + CKB::Address::TYPES[0] ||
-         parsed_address[:code_hash_index] != "0x" + CKB::Address::CODE_HASH_INDEXES[0]
-        raise "Right now only supports sending to default single signed lock!"
-      end
+      parsed_address = AddressParser.new(target_address).parse
+      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type != "SHORTSINGLESIG"
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(
-          parsed_address[:arg],
-          api.secp_cell_type_hash,
-          "type"
-        )
+        lock: parsed_address.script
       )
       output_data = data
 

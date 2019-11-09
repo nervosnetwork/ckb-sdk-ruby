@@ -12,7 +12,7 @@ module CKB
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
     def initialize(api, key, skip_data_and_type: true, hash_type: "type", mode: MODE::TESTNET)
-      raise "Wrong hash_type, hash_type should be `data` or `type`" unless CKB::Types::Script::HASH_TYPES.include?(hash_type)
+      raise "Wrong hash_type, hash_type should be `data` or `type`" unless CKB::ScriptHashType::TYPES.include?(hash_type)
 
       @api = api
       if key.is_a?(CKB::Key)

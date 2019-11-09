@@ -26,12 +26,12 @@ module CKB
     private
 
     def parse_address_type(format_type, code_hash_index = nil)
-      return "FULL" if Address::TYPES[0] != format_type
+      return "FULL" if Address::SHORT_FORMAT != format_type
 
       case code_hash_index
-      when Address::CODE_HASH_INDEXES[0]
+      when Address::CODE_HASH_INDEX_SINGLESIG
         "SHORTSINGLESIG"
-      when Address::CODE_HASH_INDEXES[1]
+      when Address::CODE_HASH_INDEX_MULTISIG_SIG
         "SHORTMULTISIG"
       else
         raise InvalidCodeHashIndexError.new("Invalid code hash index")
@@ -46,7 +46,7 @@ module CKB
       args = CKB::Utils.bin_to_hex(data.slice(2..-1))
       raise InvalidArgSizeError.new("Short payload format address args bytesize must equal to 20") if CKB::Utils.hex_to_bin(args).bytesize != 20
 
-      OpenStruct.new(mode: mode, script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::Types::Script::TYPE), address_type: parse_address_type(format_type, code_hash_index))
+      OpenStruct.new(mode: mode, script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPE), address_type: parse_address_type(format_type, code_hash_index))
     end
 
     def parse_full_payload_address(decoded_prefix, data)
@@ -64,10 +64,10 @@ module CKB
 
     def parse_hash_type(format_type)
       case format_type
-      when Address::TYPES[1]
-        CKB::Types::Script::DATA
-      when Address::TYPES[2]
-        CKB::Types::Script::TYPE
+      when Address::FULL_DATA_FORMAT
+        CKB::ScriptHashType::DATA
+      when Address::FULL_TYPE_FORMAT
+        CKB::ScriptHashType::TYPE
       else
         raise InvalidFormatTypeError.new("Invalid format type")
       end
@@ -75,9 +75,9 @@ module CKB
 
     def parse_code_hash(code_hash_index)
       case code_hash_index
-      when Address::CODE_HASH_INDEXES[0]
+      when Address::CODE_HASH_INDEX_SINGLESIG
         SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
-      when Address::CODE_HASH_INDEXES[1]
+      when Address::CODE_HASH_INDEX_MULTISIG_SIG
         SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH
       else
         raise InvalidCodeHashIndexError.new("Invalid code hash index")

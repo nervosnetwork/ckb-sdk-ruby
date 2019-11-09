@@ -7,8 +7,11 @@ module CKB
     PREFIX_MAINNET = "ckb"
     PREFIX_TESTNET = "ckt"
     DEFAULT_MODE = MODE::TESTNET
-    TYPES = %w(01 02 04)
-    CODE_HASH_INDEXES = %w(00 01)
+    SHORT_FORMAT = "01"
+    FULL_DATA_FORMAT = "02"
+    FULL_TYPE_FORMAT = "04"
+    CODE_HASH_INDEX_SINGLESIG = "00"
+    CODE_HASH_INDEX_MULTISIG_SIG = "01"
 
     # @param script [CKB::Types::Script]
     # @param mode [String]
@@ -22,7 +25,7 @@ module CKB
     # payload = type(01) | code hash index(00) | pubkey blake160
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     def generate
-      return generate_full_payload_address unless CKB::Types::Script::TYPE == script.hash_type && CKB::Utils.hex_to_bin(script.args).bytesize == 20
+      return generate_full_payload_address unless CKB::ScriptHashType::TYPE == script.hash_type && CKB::Utils.hex_to_bin(script.args).bytesize == 20
 
       if(SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash)
         generate_short_payload_singlesig_address
@@ -50,7 +53,7 @@ module CKB
 
     def short_payload(code_hash_index)
       blake160_bin = CKB::Utils.hex_to_bin(script.args)
-      type = [TYPES[0]].pack("H*")
+      type = [SHORT_FORMAT].pack("H*")
       code_hash_index = [code_hash_index].pack("H*")
       type + code_hash_index + blake160_bin
     end
@@ -61,7 +64,7 @@ module CKB
     #
     # @return [String]
     def generate_short_payload_singlesig_address
-      ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEXES[0]))
+      ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_SINGLESIG))
     end
 
     # Generates short payload format address
@@ -70,7 +73,7 @@ module CKB
     #
     # @return [String]
     def generate_short_payload_multisig_address
-      ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEXES[1]))
+      ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_MULTISIG_SIG))
     end
 
     # Generates full payload format address
@@ -79,7 +82,7 @@ module CKB
     #
     # @return [String]
     def generate_full_payload_address
-      format_type = CKB::Types::Script::TYPE == script.hash_type ? TYPES[2] : TYPES[1]
+      format_type = CKB::ScriptHashType::TYPE == script.hash_type ? FULL_TYPE_FORMAT : FULL_DATA_FORMAT
       payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(script.code_hash) + CKB::Utils.hex_to_bin(script.args)
 
       CKB::ConvertAddress.encode(prefix, payload)
