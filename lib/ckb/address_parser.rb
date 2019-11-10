@@ -14,9 +14,9 @@ module CKB
       format_type = data[0].unpack("H*").first
 
       case format_type
-      when "01"
+      when Address::SHORT_FORMAT
         parse_short_payload_address(decoded_prefix, data)
-      when "02", "04"
+      when Address::FULL_DATA_FORMAT, Address::FULL_TYPE_FORMAT
         parse_full_payload_address(decoded_prefix, data)
       else
         raise InvalidFormatTypeError.new("Invalid format type")
