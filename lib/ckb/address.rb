@@ -27,7 +27,7 @@ module CKB
     def generate
       return generate_full_payload_address unless CKB::ScriptHashType::TYPE == script.hash_type && CKB::Utils.hex_to_bin(script.args).bytesize == 20
 
-      if(SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash)
+      if SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_singlesig_address
       elsif SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_multisig_address
