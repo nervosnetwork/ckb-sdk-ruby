@@ -1,6 +1,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.25.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.24.0...v0.25.0) (2019-11-16)
+
+
+### Features
+
+* add address parser ([3d3c4f3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3d3c4f3974dd051f8eea4aee8ec343169022256e))
+* add system code hash module ([008ab21](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/008ab2114417a1afdd88e1e98298a43bd69ee0d5))
+* check hash type ([3c9eed8](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/3c9eed84aabb3b26170aaaa746a231b2cb49e322))
+* Fix multi sign wallet ([c75e6fe](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/c75e6febdc142a2e84f74b8ed17b3f8840b93b86))
+
+
 # [v0.24.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.23.1...v0.24.0) (2019-11-02)
 
 
