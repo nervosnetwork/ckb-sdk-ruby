@@ -5,18 +5,15 @@ module CKB
   DAO_MATURITY_BLOCKS = 5
 
   class Wallet
-    attr_reader :api
-    attr_reader :key
-    attr_reader :pubkey
-    attr_reader :addr
-    attr_reader :address
-    attr_reader :hash_type
+    attr_reader :api, :key, :pubkey, :address, :hash_type , :blake160
 
     attr_accessor :skip_data_and_type
 
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
-    def initialize(api, key, skip_data_and_type: true, hash_type: "type")
+    def initialize(api, key, skip_data_and_type: true, hash_type: "type", mode: MODE::TESTNET)
+      raise "Wrong hash_type, hash_type should be `data` or `type`" unless CKB::ScriptHashType::TYPES.include?(hash_type)
+
       @api = api
       if key.is_a?(CKB::Key)
         @key = key
@@ -25,12 +22,11 @@ module CKB
         @pubkey = key
         @key = nil
       end
-      @addr = Address.from_pubkey(@pubkey)
+      @hash_type = hash_type
+      @blake160 = CKB::Key.blake160(@pubkey)
+      @addr = Address.new(lock, mode: mode)
       @address = @addr.to_s
       @skip_data_and_type = skip_data_and_type
-      raise "Wrong hash_type, hash_type should be `data` or `type`" unless %w(data type).include?(hash_type)
-
-      @hash_type = hash_type
     end
 
     def self.from_hex(api, privkey, hash_type: "type")
@@ -72,21 +68,12 @@ module CKB
     # @param fee [Integer] transaction fee, in shannon
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true)
       key = get_key(key)
-      result = addr.parse(target_address)
-      code_hash =
-        case result[:format_type][2..-1]
-        when CKB::Address::TYPES[0]
-          result[:code_hash_index][2..-1] == CKB::Address::CODE_HASH_INDEXES[0] ? api.secp_cell_type_hash : api.multi_sign_secp_cell_type_hash
-        when CKB::Address::TYPES[1], CKB::Address::TYPES[2]
-          result[:code_hash]
-        end
+      parsed_address = AddressParser.new(target_address).parse
+      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
+
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(
-          result[:arg],
-          code_hash,
-          "type"
-        )
+        lock: parsed_address.script
       )
       output_data = data
 
@@ -152,7 +139,7 @@ module CKB
 
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(addr.blake160, code_hash, hash_type),
+        lock: Types::Script.generate_lock(blake160, code_hash, hash_type),
         type: Types::Script.new(
           code_hash: api.dao_type_hash,
           args: "0x",
@@ -365,7 +352,7 @@ args = #{lock.args}
     # @return [CKB::Types::Script]
     def lock
       Types::Script.generate_lock(
-        addr.blake160,
+        blake160,
         code_hash,
         hash_type
       )
@@ -397,7 +384,7 @@ args = #{lock.args}
     end
 
     def code_hash
-      hash_type == "data" ? api.secp_cell_code_hash : api.secp_cell_type_hash
+      hash_type == "data" ? SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_DATA_HASH : SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
     end
 
     # @param [CKB::Key | String | nil]

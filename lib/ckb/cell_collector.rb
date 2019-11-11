@@ -95,9 +95,9 @@ module CKB
         diff = input_capacities - total_capacities
         break if diff >= min_change_capacity || diff.zero?
       end
-      witnesses[0].lock = "0x#{'0' * 130}"
-
       raise "Capacity not enough!" if input_capacities < total_capacities
+
+      witnesses[0].lock = "0x#{'0' * 130}"
 
       OpenStruct.new(
         inputs: inputs,
