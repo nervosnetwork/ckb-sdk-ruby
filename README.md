@@ -4,6 +4,8 @@
 
 Ruby SDK for CKB
 
+The ckb-sdk-ruby is still under development and NOT production ready. You should get familiar with CKB transaction structure and RPC before using it.
+
 ## Prerequisites
 
 Require Ruby 2.4 and above.
