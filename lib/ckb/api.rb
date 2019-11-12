@@ -23,7 +23,7 @@ module CKB
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
       @rpc = CKB::RPC.new(host: host)
-      if mode == MODE::TESTNET
+      if mode == MODE::TESTNET || mode == MODE::MAINNET
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
