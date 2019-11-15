@@ -101,6 +101,9 @@ module CKB
       )
       change_output_data = "0x"
 
+      min_capacity = output.calculate_min_capacity(output_data)
+      raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
+
       i = CellCollector.new(
         api,
         skip_data_and_type: skip_data_and_type,
@@ -108,7 +111,6 @@ module CKB
       ).gather_inputs(
         [lock.compute_hash],
         capacity,
-        output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
         fee
       )
