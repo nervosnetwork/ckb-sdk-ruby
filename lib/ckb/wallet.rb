@@ -110,7 +110,6 @@ module CKB
 
       if use_dep_group
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_group_out_point, dep_type: "dep_group")
-        tx.cell_deps << Types::CellDep.new(out_point: api.multi_sign_secp_group_out_point, dep_type: "dep_group")
       else
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
