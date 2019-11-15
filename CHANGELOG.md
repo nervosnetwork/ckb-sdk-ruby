@@ -7,6 +7,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * InsufficientCellCapacity when collect cells ([4c8fdb4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4c8fdb498898f34b7180564609032aa6bb935fd5))
+* remove multi sign secp group out point ([4b65500](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4b65500d018f0c69b7cd073c7b45b753d7d976fb))
 
 
 ### Features
