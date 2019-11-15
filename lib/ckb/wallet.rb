@@ -370,6 +370,7 @@ args = #{lock.args}
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
     def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
+      raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
       CellCollector.new(
         @api,
         skip_data_and_type: @skip_data_and_type,
@@ -377,7 +378,6 @@ args = #{lock.args}
       ).gather_inputs(
         [lock_hash],
         capacity,
-        min_capacity,
         min_change_capacity,
         fee
       )
