@@ -12,6 +12,8 @@ module CKB
         @code_hash = code_hash
         @args = args
         @hash_type = hash_type
+
+        raise InvalidHashTypeError.new("Invalid hash type error") unless CKB::ScriptHashType::TYPES.include?(hash_type)
       end
 
       # @return [Integer] Byte
@@ -56,6 +58,8 @@ module CKB
           hash_type: hash_type
         )
       end
+
+      class InvalidHashTypeError < StandardError; end
     end
   end
 end

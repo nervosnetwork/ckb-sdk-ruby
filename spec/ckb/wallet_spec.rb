@@ -10,7 +10,6 @@ RSpec.describe CKB::Wallet do
 
       expect(wallet.key.privkey).to eq key.privkey
       expect(wallet.pubkey).to eq key.pubkey
-      expect(wallet.address).to eq key.address.to_s
     end
 
     it "pubkey" do
@@ -18,7 +17,6 @@ RSpec.describe CKB::Wallet do
 
       expect(wallet.key).to be nil
       expect(wallet.pubkey).to eq pubkey
-      expect(wallet.address).to eq key.address.to_s
     end
   end
 

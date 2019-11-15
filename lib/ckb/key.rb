@@ -5,7 +5,7 @@ require "secp256k1"
 
 module CKB
   class Key
-    attr_reader :privkey, :pubkey, :address
+    attr_reader :privkey, :pubkey
 
     # @param privkey [String] hex string
     def initialize(privkey)
@@ -20,8 +20,6 @@ module CKB
       rescue Secp256k1::AssertError
         raise ArgumentError, "invalid privkey!"
       end
-
-      @address = Address.from_pubkey(pubkey)
     end
 
     # @param data [String] hex string
@@ -58,6 +56,13 @@ module CKB
       privkey_bin = [privkey[2..-1]].pack("H*")
       pubkey_bin = Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
       Utils.bin_to_hex(pubkey_bin)
+    end
+
+    def self.blake160(pubkey)
+      pubkey = pubkey[2..-1] if pubkey.start_with?("0x")
+      pubkey_bin = [pubkey].pack("H*")
+      hash_bin = CKB::Blake2b.digest(pubkey_bin)
+      Utils.bin_to_hex(hash_bin[0...20])
     end
   end
 end

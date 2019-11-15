@@ -5,8 +5,9 @@ module CKB
     attr_reader :require_n
     attr_reader :threshold
     attr_reader :pubkeys
+    attr_reader :since
 
-    def initialize(require_n:, threshold:, pubkeys:)
+    def initialize(require_n:, threshold:, pubkeys:, since:)
       raise "require_n should be less than 256" if require_n > 255 || require_n < 0
       raise "threshold should be less than 256" if threshold > 255 || threshold < 0
       raise "Pubkey number must be less than 256" if pubkeys.length > 255
@@ -14,13 +15,24 @@ module CKB
       @require_n = require_n
       @threshold = threshold
       @pubkeys = pubkeys
+      @since = since
+    end
+
+    def self.from_private_keys(require_n:, threshold:, private_keys:, since:)
+      pubkeys = private_keys.map do |privkey|
+        CKB::Key.new(privkey).pubkey
+      end
+      self.new(require_n: require_n,
+               threshold: threshold,
+               pubkeys: pubkeys,
+               since: since)
     end
 
     def serialize
       CKB::Utils.bin_to_hex(
         [0, require_n, threshold, pubkeys.length].pack("CCCC") +
         pubkeys.map do |pubkey|
-          CKB::Blake2b.digest(CKB::Utils.hex_to_bin(pubkey))[0..20]
+          CKB::Blake2b.digest(CKB::Utils.hex_to_bin(pubkey))[0..19]
         end.reduce(&:+)
       )
     end
@@ -28,6 +40,10 @@ module CKB
     def blake160
       hash_bin = CKB::Blake2b.digest(CKB::Utils.hex_to_bin(serialize))
       Utils.bin_to_hex(hash_bin[0...20])
+    end
+
+    def lock_args
+      Utils.hex_concat(blake160, Utils.bin_to_hex([since].pack("Q<")))
     end
   end
 
@@ -45,18 +61,15 @@ module CKB
     end
 
     def address
-      blake160_bin = CKB::Utils.hex_to_bin(configuration.blake160)
-      type = [CKB::Address::TYPES[0]].pack("H*")
-      code_hash_index = [CKB::Address::CODE_HASH_INDEXES[1]].pack("H*")
-      payload = type + code_hash_index + blake160_bin
+      payload = [CKB::Address::FULL_TYPE_FORMAT].pack("H*") + CKB::Utils.hex_to_bin(api.multi_sign_secp_cell_type_hash) + CKB::Utils.hex_to_bin(configuration.lock_args)
       ConvertAddress.encode(prefix, payload)
     end
 
     def lock
-      Types::Script.generate_lock(
-        configuration.blake160,
-        api.multi_sign_secp_cell_type_hash,
-        "type"
+      Types::Script.new(
+        code_hash: api.multi_sign_secp_cell_type_hash,
+        hash_type: "type",
+        args: configuration.lock_args
       )
     end
 
@@ -73,13 +86,12 @@ module CKB
     def generate_tx(target_address, capacity, private_keys, data: "0x", fee: 0)
       raise "Invalid number of keys" if private_keys.length != configuration.threshold
 
+      parsed_address = AddressParser.new(target_address).parse
+      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type != "SHORTSINGLESIG"
+
       output = Types::Output.new(
         capacity: capacity,
-        lock: Types::Script.generate_lock(
-          Address.parse(target_address),
-          api.secp_cell_type_hash,
-          "type"
-        )
+        lock: parsed_address.script
       )
       output_data = data
 
@@ -89,6 +101,9 @@ module CKB
       )
       change_output_data = "0x"
 
+      min_capacity = output.calculate_min_capacity(output_data)
+      raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
+
       i = CellCollector.new(
         api,
         skip_data_and_type: skip_data_and_type,
@@ -96,7 +111,6 @@ module CKB
       ).gather_inputs(
         [lock.compute_hash],
         capacity,
-        output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
         fee
       )
@@ -113,7 +127,12 @@ module CKB
       tx = Types::Transaction.new(
         version: 0,
         cell_deps: [Types::CellDep.new(out_point: api.multi_sign_secp_group_out_point, dep_type: "dep_group")],
-        inputs: i.inputs,
+        inputs: i.inputs.map do |input|
+          dupped_input = input.dup
+          # TODO: auto-detect if since value has passed
+          dupped_input.since = configuration.since
+          dupped_input
+        end,
         outputs: outputs,
         outputs_data: outputs_data,
         witnesses: i.witnesses
