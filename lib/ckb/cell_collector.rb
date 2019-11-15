@@ -73,17 +73,14 @@ module CKB
 
     # @param lock_hashes [String[]]
     # @param capacity [Integer]
-    # @param min_capacity [Integer]
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
-    def gather_inputs(lock_hashes, capacity, min_capacity, min_change_capacity, fee)
-      raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
-
+    def gather_inputs(lock_hashes, capacity, min_change_capacity, fee)
       total_capacities = capacity + fee
       input_capacities = 0
       inputs = []
       witnesses = []
-      get_unspent_cells_by_lock_hashes(lock_hashes, need_capacities: total_capacities)[:outputs].each do |cell|
+      get_unspent_cells_by_lock_hashes(lock_hashes, need_capacities: total_capacities + min_change_capacity)[:outputs].each do |cell|
         input = Types::Input.new(
           previous_output: cell.out_point,
           since: 0
