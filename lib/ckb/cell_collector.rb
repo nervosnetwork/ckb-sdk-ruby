@@ -37,7 +37,7 @@ module CKB
           break if need_capacities && total_capacities >= need_capacities
         else
           results.concat(cells)
-          total_capacities += cells.map(&:capacity).reduce(:+)
+          total_capacities += cells.map(&:capacity).reduce(0, :+)
           break if need_capacities && total_capacities >= need_capacities
         end
         current_from = current_to + 1
