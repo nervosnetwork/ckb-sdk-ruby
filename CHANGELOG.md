@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.25.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.25.0...v0.25.1) (2019-11-17)
+
+
+### Bug Fixes
+
+* add default value for reduce in get_unspent_cells ([e14901b](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/e14901bbbde21c17d75546669ab3081e2850af70))
+
+
 # [v0.25.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.24.0...v0.25.0) (2019-11-16)
 
 
