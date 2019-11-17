@@ -29,8 +29,8 @@ module CKB
       @skip_data_and_type = skip_data_and_type
     end
 
-    def self.from_hex(api, privkey, hash_type: "type")
-      new(api, Key.new(privkey), hash_type: hash_type)
+    def self.from_hex(api, privkey, hash_type: "type", skip_data_and_type: true, mode: MODE::TESTNET)
+      new(api, Key.new(privkey), hash_type: hash_type, skip_data_and_type: skip_data_and_type, mode: mode)
     end
 
     def hash_type=(hash_type)

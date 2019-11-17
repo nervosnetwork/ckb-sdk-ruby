@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.25.2](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.25.1...v0.25.2) (2019-11-17)
+
+
+### Bug Fixes
+
+* add options to wallet.from_hex ([ac2b658](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/ac2b658cada45dcbec0b041ea2347e0b072f43d1))
+
+
 # [v0.25.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.25.0...v0.25.1) (2019-11-17)
 
 
