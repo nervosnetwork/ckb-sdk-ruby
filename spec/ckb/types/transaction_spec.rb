@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 RSpec.describe CKB::Types::Transaction do
+  let(:private_key) { ENV["BOB_PRIVATE_KEY"] }
+  let(:key) { CKB::Key.new(private_key) }
+
   let(:tx_to_sign_hash) do
     {
       "version": "0x0",
@@ -74,7 +77,6 @@ RSpec.describe CKB::Types::Transaction do
 
   it "sign" do
     tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
-    key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
     tx_hash = "0x8457b932a9a3cd0bedd3eebad473cf7fd1f59cd5f96f80a637271a6901e4a0da"
     signed_tx = tx_to_sign.sign(key)
 
@@ -84,7 +86,6 @@ RSpec.describe CKB::Types::Transaction do
 
   it "sign with data hash" do
     tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
-    key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
     tx_hash = tx_to_sign.compute_hash
     signed_tx = tx_to_sign.sign(key)
 
@@ -179,9 +180,6 @@ RSpec.describe CKB::Types::Transaction do
 
     let(:tx_hash) { "0x11a67b2de5629a39a1514b39c27500bad8a52cb8ff604ddb50f0f8fc044a5448" }
 
-    let(:private_key) { "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3" }
-    let(:key) { CKB::Key.new(private_key) }
-
     it "sign" do
       tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash)
       signed_tx = tx_to_sign.sign(key)
@@ -216,7 +214,6 @@ RSpec.describe CKB::Types::Transaction do
 
     it "sign2" do
       tx_to_sign = CKB::Types::Transaction.from_h(tx_to_sign_hash_use_data_hash)
-      key = CKB::Key.new("0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
       tx_hash = tx_to_sign.compute_hash
       signed_tx = tx_to_sign.sign(key)
 
