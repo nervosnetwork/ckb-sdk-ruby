@@ -96,6 +96,12 @@ bob_key = "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3"
 tx_hash = bob.send_capacity(alice.address, 1000 * 10**8, key: bob_key)
 ```
 
+## Run Tests
+
+```bash
+BOB_PRIVATE_KEY="0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3" rake spec
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
