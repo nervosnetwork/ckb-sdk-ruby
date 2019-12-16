@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.26.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.25.2...v0.26.0) (2019-12-16)
+
+
+### Features
+
+* update `get_cells_by_lock_hash` and `get_live_cells_by_lock` returns ([65f76c4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/65f76c48ce91752442aa68dc57af0a9a7061ac9e))
+
+
 # [v0.25.2](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.25.1...v0.25.2) (2019-11-17)
 
 
