@@ -11,6 +11,13 @@ RSpec.describe CKB::Types::CellOutputWithOutPoint do
       "out_point": {
           "index": "0x0",
           "tx_hash": "0x5ba156200c6310bf140fbbd3bfe7e8f03d4d5f82b612c1a8ec2501826eaabc17"
+      },
+      "cellbase": true,
+      "output_data_len": "0x0",
+      "type": {
+        "args": [],
+        "code_hash": "0x28e83a1277d48add8e72fadaa9248559e1b632bab2bd60b27955ebc4c03800a5",
+        "hash_type": "data"
       }
     }
   end
@@ -20,9 +27,12 @@ RSpec.describe CKB::Types::CellOutputWithOutPoint do
   it "from_h" do
     expect(cell_output_with_out_point).to be_a(CKB::Types::CellOutputWithOutPoint)
     expect(cell_output_with_out_point.lock).to be_a(CKB::Types::Script)
+    expect(cell_output_with_out_point.type).to be_a(CKB::Types::Script)
     expect(cell_output_with_out_point.out_point).to be_a(CKB::Types::OutPoint)
     expect(cell_output_with_out_point.capacity).to eq cell_output_with_out_point_h[:capacity].hex
+    expect(cell_output_with_out_point.output_data_len).to eq cell_output_with_out_point_h[:output_data_len].hex
     expect(cell_output_with_out_point.block_hash).to eq cell_output_with_out_point_h[:block_hash]
+    expect(cell_output_with_out_point.cellbase).to eq cell_output_with_out_point_h[:cellbase]
   end
 
   it "to_h" do
