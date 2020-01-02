@@ -1,6 +1,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [v0.26.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.26.0...v0.26.1) (2020-01-02)
+
+
+### Features
+
+* add `get_capacity_by_lock_hash` RPC ([9de8da2](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/9de8da23ec14f83178b72efa1a831973cad73cf8))
+
+
 # [v0.26.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.25.2...v0.26.0) (2019-12-16)
 
 

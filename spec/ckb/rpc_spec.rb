@@ -147,6 +147,12 @@ RSpec.describe CKB::RPC do
       result = rpc.get_transactions_by_lock_hash(lock_hash, 0, 10)
       expect(result).not_to be nil
     end
+
+    it "get_capacity_by_lock_hash" do
+      rpc.index_lock_hash(lock_hash)
+      result = rpc.get_capacity_by_lock_hash(lock_hash)
+      expect(result).not_to be nil
+    end
   end
 
   it "get block header" do

@@ -35,6 +35,7 @@ require_relative "cellbase_template"
 require_relative "block_template"
 require_relative "estimate_result"
 require_relative "witness"
+require_relative "lock_hash_capacity"
 
 module CKB
   module Types
