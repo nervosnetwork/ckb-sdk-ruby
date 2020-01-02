@@ -147,6 +147,11 @@ module CKB
       rpc_request("index_lock_hash", params: [lock_hash, Utils.to_hex(index_from)])
     end
 
+    # @param lock_hash [String]
+    def get_capacity_by_lock_hash(lock_hash)
+      rpc_request('get_capacity_by_lock_hash', params: [lock_hash])
+    end
+
     def get_header(block_hash)
       rpc_request("get_header", params: [block_hash])
     end

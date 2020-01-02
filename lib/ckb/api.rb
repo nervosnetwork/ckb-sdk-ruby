@@ -269,6 +269,14 @@ module CKB
       Types::LockHashIndexState.from_h(state)
     end
 
+    # @param lock_hash [String]
+    #
+    # @return [CKB::Types::LockHashCapacity]
+    def get_capacity_by_lock_hash(lock_hash)
+      result = rpc.get_capacity_by_lock_hash(lock_hash)
+      Types::LockHashCapacity.from_h(result) unless result.nil?
+    end
+
     # @param block_hash [String] 0x...
     #
     # @return [CKB::Types::BlockHeader]
