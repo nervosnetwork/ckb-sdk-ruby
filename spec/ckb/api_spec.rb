@@ -180,6 +180,12 @@ RSpec.describe CKB::API do
       result = api.get_transactions_by_lock_hash(lock_hash, 0, 10)
       expect(result).not_to be nil
     end
+
+    it "get_capacity_by_lock_hash" do
+      api.index_lock_hash(lock_hash)
+      result = api.get_capacity_by_lock_hash(lock_hash)
+      expect(result).not_to be nil
+    end
   end
 
   it "get block header" do
