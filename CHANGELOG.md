@@ -3,7 +3,7 @@
 
 ### Features
 
-* update send_transaction rpc ([295869f](https://github.com/shaojunda/ckb-sdk-ruby/commit/295869f))
+* update send_transaction rpc ([295869f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/295869f))
 
 
 ### BREAKING CHANGES
