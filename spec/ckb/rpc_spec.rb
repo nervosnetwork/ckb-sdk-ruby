@@ -29,6 +29,55 @@ RSpec.describe CKB::RPC do
   end
   let(:rpc) { CKB::RPC.new }
   let(:lock_hash) { "0xd0e22f863da970a3ff51a937ae78ba490bbdcede7272d658a053b9f80e30305d" }
+  let(:normal_tx) do
+    {
+      "version": "0x0",
+      "cell_deps": [
+        {
+          "out_point": {
+            "tx_hash": "0xace5ea83c478bb866edf122ff862085789158f5cbff155b7bb5f13058555b708",
+            "index": "0x0"
+          },
+          "dep_type": "dep_group"
+        }
+      ],
+      "header_deps": [],
+      "inputs": [
+        {
+          "previous_output": {
+            "tx_hash": "0x3ac0a667dc308a78f38c75cbeedfdea9247bbd67e727e1c153a4aa1a2afb28d8",
+            "index": "0x0"
+          },
+          "since": "0x0"
+        }
+      ],
+      "outputs": [
+        {
+          "capacity": "0x174876e800",
+          "lock": {
+            "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+            "args": "0xe2193df51d78411601796b35b17b4f8f2cd85bd0",
+            "hash_type": "type"
+          },
+          "type": nil
+        },
+        {
+          "capacity": "0x123057115561",
+          "lock": {
+            "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+            "args": "0x36c329ed630d6ce750712a477543672adab57f4c",
+            "hash_type": "type"
+          },
+          "type": nil
+        }
+      ],
+      "outputs_data": [
+        "0x",
+        "0x"
+      ],
+      "witnesses": ["0x5500000010000000550000005500000041000000fd8d32a3e1a4276d479379357d8dda72f68672db9a21919bdc6f24d7b91cc6de5e7f76b835b9038303d9cae171ab47428eabdfa310d09254b8fadae19026605300"]
+    }
+  end
 
   it "genesis block" do
     result = rpc.genesis_block
@@ -106,6 +155,18 @@ RSpec.describe CKB::RPC do
     expect do
       rpc.send_transaction(tx)
     end.to raise_error(CKB::RPCError, /:code=>-3/)
+  end
+
+  it "should raise ArgumentError when outputs_validator is invalid" do
+    expect do
+      rpc.send_transaction(normal_tx, "something")
+    end.to raise_error(ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`")
+  end
+
+  it "should not raise ArgumentError when outputs_validator is valid" do
+    expect do
+      rpc.send_transaction(normal_tx, "passthrough")
+    end.not_to raise_error(ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`")
   end
 
   it "local node info" do

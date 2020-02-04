@@ -1,3 +1,17 @@
+# [v0.27.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.26.1...v0.27.1) (2020-02-04)
+
+
+### Features
+
+* update send_transaction rpc ([295869f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/295869f))
+
+
+### BREAKING CHANGES
+
+* add outputs_validator to send_transaction rpc
+
+
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
