@@ -1,3 +1,8 @@
+# [v0.28.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.27.1...v0.28.0) (2020-02-07)
+
+Bump version to v0.28.0
+
+
 # [v0.27.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.26.1...v0.27.1) (2020-02-04)
 
 
