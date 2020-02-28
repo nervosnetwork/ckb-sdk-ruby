@@ -169,6 +169,12 @@ RSpec.describe CKB::RPC do
     end.not_to raise_error(ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`")
   end
 
+  it "should not raise ArgumentError when outputs_validator is nil" do
+    expect do
+      rpc.send_transaction(normal_tx)
+    end.not_to raise_error(ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`")
+  end
+
   it "local node info" do
     result = rpc.local_node_info
     expect(result).not_to be nil
