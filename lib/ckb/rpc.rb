@@ -73,7 +73,7 @@ module CKB
       rpc_request("get_live_cell", params: [out_point, with_data])
     end
 
-    def send_transaction(transaction, outputs_validator = "default")
+    def send_transaction(transaction, outputs_validator = "passthrough")
       raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w(default passthrough).include?(outputs_validator)
 
       rpc_request("send_transaction", params: [transaction, outputs_validator])

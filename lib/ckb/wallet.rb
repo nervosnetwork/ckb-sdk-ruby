@@ -123,7 +123,7 @@ module CKB
     # @param data [String] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0, outputs_validator: "default")
+    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0, outputs_validator: "passthrough")
       tx = generate_tx(target_address, capacity, data, key: key, fee: fee)
       send_transaction(tx, outputs_validator)
     end
@@ -360,7 +360,7 @@ args = #{lock.args}
     private
 
     # @param transaction [CKB::Transaction]
-    def send_transaction(transaction, outputs_validator = "default")
+    def send_transaction(transaction, outputs_validator = "passthrough")
       api.send_transaction(transaction, outputs_validator)
     end
 

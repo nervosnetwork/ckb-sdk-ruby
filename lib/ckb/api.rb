@@ -152,7 +152,7 @@ module CKB
     # @param transaction [CKB::Types::Transaction]
     #
     # @return [String] tx_hash
-    def send_transaction(transaction, outputs_validator = "default")
+    def send_transaction(transaction, outputs_validator = "passthrough")
       raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w(default passthrough).include?(outputs_validator)
 
       rpc.send_transaction(transaction.to_raw_transaction_h, outputs_validator)
