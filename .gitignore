@@ -8,6 +8,7 @@
 /tmp/
 /.ruby-version
 .idea/
+.vscode/
 
 # rspec failure tracking
 .rspec_status

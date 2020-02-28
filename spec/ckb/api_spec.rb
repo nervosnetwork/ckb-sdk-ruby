@@ -164,6 +164,12 @@ RSpec.describe CKB::API do
     end.not_to raise_error(ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`")
   end
 
+  it "should not raise ArgumentError when outputs_validator is nil" do
+    expect do
+      api.send_transaction(normal_tx)
+    end.not_to raise_error(ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`")
+  end
+
   it "get current epoch" do
     result = api.get_current_epoch
     expect(result).not_to be nil
