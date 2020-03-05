@@ -1,3 +1,7 @@
+# [v0.29.1](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.29.0...v0.29.1) (2020-03-05)
+
+* Bump rake to 13.0.1
+
 # [v0.29.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.28.0...v0.29.0) (2020-02-28)
 
 * change outputs_validator default to nil on `rpc` and `api` module
