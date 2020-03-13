@@ -31,36 +31,38 @@ module CKB
       api.send_transaction(tx, outputs_validator)
     end
 
-    def transfer(target_address, amount, fee: 0, outputs_validator: nil)
-      tx = generate_transfer_tx(target_address, amount, fee)
+    def transfer(target_address, amount, type_hash:, fee: 0, outputs_validator: nil)
+      tx = generate_transfer_tx(target_address, amount, fee, type_hash)
       api.send_transaction(tx, outputs_validator)
     end
 
-    def burn(amount, outputs_validator: nil, fee: 0)
-      tx = generate_burn_tx(amount, fee)
+    def burn(amount, type_hash:, outputs_validator: nil, fee: 0)
+      tx = generate_burn_tx(type_hash, amount, fee)
       api.send_transaction(tx, outputs_validator)
     end
 
-    def balance
-      get_unspent_sudt_cells[:amounts]
+    def balance(type_hash)
+      get_unspent_sudt_cells(type_hash)[:amounts]
     end
 
     private
 
-    def generate_burn_tx(amount, fee, use_dep_group: true)
+    def generate_burn_tx(type_hash, amount, fee, use_dep_group: true)
       min_capacity = CKB::Utils.byte_to_shannon(150)
       key = get_key(key)
       parsed_address = AddressParser.new(address).parse
       raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
+      raise "Amount not enough!" if balance(type_hash) < amount
 
       output = Types::Output.new(capacity: min_capacity, lock: parsed_address.script, type: sudt_type_script)
-      output_data = generate_udt_cell_data(balance - amount)
+
+      output_data = generate_udt_cell_data(balance(type_hash) - amount)
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock,
       )
       change_output_data = "0x#{'0' * 32}"
-      result = gather_sudt_inputs(min_capacity, change_output.calculate_min_capacity(change_output_data), fee, need_amounts: balance)
+      result = gather_sudt_inputs(min_capacity, change_output.calculate_min_capacity(change_output_data), fee, type_hash, need_amounts: balance(type_hash))
       input_capacities = result.capacities
       input_amounts = result.amounts
       outputs = [output]
@@ -96,7 +98,7 @@ module CKB
       tx.sign(key)
     end
 
-    def generate_transfer_tx(target_address, amount, fee, use_dep_group: true)
+    def generate_transfer_tx(target_address, amount, fee, type_hash, use_dep_group: true)
       min_capacity = CKB::Utils.byte_to_shannon(150)
       key = get_key(key)
       parsed_address = AddressParser.new(target_address).parse
@@ -104,26 +106,32 @@ module CKB
 
       output = Types::Output.new(capacity: min_capacity, lock: parsed_address.script, type: sudt_type_script)
       output_data = generate_udt_cell_data(amount)
-      change_output = Types::Output.new(
+      capacity_change_output = Types::Output.new(
         capacity: 0,
         lock: lock
       )
-      change_output_data = "0x#{'0' * 32}"
-      result = gather_sudt_inputs(min_capacity, change_output.calculate_min_capacity(change_output_data), fee, need_amounts: amount)
+      amount_change_output = Types::Output.new(
+        capacity: min_capacity,
+        lock: lock,
+        type: sudt_type_script
+      )
+      capacity_change_output_data = "0x"
+      amount_change_output_data = "0x#{'0' * 32}"
+      result = gather_sudt_inputs(min_capacity, capacity_change_output.calculate_min_capacity(capacity_change_output_data), fee, type_hash, need_amounts: amount)
       input_capacities = result.capacities
       input_amounts = result.amounts
       outputs = [output]
       outputs_data = [output_data]
-      change_output.capacity = input_capacities - (min_capacity + fee)
-      if change_output.capacity.to_i > 0
-        outputs << change_output
-        if input_amounts > amount
-          change_output_data = generate_udt_cell_data(input_amounts - amount)
-          change_output.type = sudt_type_script
-        else
-          change_output_data = "0x"
-        end
-        outputs_data << change_output_data
+      capacity_change_output.capacity = input_capacities - (min_capacity + fee) - min_capacity
+      if capacity_change_output.capacity.to_i > 0
+        outputs << capacity_change_output
+        outputs_data << capacity_change_output_data
+      end
+      if input_amounts > amount
+        change_output_data = generate_udt_cell_data(input_amounts - amount)
+        amount_change_output_data = change_output_data
+        outputs << amount_change_output
+        outputs_data << amount_change_output_data
       end
 
       tx = Types::Transaction.new(
@@ -214,12 +222,12 @@ module CKB
       )
     end
 
-    def gather_sudt_inputs(capacity, min_change_capacity, fee, need_amounts: nil)
+    def gather_sudt_inputs(capacity, min_change_capacity, fee, type_hash, need_amounts: nil)
       total_capacities = capacity + min_change_capacity + fee
       input_capacities = 0
       inputs = []
       witnesses = []
-      result = get_unspent_sudt_cells(need_amounts, total_capacities)
+      result = get_unspent_sudt_cells(type_hash, need_amounts, total_capacities)
       result[:outputs].each do |output|
         input = Types::Input.new(
           previous_output: output.out_point,
@@ -242,7 +250,9 @@ module CKB
       )
     end
 
-    def get_unspent_sudt_cells(need_amounts = nil, need_capacities = nil)
+    def get_unspent_sudt_cells(type_hash = nil, need_amounts = nil, need_capacities = nil)
+      raise "type_hash can't be empty" if type_hash.nil? || type_hash.empty?
+
       lock_hash = lock.compute_hash
       to = api.get_tip_block_number.to_i
       results = []
@@ -255,16 +265,32 @@ module CKB
         cells.each do |cell|
           next if cell.out_point.to_h == sudt_out_point.to_h
 
-          if cell.type && cell.type.code_hash == SUDT_CODE_HASH
+          if cell.type && cell.type.code_hash == SUDT_CODE_HASH && cell.type.compute_hash == type_hash
             live_cell = api.get_live_cell(cell.out_point, true)
             total_amount += parse_udt_cell_data(live_cell.cell.data.content)
+            results << cell
+            total_capacities += cell.capacity
+            break if need_amounts && total_amount >= need_amounts
           end
-          total_capacities += cell.capacity
-          results << cell
-          break if need_amounts && need_capacities && total_amount >= need_amounts && total_capacities >= need_capacities
         end
 
         current_from = current_to + 1
+      end
+      if need_capacities && total_capacities < need_capacities
+        current_from = 0
+        while current_from <= to
+          current_to = [current_from + 100, to].min
+          cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
+          cells.each do |cell|
+            next if cell.type || cell.output_data_len > 0
+
+            results << cell
+            total_capacities += cell.capacity
+            break if need_capacities && total_capacities >= need_capacities
+          end
+
+          current_from = current_to + 1
+        end
       end
       {
         outputs: results,
