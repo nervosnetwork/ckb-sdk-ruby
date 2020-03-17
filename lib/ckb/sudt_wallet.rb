@@ -1,7 +1,7 @@
 module CKB
   class SUDTWallet
     SUDT_CODE_HASH = "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"
-    SUDT_OUT_POINT_TX_HASH = "0xa608b247bf322474f0b9cb3b6928eff08ecffac658724bcae4611a37d0da7218"
+    SUDT_OUT_POINT_TX_HASH = "0x78fbb1d420d242295f8668cb5cf38869adac3500f6d4ce18583ed42ff348fa64"
 
     attr_reader :api, :key, :blake160, :address, :sudt_type_script_cell_dep, :sudt_out_point
 
@@ -62,7 +62,7 @@ module CKB
         capacity: 0,
         lock: lock,
       )
-      change_output_data = "0x#{'0' * 32}"
+      change_output_data = "0x"
       result = gather_sudt_inputs(min_capacity, change_output.calculate_min_capacity(change_output_data), fee, sudt_type_script, need_amounts: balance(sudt_type_script))
       input_capacities = result.capacities
       input_amounts = result.amounts
@@ -71,12 +71,12 @@ module CKB
       change_output.capacity = input_capacities - (min_capacity + fee)
       if change_output.capacity.to_i > 0
         outputs << change_output
-        if input_amounts > amount
-          change_output.type = sudt_type_script
-        else
-          change_output_data = "0x"
-        end
         outputs_data << change_output_data
+      end
+      if input_amounts > amount
+        output_data_int = parse_udt_cell_data(output_data)
+        output_data = generate_udt_cell_data(input_amounts - amount + output_data_int)
+        outputs_data[0] = output_data
       end
 
       tx = Types::Transaction.new(
