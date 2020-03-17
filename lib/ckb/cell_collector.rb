@@ -2,13 +2,14 @@
 
 module CKB
   class CellCollector
-    attr_reader :api, :skip_data_and_type, :hash_type
+    attr_reader :api, :skip_data_and_type, :hash_type, :from_block_number
 
     # @param api [CKB::API]
-    def initialize(api, skip_data_and_type: true, hash_type: "type")
+    def initialize(api, skip_data_and_type: true, hash_type: "type", from_block_number: 0)
       @api = api
       @skip_data_and_type = skip_data_and_type
       @hash_type = hash_type
+      @from_block_number = from_block_number
     end
 
     # @param lock_hash [String]
@@ -19,10 +20,9 @@ module CKB
       to = api.get_tip_block_number.to_i
       results = []
       total_capacities = 0
-      current_from = 0
-      while current_from <= to
-        current_to = [current_from + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
+      while from_block_number <= to
+        current_to = [from_block_number + 100, to].min
+        cells = api.get_cells_by_lock_hash(lock_hash, from_block_number, current_to)
         if skip_data_and_type
           cells.each do |cell|
             live_cell = api.get_live_cell(cell.out_point, true)
@@ -40,7 +40,7 @@ module CKB
           total_capacities += cells.map(&:capacity).reduce(0, :+)
           break if need_capacities && total_capacities >= need_capacities
         end
-        current_from = current_to + 1
+        @from_block_number = current_to + 1
       end
       {
         outputs: results,
