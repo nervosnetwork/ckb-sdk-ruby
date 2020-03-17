@@ -67,7 +67,7 @@ module CKB
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true, from_block_number: 0)
+    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true, from_block_number: 0, target_type_script: nil)
       key = get_key(key)
       parsed_address = AddressParser.new(target_address).parse
       raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
@@ -76,6 +76,7 @@ module CKB
         capacity: capacity,
         lock: parsed_address.script
       )
+      output.type = target_type_script if target_type_script
       output_data = data
 
       change_output = Types::Output.new(
@@ -316,6 +317,15 @@ module CKB
         ]
       )
       tx.sign(key)
+    end
+
+
+    def generate_anyone_can_pay_cell(target_address:, capacity:, sudt_type_script:, data: "0x", key: nil, fee: 0)
+      parsed_result = CKB::AddressParser.new(target_address).parse
+      raise "The target address's lock must be a anyone can pay lock" if parsed_result.script.code_hash != CKB::AnyoneCanPaySUDTWallet::EVERYONE_CAN_PAY_CODE_HAHS
+
+      tx = generate_tx(target_address, capacity, data, key: key, fee: fee, target_type_script: sudt_type_script)
+      send_transaction(tx, nil)
     end
 
     # @param epoch [Integer]
