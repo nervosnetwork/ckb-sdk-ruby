@@ -25,58 +25,53 @@ module CKB
       new(api: api, key: Key.new(privkey), mode: mode)
     end
 
-    def issue(amount, outputs_validator: nil)
+    def issue(amount, outputs_validator: nil, from_block_number: 0)
       fee = CKB::Utils.byte_to_shannon(0.01).to_i
       hex_amount = generate_udt_cell_data(amount)
-      tx = generate_issue_tx(hex_amount, fee: fee)
+      tx = generate_issue_tx(hex_amount, fee: fee, from_block_number: from_block_number)
       api.send_transaction(tx, outputs_validator)
     end
 
-    def transfer(target_address, amount, sudt_type_script:, fee: 0, outputs_validator: nil)
-      tx = generate_transfer_tx(target_address, amount, fee, sudt_type_script)
+    def transfer(target_address, amount, sudt_type_script:, fee: 0, outputs_validator: nil, from_block_number: 0)
+      tx = generate_transfer_tx(target_address, amount, fee, sudt_type_script, from_block_number: from_block_number)
       api.send_transaction(tx, outputs_validator)
     end
 
-    def burn(amount, sudt_type_script:, outputs_validator: nil, fee: 0)
-      tx = generate_burn_tx(sudt_type_script, amount, fee)
+    def burn(amount, sudt_type_script:, outputs_validator: nil, fee: 0, from_block_number: 0)
+      tx = generate_burn_tx(sudt_type_script, amount, fee, from_block_number: from_block_number)
       api.send_transaction(tx, outputs_validator)
     end
 
-    def balance(sudt_type_script)
-      get_unspent_sudt_cells(sudt_type_script)[:amounts]
+    def balance(sudt_type_script, from_block_number = 0)
+      get_unspent_sudt_cells(sudt_type_script: sudt_type_script, from_block_number: from_block_number)[:amounts]
     end
 
     private
 
-    def generate_burn_tx(sudt_type_script, amount, fee, use_dep_group: true)
+    def generate_burn_tx(sudt_type_script, amount, fee, use_dep_group: true, from_block_number: 0)
       min_capacity = CKB::Utils.byte_to_shannon(150)
       key = get_key(key)
       parsed_address = AddressParser.new(address).parse
+      balance = balance(sudt_type_script, from_block_number)
       raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
-      raise "Amount not enough!" if balance(sudt_type_script) < amount
+      raise "Amount not enough!" if balance < amount
 
       output = Types::Output.new(capacity: min_capacity, lock: parsed_address.script, type: sudt_type_script)
-
-      output_data = generate_udt_cell_data(balance(sudt_type_script) - amount)
+      amount_after_burn = balance - amount
+      output_data = generate_udt_cell_data(amount_after_burn)
       change_output = Types::Output.new(
         capacity: 0,
         lock: lock,
       )
       change_output_data = "0x"
-      result = gather_sudt_inputs(min_capacity, change_output.calculate_min_capacity(change_output_data), fee, sudt_type_script, need_amounts: balance(sudt_type_script))
+      result = gather_sudt_inputs(min_capacity, change_output.calculate_min_capacity(change_output_data), fee, sudt_type_script, need_amounts: balance, from_block_number: from_block_number)
       input_capacities = result.capacities
-      input_amounts = result.amounts
       outputs = [output]
       outputs_data = [output_data]
       change_output.capacity = input_capacities - (min_capacity + fee)
       if change_output.capacity.to_i > 0
         outputs << change_output
         outputs_data << change_output_data
-      end
-      if input_amounts > amount
-        output_data_int = parse_udt_cell_data(output_data)
-        output_data = generate_udt_cell_data(input_amounts - amount + output_data_int)
-        outputs_data[0] = output_data
       end
 
       tx = Types::Transaction.new(
@@ -99,7 +94,7 @@ module CKB
       tx.sign(key)
     end
 
-    def generate_transfer_tx(target_address, amount, fee, sudt_type_script, use_dep_group: true)
+    def generate_transfer_tx(target_address, amount, fee, sudt_type_script, use_dep_group: true, from_block_number: 0)
       min_capacity = CKB::Utils.byte_to_shannon(150)
       key = get_key(key)
       parsed_address = AddressParser.new(target_address).parse
@@ -118,7 +113,7 @@ module CKB
       )
       capacity_change_output_data = "0x"
       amount_change_output_data = "0x#{'0' * 32}"
-      result = gather_sudt_inputs(min_capacity, capacity_change_output.calculate_min_capacity(capacity_change_output_data), fee, sudt_type_script, need_amounts: amount)
+      result = gather_sudt_inputs(min_capacity, capacity_change_output.calculate_min_capacity(capacity_change_output_data), fee, sudt_type_script, need_amounts: amount, from_block_number: from_block_number)
       input_capacities = result.capacities
       input_amounts = result.amounts
       outputs = [output]
@@ -155,7 +150,7 @@ module CKB
       tx.sign(key)
     end
 
-    def generate_issue_tx(data = "0x", key: nil, fee: 0, use_dep_group: true)
+    def generate_issue_tx(data = "0x", key: nil, fee: 0, use_dep_group: true, from_block_number: 0)
       capacity = CKB::Utils.byte_to_shannon(150)
       target_address = address
       key = get_key(key)
@@ -179,7 +174,8 @@ module CKB
         capacity,
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        fee
+        fee,
+        from_block_number
       )
       input_capacities = i.capacities
 
@@ -210,11 +206,12 @@ module CKB
       tx.sign(key)
     end
 
-    def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
+    def gather_inputs(capacity, min_capacity, min_change_capacity, fee, from_block_number)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
       CellCollector.new(
         api,
-        skip_data_and_type: true
+        skip_data_and_type: true,
+        from_block_number: from_block_number
       ).gather_inputs(
         [lock_hash],
         capacity,
@@ -223,12 +220,12 @@ module CKB
       )
     end
 
-    def gather_sudt_inputs(capacity, min_change_capacity, fee, sudt_type_script, need_amounts: nil)
+    def gather_sudt_inputs(capacity, min_change_capacity, fee, sudt_type_script, need_amounts: nil, from_block_number: 0)
       total_capacities = capacity + min_change_capacity + fee
       input_capacities = 0
       inputs = []
       witnesses = []
-      result = get_unspent_sudt_cells(sudt_type_script, need_amounts, total_capacities)
+      result = get_unspent_sudt_cells(sudt_type_script: sudt_type_script, need_amounts: need_amounts, need_capacities: total_capacities, from_block_number: from_block_number)
       result[:outputs].each do |output|
         input = Types::Input.new(
           previous_output: output.out_point,
@@ -251,15 +248,16 @@ module CKB
       )
     end
 
-    def get_unspent_sudt_cells(sudt_type_script = nil, need_amounts = nil, need_capacities = nil)
+    def get_unspent_sudt_cells(sudt_type_script: nil, need_amounts: nil, need_capacities: nil, from_block_number: 0)
       raise "type script can't be empty" if sudt_type_script.nil? || !sudt_type_script.kind_of?(CKB::Types::Script)
 
       to = api.get_tip_block_number.to_i
       results = []
       total_amount = 0
       total_capacities = 0
-      current_from = 0
+      current_from = from_block_number
       type_hash = sudt_type_script.compute_hash
+
       while current_from <= to
         current_to = [current_from + 100, to].min
         cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
@@ -278,7 +276,7 @@ module CKB
         current_from = current_to + 1
       end
       if need_capacities && total_capacities < need_capacities
-        current_from = 0
+        current_from = from_block_number
         while current_from <= to
           current_to = [current_from + 100, to].min
           cells = api.get_cells_by_lock_hash(lock_hash, current_from, current_to)
@@ -289,7 +287,6 @@ module CKB
             total_capacities += cell.capacity
             break if need_capacities && total_capacities >= need_capacities
           end
-
           current_from = current_to + 1
         end
       end

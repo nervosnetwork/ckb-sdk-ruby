@@ -117,6 +117,7 @@ module CKB
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_code_out_point, dep_type: "code")
         tx.cell_deps << Types::CellDep.new(out_point: api.secp_data_out_point, dep_type: "code")
       end
+      tx.cell_deps << Types::CellDep.new(out_point: Types::OutPoint.new(tx_hash: CKB::SUDTWallet::SUDT_OUT_POINT_TX_HASH, index: 0)) if target_type_script
 
       tx.sign(key)
     end
@@ -128,6 +129,7 @@ module CKB
     # @param fee [Integer] transaction fee, in shannon
     def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0, outputs_validator: "default", from_block_number: 0)
       tx = generate_tx(target_address, capacity, data, key: key, fee: fee, from_block_number: from_block_number)
+      binding.pry
       send_transaction(tx, outputs_validator)
     end
 
