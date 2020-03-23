@@ -51,11 +51,12 @@ module CKB
       )[:outputs]
     end
 
-    def get_balance
+    def get_balance(from_block_number: 0)
       CellCollector.new(
         @api,
         skip_data_and_type: @skip_data_and_type,
-        hash_type: @hash_type
+        hash_type: @hash_type,
+        from_block_number: from_block_number
       ).get_unspent_cells(
         lock_hash
       )[:total_capacities]
@@ -66,7 +67,7 @@ module CKB
     # @param data [String ] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true)
+    def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true, from_block_number: 0)
       key = get_key(key)
       parsed_address = AddressParser.new(target_address).parse
       raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
@@ -87,7 +88,8 @@ module CKB
         capacity,
         output.calculate_min_capacity(output_data),
         change_output.calculate_min_capacity(change_output_data),
-        fee
+        fee,
+        from_block_number: from_block_number
       )
       input_capacities = i.capacities
 
@@ -123,8 +125,8 @@ module CKB
     # @param data [String] "0x..."
     # @param key [CKB::Key | String] Key or private key hex string
     # @param fee [Integer] transaction fee, in shannon
-    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0, outputs_validator: "default")
-      tx = generate_tx(target_address, capacity, data, key: key, fee: fee)
+    def send_capacity(target_address, capacity, data = "0x", key: nil, fee: 0, outputs_validator: "default", from_block_number: 0)
+      tx = generate_tx(target_address, capacity, data, key: key, fee: fee, from_block_number: from_block_number)
       send_transaction(tx, outputs_validator)
     end
 
@@ -368,12 +370,13 @@ args = #{lock.args}
     # @param min_capacity [Integer]
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
-    def gather_inputs(capacity, min_capacity, min_change_capacity, fee)
+    def gather_inputs(capacity, min_capacity, min_change_capacity, fee, from_block_number: 0)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
       CellCollector.new(
         @api,
         skip_data_and_type: @skip_data_and_type,
-        hash_type: @hash_type
+        hash_type: @hash_type,
+        from_block_number: from_block_number
       ).gather_inputs(
         [lock_hash],
         capacity,

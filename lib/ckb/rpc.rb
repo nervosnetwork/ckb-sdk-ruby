@@ -103,6 +103,10 @@ module CKB
       rpc_request("tx_pool_info")
     end
 
+    def get_block_economic_state(block_hash)
+      rpc_request("get_block_economic_state", params: [block_hash])
+    end
+
     def get_blockchain_info
       rpc_request("get_blockchain_info")
     end

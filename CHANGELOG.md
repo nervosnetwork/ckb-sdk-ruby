@@ -1,3 +1,13 @@
+# [v0.30.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.29.1...v0.30.0) (2020-03-23)
+
+
+### Features
+
+* add min fee rate to tx pool info ([7e19812](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/7e19812))
+* add get_block_economic_state RPC ([de7eed3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/de7eed3))
+* add `from_block_number` to `cell_collecotr` ([4095b0d](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4095b0d))
+
+
 # [v0.29.1](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.29.0...v0.29.1) (2020-03-05)
 
 * Bump rake to 13.0.1
