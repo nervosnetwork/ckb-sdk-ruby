@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-
+require 'pry'
 RSpec.describe CKB::API do
   Types = CKB::Types
 
@@ -186,6 +186,12 @@ RSpec.describe CKB::API do
   it "local node info" do
     result = api.local_node_info
     expect(result).to be_a(Types::Peer)
+  end
+
+   it "tx pool info" do
+    result = api.tx_pool_info
+    expect(result).not_to be nil
+    expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
   end
 
   it "get peers" do

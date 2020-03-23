@@ -189,6 +189,12 @@ RSpec.describe CKB::RPC do
     expect(result[:number].hex).to eq number
   end
 
+  it "tx pool info" do
+    result = rpc.tx_pool_info
+    expect(result).not_to be nil
+    expect(result.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
+  end
+
   context "indexer RPCs" do
     it "index_lock_hash" do
       result = rpc.index_lock_hash(lock_hash)
