@@ -3,7 +3,7 @@
 module CKB
   module Types
     class TxPoolInfo
-      attr_accessor :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at
+      attr_accessor :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at, :min_fee_rate
 
       # @param pending [String | Integer] integer or hex number
       # @param proposed [String | Integer] integer or hex number
@@ -16,6 +16,7 @@ module CKB
         proposed:,
         orphan:,
         last_txs_updated_at:,
+        min_fee_rate:,
         total_tx_cycles:,
         total_tx_size:
       )
@@ -25,6 +26,7 @@ module CKB
         @total_tx_cycles = Utils.to_int(total_tx_cycles)
         @total_tx_size = Utils.to_int(total_tx_size)
         @last_txs_updated_at = Utils.to_int(last_txs_updated_at)
+        @min_fee_rate = Utils.to_int(min_fee_rate)
       end
 
       def to_h
@@ -34,7 +36,8 @@ module CKB
           orphan: Utils.to_hex(@orphan),
           total_tx_cycles: Utils.to_hex(@total_tx_cycles),
           total_tx_size: Utils.to_hex(@total_tx_size),
-          last_txs_updated_at: Utils.to_hex(@last_txs_updated_at)
+          last_txs_updated_at: Utils.to_hex(@last_txs_updated_at),
+          min_fee_rate: Utils.to_hex(@min_fee_rate)
         }
       end
 
@@ -47,7 +50,8 @@ module CKB
           orphan: hash[:orphan],
           total_tx_cycles: hash[:total_tx_cycles],
           total_tx_size: hash[:total_tx_size],
-          last_txs_updated_at: hash[:last_txs_updated_at]
+          last_txs_updated_at: hash[:last_txs_updated_at],
+          min_fee_rate: hash[:min_fee_rate]
         )
       end
     end

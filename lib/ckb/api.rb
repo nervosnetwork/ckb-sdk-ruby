@@ -201,6 +201,13 @@ module CKB
       )
     end
 
+    # @return [CKB::Types::BlockEconomyState]
+    def get_block_economic_state(block_hash)
+      Types::BlockEconomicState.from_h(
+        rpc.get_block_economic_state(block_hash)
+      )
+    end
+
     # @return [CKB::Types::ChainInfo]
     def get_blockchain_info
       Types::ChainInfo.from_h(
