@@ -6,7 +6,8 @@ RSpec.describe CKB::Types::TxPoolInfo do
       "pending": "0x1",
       "proposed": "0x0",
       "total_tx_cycles": "0xc",
-      "total_tx_size": "0x112"
+      "total_tx_size": "0x112",
+      "min_fee_rate": "0x3e8"
     }
   end
 
