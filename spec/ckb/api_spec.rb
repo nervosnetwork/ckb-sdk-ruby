@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require 'pry'
+
 RSpec.describe CKB::API do
   Types = CKB::Types
 
@@ -192,6 +192,13 @@ RSpec.describe CKB::API do
     result = api.tx_pool_info
     expect(result).not_to be nil
     expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
+  end
+
+  it "get block economic state" do
+    block_hash = api.get_block_hash(12)
+    result = api.get_block_economic_state(block_hash)
+    expect(result).not_to be nil
+    expect(result.to_h.keys.sort).to eq %i(finalized_at issuance miner_reward txs_fee).sort
   end
 
   it "get peers" do

@@ -195,6 +195,13 @@ RSpec.describe CKB::RPC do
     expect(result.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
   end
 
+  it "get block economic state" do
+    block_hash = rpc.get_block_hash(12)
+    result = rpc.get_block_economic_state(block_hash)
+    expect(result).not_to be nil
+    expect(result.keys.sort).to eq %i(finalized_at issuance miner_reward txs_fee).sort
+  end
+
   context "indexer RPCs" do
     it "index_lock_hash" do
       result = rpc.index_lock_hash(lock_hash)
