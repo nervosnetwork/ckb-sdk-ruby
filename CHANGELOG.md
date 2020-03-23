@@ -8,7 +8,6 @@
 * add `from_block_number` to `cell_collecotr` ([4095b0d](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4095b0d))
 
 
-
 # [v0.29.1](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.29.0...v0.29.1) (2020-03-05)
 
 * Bump rake to 13.0.1
