@@ -20,7 +20,7 @@ require "ckb/mock_transaction_dumper"
 require "ckb/system_code_hash"
 require "ckb/script_hash_type"
 require "ckb/config"
-require "ckb/single_signer"
+require "ckb/single_sign_handler"
 
 module CKB
   class Error < StandardError; end

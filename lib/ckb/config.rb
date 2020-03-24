@@ -16,7 +16,7 @@ module CKB
 
     def initialize
       @lock_handlers = {
-        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::SingleSigner
+        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::SingleSignHandler
       }
       @type_handlers = {}
     end
