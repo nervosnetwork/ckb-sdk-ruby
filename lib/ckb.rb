@@ -22,6 +22,7 @@ require "ckb/script_hash_type"
 require "ckb/indexer/types/types"
 require "ckb/indexer/api"
 require "ckb/config"
+require "ckb/single_sign_handler"
 
 module CKB
   class Error < StandardError; end

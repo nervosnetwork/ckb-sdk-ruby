@@ -2,7 +2,7 @@
 require "secp256k1"
 
 module CKB
-  class SingleSigner
+  class SingleSignHandler
     def self.generate(cell_meta:, tx_generator:, context:)
       tx_generator.transaction.inputs << CKB::Types::Input.new(since: 0, previous_output: cell_meta.out_point)
       cell_dep = CKB::Config.instance.standard_secp256k1_blake160_sighash_all_cell_dep
