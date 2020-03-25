@@ -21,6 +21,8 @@ require "ckb/system_code_hash"
 require "ckb/script_hash_type"
 require "ckb/config"
 require "ckb/single_sign_handler"
+require "ckb/cell_meta"
+require "ckb/collector"
 
 module CKB
   class Error < StandardError; end
