@@ -142,6 +142,10 @@ module CKB
           witnesses: hash[:witnesses]
         )
       end
+
+      def outputs_capacity
+        outputs.sum(&:capacity)
+      end
     end
   end
 end
