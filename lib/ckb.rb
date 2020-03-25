@@ -23,6 +23,8 @@ require "ckb/indexer/types/types"
 require "ckb/indexer/api"
 require "ckb/config"
 require "ckb/single_sign_handler"
+require "ckb/cell_meta"
+require "ckb/collector"
 
 module CKB
   class Error < StandardError; end
