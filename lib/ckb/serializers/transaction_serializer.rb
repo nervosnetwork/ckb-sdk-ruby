@@ -8,7 +8,7 @@ module CKB
       # @param transaction [CKB::Types::Transaction]
       def initialize(transaction)
         @raw_serializer = RawTransactionSerializer.new(transaction)
-        @witnesses_serializer = DynVecSerializer.new(transaction.witnesses, WitnessSerializer)
+        @witnesses_serializer = DynVecSerializer.new(transaction.witnesses, WitnessArgsSerializer)
         @items_count = 2
       end
 
