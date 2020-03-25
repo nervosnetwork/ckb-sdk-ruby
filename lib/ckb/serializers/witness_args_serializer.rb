@@ -7,17 +7,11 @@ module CKB
       # @param witness_for_input_lock [String]
       # @param witness_for_input_type [String]
       # @param witness_for_output_type [String]
-      def initialize(witness_for_input_lock: "", witness_for_input_type: "", witness_for_output_type: "")
-        @witness_for_input_lock_serializer = BytesOptSerializer.new(witness_for_input_lock)
-        @witness_for_input_type_serializer = BytesOptSerializer.new(witness_for_input_type)
-        @witness_for_output_type_serializer = BytesOptSerializer.new(witness_for_output_type)
+      def initialize(witness)
+        @witness_for_input_lock_serializer = BytesOptSerializer.new(witness.lock)
+        @witness_for_input_type_serializer = BytesOptSerializer.new(witness.input_type)
+        @witness_for_output_type_serializer = BytesOptSerializer.new(witness.output_type)
         @items_count = 3
-      end
-
-      def self.from(witness)
-        self.new(witness_for_input_lock: witness.lock,
-                 witness_for_input_type: witness.input_type,
-                 witness_for_output_type: witness.output_type)
       end
 
       private

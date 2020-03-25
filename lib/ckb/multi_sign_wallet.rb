@@ -147,7 +147,7 @@ module CKB
       emptied_witness = tx.witnesses[0].dup
       emptied_witness.lock = Utils.hex_concat(configuration.serialize, empty_signature)
       emptied_witness_data_binary = Utils.hex_to_bin(
-        Serializers::WitnessArgsSerializer.from(emptied_witness).serialize)
+        Serializers::WitnessArgsSerializer.new(emptied_witness).serialize)
       emptied_witness_data_size = emptied_witness_data_binary.bytesize
 
       blake2b.update([emptied_witness_data_size].pack("Q<"))
@@ -157,7 +157,7 @@ module CKB
         data_binary =
           case witness
           when CKB::Types::Witness
-            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(witness).serialize)
+            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.new(witness).serialize)
           else
             Utils.hex_to_bin(witness)
           end
