@@ -21,6 +21,12 @@ module CKB
       lock_script = cell_meta.output.lock_script
       cell_meta_index = tx_generator.cell_metas.find_index { |inner_cell_meta| inner_cell_meta == cell_meta  }
       grouped_indexes = tx_generator.cell_metas.map.with_index { |inner_cell_meta, index| index if inner_cell_meta.output.lock.compute_hash == lock_script.compute_hash }.compact
+      uncoverd_witness_index = tx_generator.transaction.inputs.size
+      while uncoverd_witness_index < tx_generator.transaction.witnesses.size
+        grouped_indexes << tx_generator.transaction.witnesses[uncoverd_witness_index]
+        uncoverd_witness_index += 1
+      end
+
       if cell_meta_index == grouped_indexes.first
         transaction = tx_generator.transaction
         blake2b = CKB::Blake2b.new
@@ -34,7 +40,7 @@ module CKB
         end
         message = blake2b.hexdigest
         private_key = CKB::Key.new(context)
-        tx_generator.witnesses[cell_meta_index].lock = private_key.sign_recoverable(message)
+        tx_generator.transaction.witnesses[cell_meta_index].lock = private_key.sign_recoverable(message)
       end
     end
   end
