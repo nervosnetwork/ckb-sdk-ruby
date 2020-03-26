@@ -7,10 +7,10 @@ module CKB
       @api = api
     end
 
-    def default_scanner(lock_hashes:, from_block_numer: 0)
+    def default_scanner(lock_hashes:, from_block_number: 0)
       tip_block_number = api.get_tip_block_number
       lock_hash_index = 0
-      from = from_block_numer
+      from = from_block_number
       cell_meta_index = 0
       cell_metas = []
       Enumerator.new do |result|
@@ -20,7 +20,6 @@ module CKB
             cell_meta_index +=1
           else
             cell_meta_index = 0
-            binding.pry
             cell_metas = api.get_cells_by_lock_hash(lock_hashes[lock_hash_index], from, from + 100).map do |cell|
               output_data_len = cell.output_data_len
               cellbase = cell.cellbase
