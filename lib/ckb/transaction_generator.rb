@@ -3,15 +3,17 @@
 module CKB
   class TransactionGenerator
     attr_accessor :transaction, :cell_metas
+    attr_reader :api
 
-    def initialize(hash)
-      @transaction = CKB::Types::Transaction.from_h(hash)
+    def initialize(api, transaction)
+      @api = api
+      @transaction = transaction
       @cell_metas = []
     end
 
     # Build unsigned transaction
     # @param collector [Enumerator] `CellMeta` enumerator
-    # @param contexts [hash], key: input lock script, value: tx generating context
+    # @param contexts [hash], key: input lock script hash, value: tx generating context
     # @param fee_rate [Integer] Default 1 shannon / transaction byte
     def generate(collector:, contexts:, fee_rate: 1)
       change_output_index = transaction.outputs.find_index { |output| output.capacity == 0 }
@@ -19,11 +21,11 @@ module CKB
       collector.each do |cell_meta|
         lock_script = cell_meta.output.lock
         type_script = cell_meta.output.type
-        lock_handler = CKB::Config.instance.lock_handler(lock_script)
-        lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script])
+        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+        lock_handler.generate(api: api, cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
         if type_script
-          type_handler = CKB::Config.instance.type_handler(type_script)
-          type_handler.generate(cell_meta: cell_meta, tx_generator: self)
+          type_handler = CKB::Config.new(api).type_handler(type_script)
+          type_handler.generate(api: api, cell_meta: cell_meta, tx_generator: self)
         end
 
         return if collected_enough_assets?(change_output_index, fee_rate)
@@ -32,12 +34,12 @@ module CKB
       raise "collected inputs not enough"
     end
 
-    # @param contexts [Hash], key: input lock script, value: tx signature context
+    # @param contexts [Hash], key: input lock script hash, value: tx signature context
     def sign(contents)
-      self.cell_metas.each do |cell_meta|
+      cell_metas.each do |cell_meta|
         lock_script = cell_meta.output.lock
-        lock_handler = CKB::Config.instance.lock_handler(lock_script)
-        if context = contents[lock_script]
+        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+        if context = contents[lock_script.compute_hash]
           lock_handler.sign(cell_meta: cell_meta, tx_generator: self, context: context)
         end
       end
