@@ -23,6 +23,8 @@ require "ckb/config"
 require "ckb/single_sign_handler"
 require "ckb/cell_meta"
 require "ckb/collector"
+require "ckb/transaction_generator"
+require "ckb/new_wallet"
 
 module CKB
   class Error < StandardError; end
