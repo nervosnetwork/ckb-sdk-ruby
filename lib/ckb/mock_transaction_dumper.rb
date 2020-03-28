@@ -11,14 +11,13 @@ module CKB
 
     def dump
       mock_inputs = transaction.inputs.map do |input|
-        cell_with_status = api.get_live_cell(input.previous_output, true)
-        unless cell_with_status && cell_with_status.cell
-          raise "Cannot find input cell: #{input.previous_output}"
-        end
+        tx = api.get_transaction(input.previous_output.tx_hash).transaction
+        output = tx.outputs[input.previous_output.index]
+        data = tx.outputs_data[input.previous_output.index]
         {
           input: input.to_h,
-          output: cell_with_status.cell.output.to_h,
-          data: cell_with_status.cell.data.content
+          output: output.to_h,
+          data: data
         }
       end
       mock_cell_deps = transaction.cell_deps.map do |cell_dep|
