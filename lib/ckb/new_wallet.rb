@@ -55,7 +55,7 @@ module CKB
       else
         CKB::Collector.new(api).default_indexer(lock_hashes: input_scripts.map(&:compute_hash))
       end
-binding.pry
+
       Enumerator.new do |result|
         loop do
           begin
