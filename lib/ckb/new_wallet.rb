@@ -19,7 +19,7 @@ module CKB
     # @param to_infos [Hash<String, Hash>], key: address, value: output infos. eg: { capacity: 1000, type: CKB::Types::Script.new(code_hash: "", args: "", hash_type: ""), data: "0x" }
     # @params contexts [hash], key: input lock script hash, value: tx generating context
     # @param fee_rate [Integer] Default 1 shannon / transaction byte
-    def build(to_infos:, contexts: [], fee_rate: 1)
+    def generate(to_infos:, contexts: [], fee_rate: 1)
       outputs = []
       outputs_data = []
       to_infos.each do |to_address, output_info|
@@ -43,6 +43,7 @@ module CKB
     end
 
     def sign(tx_generator:, contexts:)
+      contexts = (contexts.is_a?(Array) ? contexts : [contexts])
       tx_generator.sign(input_scripts.map(&:compute_hash).zip(contexts).to_h)
       tx_generator.transaction
     end
