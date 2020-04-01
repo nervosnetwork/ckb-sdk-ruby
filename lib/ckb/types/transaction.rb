@@ -111,7 +111,14 @@ module CKB
 
       def serialized_size_in_block
         transaction = self.dup
-        transaction.witnesses = transaction.witnesses.map { |witness| CKB::Serializers::WitnessArgsSerializer.new(witness).serialize }
+        transaction.witnesses = transaction.witnesses.map do |witness|
+          case witness
+          when CKB::Types::Witness
+            CKB::Serializers::WitnessArgsSerializer.new(witness).serialize
+          else
+            witness
+          end
+        end
         transaction_serializer = CKB::Serializers::TransactionSerializer.new(transaction)
         serialized_tx_offset_bytesize = 4 # 4 bytes for the tx offset cost with molecule array (transactions)
         Utils.hex_to_bin(transaction_serializer.serialize).bytesize + serialized_tx_offset_bytesize
