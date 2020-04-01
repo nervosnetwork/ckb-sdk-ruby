@@ -15,11 +15,23 @@ module CKB
       end
     end
 
+    def generate(to_address, capacity, fee_rate = 1, output_info = {})
+      advance_generate(
+        to_infos: { to_address => { capacity: capacity, type: output_info[:type], data: output_info[:data] } },
+        contexts: [output_info[:context]],
+        fee_rate: fee_rate
+      )
+    end
+
+    def sign(tx_generator, context)
+      advance_sign(tx_generator: tx_generator, contexts: [context])
+    end
+
     # Build unsigned transaction
     # @param to_infos [Hash<String, Hash>], key: address, value: output infos. eg: { capacity: 1000, type: CKB::Types::Script.new(code_hash: "", args: "", hash_type: ""), data: "0x" }
     # @params contexts [hash], key: input lock script hash, value: tx generating context
     # @param fee_rate [Integer] Default 1 shannon / transaction byte
-    def generate(to_infos:, contexts: [], fee_rate: 1)
+    def advance_generate(to_infos:, contexts: [], fee_rate: 1)
       outputs = []
       outputs_data = []
       to_infos.each do |to_address, output_info|
@@ -42,7 +54,7 @@ module CKB
       tx_generator
     end
 
-    def sign(tx_generator:, contexts:)
+    def advance_sign(tx_generator:, contexts:)
       contexts = (contexts.is_a?(Array) ? contexts : [contexts])
       tx_generator.sign(input_scripts.map(&:compute_hash).zip(contexts).to_h)
       tx_generator.transaction
