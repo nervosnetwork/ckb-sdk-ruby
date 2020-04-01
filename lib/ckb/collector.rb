@@ -38,7 +38,7 @@ module CKB
       end
     end
 
-    def default_indexer(lock_hashes)
+    def default_indexer(lock_hashes:)
       lock_hash_index = 0
       page = 0
       cell_meta_index = 0
@@ -50,10 +50,10 @@ module CKB
             result << cell_metas[cell_meta_index]
             cell_meta_index += 1
           else
-            cell_metas = api.get_live_cells_by_lock_hash(lock_hashes[lock_hash_index], page, MAX_PAGINATES_PER).map do |cell_meta|
+            cell_metas = api.get_live_cells_by_lock_hash(lock_hashes[lock_hash_index], page, MAX_PAGINATES_PER).map do |cell|
               output_data_len = cell.output_data_len
               cellbase = cell.cellbase
-              CKB::CellMeta.new(api: api, out_point: cell.out_point, output: CKB::Types::Output.new(capacity: cell.capacity, lock: cell.lock, type: cell.type), output_data_len: output_data_len, cellbase: cellbase)
+              CKB::CellMeta.new(api: api, out_point: CKB::Types::OutPoint.new(tx_hash: cell.created_by.tx_hash, index: cell.created_by.index), output: cell.cell_output, output_data_len: output_data_len, cellbase: cellbase)
             end
 
             page += 1
