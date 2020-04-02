@@ -15,7 +15,7 @@ module CKB
       end
     end
 
-    def generate(to_address, capacity, fee_rate = 1, output_info = {})
+    def generate(to_address, capacity, output_info = {}, fee_rate = 1)
       advance_generate(
         to_infos: { to_address => { capacity: capacity, type: output_info[:type], data: output_info[:data] } },
         contexts: [output_info[:context]],
