@@ -14,7 +14,8 @@ module CKB
     def initialize(api)
       @api = api
       @lock_handlers = {
-        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::SingleSignHandler
+        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::SingleSignHandler,
+        [SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, TYPE] => CKB::MultiSignHandler
       }
       @type_handlers = {}
     end
@@ -30,6 +31,13 @@ module CKB
     def standard_secp256k1_blake160_sighash_all_cell_dep
       CKB::Types::CellDep.new(
         out_point: api.secp_group_out_point,
+        dep_type: "dep_group"
+      )
+    end
+
+    def standard_secp256k1_blake160_multisig_all
+      CKB::Types::CellDep.new(
+        out_point: api.multi_sign_secp_group_out_point,
         dep_type: "dep_group"
       )
     end
