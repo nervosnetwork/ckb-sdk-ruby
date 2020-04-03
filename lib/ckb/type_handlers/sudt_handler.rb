@@ -10,7 +10,7 @@ module CKB
       end
 
       def generate(cell_meta: nil, tx_generator:, context: nil)
-        tx_generator.transaction.cell_deps << sudt_cell_dep unless tx_generator.transaction.cell_deps.include?(sudt_cell_dep)
+        tx_generator.transaction.cell_deps << sudt_cell_dep unless tx_generator.transaction.cell_deps.map(&:to_h).include?(sudt_cell_dep.to_h)
       end
 
       def sign(cell_meta: nil, tx_generator:, context: nil); end

@@ -76,7 +76,7 @@ module CKB
           loop do
             begin
               cell_meta = collector.next
-              if is_issuer ? normal_cell?(cell_meta) : (cell_meta.output.type == nil || cell_meta.output.type == sudt_type_script)
+              if is_issuer ? normal_cell?(cell_meta) : (cell_meta.output.type == nil || cell_meta.output.type.compute_hash == sudt_type_script.compute_hash)
                 result << cell_meta
               end
             rescue StopIteration
