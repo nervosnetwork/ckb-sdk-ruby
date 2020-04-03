@@ -67,4 +67,19 @@ RSpec.describe CKB::NewWallet do
 
     expect(api.send_transaction(tx)).not_to be_nil
   end
+
+  it "should hash witnesses which do not in any input group" do
+    wallet = CKB::NewWallet.new(api: api, from_addresses: "ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37")
+    tx_generator = wallet.advance_generate(to_infos: {
+      "ckt1qyq72ua6khnkfqzt5wmhmrxmh54a4arwarfsncdxuc" => { capacity: CKB::Utils.byte_to_shannon(1000) } ,
+      "ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37" => { capacity: 0 }
+    })
+    other_witness = CKB::Types::Witness.new(input_type: "0xc219351b150b900e50a7039f1e448b844110927e5fd9bd30425806cb8ddff1fd")
+    tx_generator.transaction.witnesses << other_witness
+    change_output = tx_generator.transaction.outputs.last
+    change_output.capacity = change_output.capacity - (CKB::Serializers::WitnessArgsSerializer.new(other_witness).capacity + 8)
+    tx = wallet.sign(tx_generator, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc")
+
+    expect(api.send_transaction(tx)).not_to be_nil
+  end
 end
