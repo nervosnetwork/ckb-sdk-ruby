@@ -26,6 +26,9 @@ require "ckb/cell_meta"
 require "ckb/collector"
 require "ckb/transaction_generator"
 require "ckb/wallets/new_wallet"
+require "ckb/sudt_transaction_generator"
+require "ckb/type_handlers/sudt_handler"
+require "ckb/wallets/sudt_wallet"
 
 module CKB
   class Error < StandardError; end

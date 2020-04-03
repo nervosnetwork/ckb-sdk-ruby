@@ -5,7 +5,7 @@ module CKB
     class SudtHandler
       attr_reader :sudt_cell_dep
 
-      def initialize(sudt_tx_hash, index)
+      def initialize(sudt_tx_hash, index = 0)
         @sudt_cell_dep = CKB::Types::CellDep.new(out_point: CKB::Types::OutPoint.new(tx_hash: sudt_tx_hash, index: index))
       end
 

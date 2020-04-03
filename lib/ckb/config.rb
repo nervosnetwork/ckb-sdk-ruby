@@ -8,6 +8,8 @@ module CKB
     SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH = "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"
     # https://github.com/nervosnetwork/ckb/blob/develop/resource/specs/mainnet.toml#L127
     SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH = "0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"
+    SUDT_CODE_HASH = "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"
+    SUDT_TX_HASH = "0x0f18ac6058f7e1cef8a94b4709be58077aef1ad586403c4337226af3fb12ba29"
     HASH_TYPES = [TYPE = "type", DATA = "data"]
 
 
@@ -17,7 +19,9 @@ module CKB
         [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::SingleSignHandler.new(api),
         [SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::MultiSignHandler.new(api)
       }
-      @type_handlers = {}
+      @type_handlers = {
+        [SUDT_CODE_HASH, DATA] => CKB::TypeHandlers::SudtHandler.new(SUDT_TX_HASH)
+      }
     end
 
     def lock_handler(lock_script)

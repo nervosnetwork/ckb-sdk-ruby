@@ -3,7 +3,7 @@
 module CKB
   module Wallets
     class SudtWallet < NewWallet
-      SUDT_CODE_HAH = "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"
+      SUDT_CODE_HASH = "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"
 
       attr_accessor :sudt_type_script, :is_issuer
       def initialize(api:, from_addresses:, sudt_args:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
@@ -13,10 +13,10 @@ module CKB
       end
 
       def generate(to_address, sudt_capacity, output_info = {}, fee_rate = 1)
-        data = [sudt_capacity].pack("Q<*").bytes + [sudt_capacity >> 64].pack("Q<*").bytes
+        data = CKB::Utils.bin_to_hex([sudt_capacity].pack("Q<*") + [sudt_capacity >> 64].pack("Q<*"))
         lock = CKB::AddressParser.new(to_address).parse.script
-        output = CKB::Types::Output.new(lock: lock, type: sudt_type_script)
-        capacity = output.calculate_bytesize(data)
+        output = CKB::Types::Output.new(lock: lock, type: sudt_type_script, capacity: 0)
+        capacity = CKB::Utils.byte_to_shannon(output.calculate_bytesize(data))
 
         advance_generate(
           to_infos: {
@@ -47,7 +47,7 @@ module CKB
           end
         end
 
-        transaction = CKB::Transaction.new(
+        transaction = CKB::Types::Transaction.new(
           version: 0, cell_deps: [], header_deps: [], inputs: [],
           outputs: outputs, outputs_data: outputs_data, witnesses: []
         )
