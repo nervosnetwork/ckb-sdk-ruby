@@ -30,7 +30,7 @@ module CKB
         grouped_indexes = tx_generator.cell_metas.map.with_index { |inner_cell_meta, index| index if inner_cell_meta.output.lock.compute_hash == lock_script.compute_hash }.compact
         uncoverd_witness_index = tx_generator.transaction.inputs.size
         while uncoverd_witness_index < tx_generator.transaction.witnesses.size
-          grouped_indexes << tx_generator.transaction.witnesses[uncoverd_witness_index]
+          grouped_indexes << uncoverd_witness_index
           uncoverd_witness_index += 1
         end
 
