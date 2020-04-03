@@ -68,7 +68,7 @@ RSpec.describe CKB::NewWallet do
     expect(api.send_transaction(tx)).not_to be_nil
   end
 
-  it "should hash witnesses which do not in any input group" do
+  it "should hash witnesses which do not in any input group on single sign" do
     wallet = CKB::NewWallet.new(api: api, from_addresses: "ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37")
     tx_generator = wallet.advance_generate(to_infos: {
       "ckt1qyq72ua6khnkfqzt5wmhmrxmh54a4arwarfsncdxuc" => { capacity: CKB::Utils.byte_to_shannon(1000) } ,
@@ -79,6 +79,20 @@ RSpec.describe CKB::NewWallet do
     change_output = tx_generator.transaction.outputs.last
     change_output.capacity = change_output.capacity - (CKB::Serializers::WitnessArgsSerializer.new(other_witness).capacity + 8)
     tx = wallet.sign(tx_generator, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc")
+
+    expect(api.send_transaction(tx)).not_to be_nil
+  end
+
+  it "should hash witnesses which do not in any input group on multisig" do
+    wallet = CKB::NewWallet.new(api: api, from_addresses: "ckt1qyq72ua6khnkfqzt5wmhmrxmh54a4arwarfsncdxuc")
+    # build tx to transfer 200 ckb from a 2 / 3 multisig script address
+    tx_generator = wallet.generate("ckt1qyqywrwdchjyqeysjegpzw38fvandtktdhrs0zaxl4", CKB::Utils.byte_to_shannon(200), { context: [0, 0, 2, 3, "0xc8328aabcd9b9e8e64fbc566c4385c3bdeb219d7", "0x470dcdc5e44064909650113a274b3b36aecb6dc7", "0x042878db10e014812610046c3445e116624766df"] }, 2)
+    other_witness = CKB::Types::Witness.new(input_type: "0xc219351b150b900e50a7039f1e448b844110927e5fd9bd30425806cb8ddff1fd")
+    tx_generator.transaction.witnesses << other_witness
+    # sign with two private keys
+     # equivalent to `tx = wallet.advance_sign(tx_builder, [private_key1, private_key2])`
+    wallet.sign(tx_generator, ["0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc"])
+    tx = wallet.sign(tx_generator, ["0x84ffe5a2b82ac1fbc7960a93ac6ed06fecf0271dd959bbcec5eeeafcc3e8e53f"])
 
     expect(api.send_transaction(tx)).not_to be_nil
   end
