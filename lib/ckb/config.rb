@@ -14,8 +14,8 @@ module CKB
     def initialize(api)
       @api = api
       @lock_handlers = {
-        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::SingleSignHandler,
-        [SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::MultiSignHandler
+        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::SingleSignHandler.new(api),
+        [SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::MultiSignHandler.new(api)
       }
       @type_handlers = {}
     end
