@@ -38,6 +38,11 @@ module CKB
         lock_script = cell_meta.output.lock
         cell_meta_index = tx_generator.cell_metas.find_index { |inner_cell_meta| inner_cell_meta == cell_meta }
         grouped_indexes = tx_generator.cell_metas.map.with_index { |inner_cell_meta, index| index if inner_cell_meta.output.lock.compute_hash == lock_script.compute_hash }.compact
+        uncoverd_witness_index = tx_generator.transaction.inputs.size
+        while uncoverd_witness_index < tx_generator.transaction.witnesses.size
+          grouped_indexes << uncoverd_witness_index
+          uncoverd_witness_index += 1
+        end
 
         if cell_meta_index == grouped_indexes.first
           transaction = tx_generator.transaction
@@ -49,7 +54,8 @@ module CKB
           required_signatures = binary_witness_lock[2].unpack("C")[0]
           total_public_keys = binary_witness_lock[3].unpack("C")[0]
           grouped_indexes.each do |index|
-            witness_dup = witness.dup
+            current_witness = tx_generator.transaction.witnesses[index]
+            witness_dup = current_witness.dup
             signature_offset_in_serialized_witness = 24 + 20 * total_public_keys
             binary_witness = Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.new(witness_dup).serialize)
             if index == cell_meta_index
