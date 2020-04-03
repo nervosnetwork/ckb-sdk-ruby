@@ -12,8 +12,8 @@ module CKB
         @is_issuer = input_scripts.size == 1 && input_scripts.first.compute_hash == sudt_args
       end
 
-      def generate(to_address, sudt_capacity, output_info = {}, fee_rate = 1)
-        data = CKB::Utils.bin_to_hex([sudt_capacity].pack("Q<*") + [sudt_capacity >> 64].pack("Q<*"))
+      def generate(to_address, sudt_amount, output_info = {}, fee_rate = 1)
+        data = CKB::Utils.generate_sudt_amount(sudt_amount)
         lock = CKB::AddressParser.new(to_address).parse.script
         output = CKB::Types::Output.new(lock: lock, type: sudt_type_script, capacity: 0)
         capacity = CKB::Utils.byte_to_shannon(output.calculate_bytesize(data))
@@ -56,6 +56,10 @@ module CKB
         tx_generator.is_issuer = is_issuer
         tx_generator.generate(collector: collector, contexts: input_scripts.map(&:compute_hash).zip(contexts).to_h, fee_rate: fee_rate)
         tx_generator
+      end
+
+      def total_amount
+        collector.select { |cell_meta| cell_meta.output.type && cell_meta.output.type.compute_hash == sudt_type_script.compute_hash }.map{ |cell_meta| CKB::Utils.sudt_amount(cell_meta.output_data) }.sum
       end
 
       private
