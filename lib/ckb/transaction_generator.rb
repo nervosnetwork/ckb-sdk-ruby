@@ -22,10 +22,10 @@ module CKB
         lock_script = cell_meta.output.lock
         type_script = cell_meta.output.type
         lock_handler = CKB::Config.new(api).lock_handler(lock_script)
-        lock_handler.generate(api: api, cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
+        lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
         if type_script
           type_handler = CKB::Config.new(api).type_handler(type_script)
-          type_handler.generate(api: api, cell_meta: cell_meta, tx_generator: self)
+          type_handler.generate(cell_meta: cell_meta, tx_generator: self)
         end
 
         return if collected_enough_assets?(change_output_index, fee_rate)

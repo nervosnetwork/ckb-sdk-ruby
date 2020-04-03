@@ -4,7 +4,13 @@ require "secp256k1"
 module CKB
   module LockHandlers
     class SingleSignHandler
-      def self.generate(api:, cell_meta:, tx_generator:, context:)
+      attr_reader :api
+
+      def initialize(api)
+        @api = api
+      end
+
+      def generate(cell_meta:, tx_generator:, context:)
         tx_generator.transaction.inputs << CKB::Types::Input.new(since: 0, previous_output: cell_meta.out_point)
         cell_dep = CKB::Config.new(api).standard_secp256k1_blake160_sighash_all_cell_dep
         tx_generator.transaction.cell_deps << cell_dep unless tx_generator.transaction.cell_deps.map(&:to_h).include?(cell_dep.to_h)
@@ -18,7 +24,7 @@ module CKB
         tx_generator.cell_metas << cell_meta
       end
 
-      def self.sign(cell_meta:, tx_generator:, context:)
+      def sign(cell_meta:, tx_generator:, context:)
         lock_script = cell_meta.output.lock
         cell_meta_index = tx_generator.cell_metas.find_index { |inner_cell_meta| inner_cell_meta == cell_meta  }
         grouped_indexes = tx_generator.cell_metas.map.with_index { |inner_cell_meta, index| index if inner_cell_meta.output.lock.compute_hash == lock_script.compute_hash }.compact
