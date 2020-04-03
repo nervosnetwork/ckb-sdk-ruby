@@ -39,7 +39,7 @@ module CKB
         tx_hash = compute_hash
         emptied_witness = witnesses[0].dup
         emptied_witness.lock = "0x#{'0' * 130}"
-        emptied_witness_data_binary = Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(emptied_witness).serialize)
+        emptied_witness_data_binary = Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.new(emptied_witness).serialize)
         emptied_witness_data_size = emptied_witness_data_binary.bytesize
 
         blake2b = CKB::Blake2b.new
@@ -50,7 +50,7 @@ module CKB
         witnesses[1..-1].each do |witness|
           data_binary = case witness
           when CKB::Types::Witness
-            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(witness).serialize)
+            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.new(witness).serialize)
           else
             Utils.hex_to_bin(witness)
           end
@@ -92,7 +92,7 @@ module CKB
           witnesses: @witnesses.map do |witness|
             case witness
             when CKB::Types::Witness
-              CKB::Serializers::WitnessArgsSerializer.from(witness).serialize
+              CKB::Serializers::WitnessArgsSerializer.new(witness).serialize
             else
               witness
             end
@@ -108,7 +108,16 @@ module CKB
       end
 
       def serialized_size_in_block
-        transaction_serializer = CKB::Serializers::TransactionSerializer.new(self)
+        transaction = self.dup
+        transaction.witnesses = transaction.witnesses.map do |witness|
+          case witness
+          when CKB::Types::Witness
+            CKB::Serializers::WitnessArgsSerializer.new(witness).serialize
+          else
+            witness
+          end
+        end
+        transaction_serializer = CKB::Serializers::TransactionSerializer.new(transaction)
         serialized_tx_offset_bytesize = 4 # 4 bytes for the tx offset cost with molecule array (transactions)
         Utils.hex_to_bin(transaction_serializer.serialize).bytesize + serialized_tx_offset_bytesize
       end
@@ -141,6 +150,10 @@ module CKB
           outputs_data: hash[:outputs_data],
           witnesses: hash[:witnesses]
         )
+      end
+
+      def outputs_capacity
+        outputs.sum(&:capacity)
       end
     end
   end
