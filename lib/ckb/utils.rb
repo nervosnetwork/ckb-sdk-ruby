@@ -50,7 +50,7 @@ module CKB
     end
 
     def self.sudt_amount(output_data)
-      CKB::Utils.hex_to_bin(output_data).reverse.unpack1("B*").to_i(2)
+      CKB::Utils.hex_to_bin(output_data)[0..15].reverse.unpack1("B*").to_i(2)
     end
 
     def self.generate_sudt_amount(sudt_amount)
