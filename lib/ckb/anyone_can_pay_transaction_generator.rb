@@ -21,17 +21,18 @@ module CKB
       enough_assets = false
       enough_anyone_can_pay_cells = is_owner ? true : false
 
-      unless is_owner
-        anyone_can_pay_collector.each do |cell_meta|
-          lock_script = cell_meta.output.lock
-          type_script = cell_meta.output.type
-          lock_handler = CKB::Config.new(api).lock_handler(lock_script)
-          lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
+      anyone_can_pay_collector.each do |cell_meta|
+        lock_script = cell_meta.output.lock
+        type_script = cell_meta.output.type
+        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+        lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
+        if type_script
           type_handler = CKB::Config.new(api).type_handler(type_script)
           type_handler.generate(cell_meta: cell_meta, tx_generator: self)
-          if enough_anyone_can_pay_cells?
-            enough_anyone_can_pay_cells = true
-
+        end
+        if enough_anyone_can_pay_cells?
+          enough_anyone_can_pay_cells = true
+          unless is_owner
             transaction.outputs.select { |output| output.lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH }.each do |output|
               if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
                 if need_sudt
@@ -52,9 +53,9 @@ module CKB
                 end
               end
             end
-
-            break
           end
+
+          break
         end
       end
 
