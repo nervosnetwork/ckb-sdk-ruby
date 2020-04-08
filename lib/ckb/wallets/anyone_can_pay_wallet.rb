@@ -21,15 +21,14 @@ module CKB
 
       def generate(to_address, transfer_info, output_info ={}, fee_rate = 1)
         transfer_type, transfer_amount = transfer_info[:type], transfer_info[:amount]
+        type = sudt_type_script
         case transfer_type
         when :ckb
           capacity = transfer_amount
-          type = nil
-          data = nil
+          data = "0x#{'0' * 32}"
           @need_sudt = false
         when :udt
           capacity = 0
-          type = sudt_type_script
           data = CKB::Utils.generate_sudt_amount(transfer_amount)
         else
           raise "wrong transfer type, only support ckb or udt"
@@ -57,7 +56,7 @@ module CKB
         end
 
         if outputs.all? { |output| output.capacity > 0 } || (outputs.map { |output| output.capacity }.sum == 0 && outputs.size == 1)
-          if to_infos.any? { |_, output_info| output_info[:type].compute_hash == sudt_type_script.compute_hash }
+          if to_infos.any? { |_, output_info| output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash }
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
             outputs_data << "0x"
             outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(142), lock: input_scripts[-1], type: sudt_type_script)
