@@ -2,7 +2,7 @@
 
 module CKB
   class AnyoneCanPayTransactionGenerator < TransactionGenerator
-    attr_accessor :need_sudt, :sudt_args, :anyone_can_pay_cell_lock_scripts
+    attr_accessor :need_sudt, :sudt_args, :anyone_can_pay_cell_lock_scripts, :is_owner
 
     def generate(anyone_can_pay_collector:, udt_collector:, capacity_collector:, contexts:, fee_rate: 1)
       transaction.outputs.each_with_index do |output, index|
@@ -16,41 +16,45 @@ module CKB
       end
 
       capacity_change_output_index = transaction.outputs.rindex { |output| output.capacity == 0 }
-      amount_change_output_index = transaction.outputs_data.rindex { |output_data| output_data == "0x#{'0' * 32}" }
+      amount_change_output_index = is_owner ? capacity_change_output_index : transaction.outputs_data.rindex { |output_data| output_data == "0x#{'0' * 32}" }
       enough_capacity = false
       enough_assets = false
-      enough_anyone_can_pay_cells = false
+      enough_anyone_can_pay_cells = is_owner ? true : false
 
-      anyone_can_pay_collector.each do |cell_meta|
-        lock_script = cell_meta.output.lock
-        type_script = cell_meta.output.type
-        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
-        lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
-        type_handler = CKB::Config.new(api).type_handler(type_script)
-        type_handler.generate(cell_meta: cell_meta, tx_generator: self)
-        if enough_anyone_can_pay_cells?
-          enough_anyone_can_pay_cells = true
+      unless is_owner
+        anyone_can_pay_collector.each do |cell_meta|
+          lock_script = cell_meta.output.lock
+          type_script = cell_meta.output.type
+          lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+          lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
+          type_handler = CKB::Config.new(api).type_handler(type_script)
+          type_handler.generate(cell_meta: cell_meta, tx_generator: self)
+          if enough_anyone_can_pay_cells?
+            enough_anyone_can_pay_cells = true
 
-          transaction.outputs.select { |output| output.lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH }.each do |output|
-            if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
-              if need_sudt
-                output.capacity = cell_metas[index].output.capacity
-              else
-                output.capacity = cell_metas[index].output.capacity + output.capacity
+            transaction.outputs.select { |output| output.lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH }.each do |output|
+              if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
+                if need_sudt
+                  output.capacity = cell_metas[index].output.capacity
+                else
+                  output.capacity = cell_metas[index].output.capacity + output.capacity
+                end
               end
             end
-          end
 
-          transaction.outputs.each_with_index do |output, index|
-            next if output.lock.code_hash != CKB::Config::ANYONE_CAN_PAY_CODE_HASH
-            transfer_amount = CKB::Utils.sudt_amount(transaction.outputs_data[index])
-            if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
-              origin_amount = CKB::Utils.sudt_amount(cell_metas[index].output_data)
-              transaction.outputs_data[index] = CKB::Utils.generate_sudt_amount(transfer_amount + origin_amount)
+            if need_sudt
+              transaction.outputs.each_with_index do |output, index|
+                next if output.lock.code_hash != CKB::Config::ANYONE_CAN_PAY_CODE_HASH
+                transfer_amount = CKB::Utils.sudt_amount(transaction.outputs_data[index])
+                if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
+                  origin_amount = CKB::Utils.sudt_amount(cell_metas[index].output_data)
+                  transaction.outputs_data[index] = CKB::Utils.generate_sudt_amount(transfer_amount + origin_amount)
+                end
+              end
             end
-          end
 
-          break
+            break
+          end
         end
       end
 
