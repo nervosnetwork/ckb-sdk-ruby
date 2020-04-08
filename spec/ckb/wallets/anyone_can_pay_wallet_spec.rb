@@ -65,4 +65,12 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
 
     expect(api.send_transaction(tx)).not_to be_nil
   end
+
+  it "transfer udt with signature" do
+    anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", anyone_can_pay_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", sudt_args: "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947")
+    tx_generator = anyone_can_pay_wallet.generate("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", { type: :udt, amount: 10000 }, { data: "0x#{'0' * 32}", context: "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3" })
+    tx = anyone_can_pay_wallet.sign(tx_generator, "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3")
+
+    expect(api.send_transaction(tx)).not_to be_nil
+  end
 end
