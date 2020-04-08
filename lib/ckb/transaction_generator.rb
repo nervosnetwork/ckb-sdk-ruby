@@ -27,7 +27,7 @@ module CKB
         end
       end
 
-      change_output_index = transaction.outputs.find_index { |output| output.capacity == 0 }
+      change_output_index = transaction.outputs.rindex { |output| output.capacity == 0 }
 
       collector.each do |cell_meta|
         lock_script = cell_meta.output.lock
@@ -39,24 +39,24 @@ module CKB
           type_handler.generate(cell_meta: cell_meta, tx_generator: self)
         end
 
-        return if collected_enough_assets?(change_output_index, fee_rate)
+        return if enough_capacity?(change_output_index, fee_rate)
       end
 
       raise "collected inputs not enough"
     end
 
     # @param contexts [Hash], key: input lock script hash, value: tx signature context
-    def sign(contents)
+    def sign(contexts)
       cell_metas.each do |cell_meta|
         lock_script = cell_meta.output.lock
         lock_handler = CKB::Config.new(api).lock_handler(lock_script)
-        if context = contents[lock_script.compute_hash]
+        if context = contexts[lock_script.compute_hash]
           lock_handler.sign(cell_meta: cell_meta, tx_generator: self, context: context)
         end
       end
     end
 
-    def collected_enough_assets?(change_output_index, fee_rate)
+    def enough_capacity?(change_output_index, fee_rate)
       fee = transaction.serialized_size_in_block * fee_rate
       change_capacity = inputs_capacity - transaction.outputs_capacity - fee
       if change_output_index

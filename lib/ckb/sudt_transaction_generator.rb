@@ -4,7 +4,7 @@ module CKB
   class SudtTransactionGenerator < TransactionGenerator
     attr_accessor :is_issuer
 
-    def collected_enough_assets?(change_output_index, fee_rate)
+    def enough_capacity?(change_output_index, fee_rate)
       if super(change_output_index, fee_rate)
         if is_issuer
           true
