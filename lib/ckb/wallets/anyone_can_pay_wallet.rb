@@ -52,7 +52,8 @@ module CKB
           lock = CKB::AddressParser.new(address).parse.script
           raise "unexpected anyone can pay address" if lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH && !anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
 
-          outputs << CKB::Types::Output.new(capacity: output_info[:capacity], lock: lock, type: output_info[:type])
+          capacity = [output_info[:capacity], CKB::Utils.byte_to_shannon(142)].max
+          outputs << CKB::Types::Output.new(capacity: capacity, lock: lock, type: output_info[:type])
           outputs_data << (output_info[:data] || "0x")
         end
 
