@@ -3,12 +3,11 @@
 module CKB
   module Wallets
     class SudtWallet < NewWallet
-      SUDT_CODE_HASH = "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"
-
       attr_accessor :sudt_type_script, :is_issuer
+
       def initialize(api:, from_addresses:, sudt_args:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
         super(api: api, from_addresses: from_addresses, collector_type: collector_type, mode: mode, from_block_number: from_block_number)
-        @sudt_type_script = CKB::Types::Script.new(code_hash: SUDT_CODE_HASH, args: sudt_args, hash_type: "data")
+        @sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config::SUDT_CODE_HASH, args: sudt_args, hash_type: "data")
         @is_issuer = input_scripts.size == 1 && input_scripts.first.compute_hash == sudt_args
       end
 
