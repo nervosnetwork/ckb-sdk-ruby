@@ -22,7 +22,7 @@ module CKB
 
       def generate(to_address, transfer_info, output_info ={}, fee_rate = 1)
         transfer_type, transfer_amount = transfer_info[:type], transfer_info[:amount]
-        type = sudt_type_script
+        type = is_owner ? output_info[:type] : sudt_type_script
         case transfer_type
         when :ckb
           capacity = transfer_amount
@@ -52,7 +52,7 @@ module CKB
           lock = CKB::AddressParser.new(address).parse.script
           raise "unexpected anyone can pay address" if lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH && !anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
 
-          capacity = [output_info[:capacity], CKB::Utils.byte_to_shannon(142)].max
+          capacity = is_owner && output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash ? [output_info[:capacity], CKB::Utils.byte_to_shannon(142)].max : output_info[:capacity]
           outputs << CKB::Types::Output.new(capacity: capacity, lock: lock, type: output_info[:type])
           outputs_data << (output_info[:data] || "0x")
         end
@@ -61,10 +61,8 @@ module CKB
           if to_infos.any? { |_, output_info| output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash }
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
             outputs_data << "0x"
-            if need_sudt
-              outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(142), lock: input_scripts[-1], type: sudt_type_script)
-              outputs_data << "0x#{'0' * 32}"
-            end
+            outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(142), lock: input_scripts[-1], type: sudt_type_script)
+            outputs_data << "0x#{'0' * 32}"
           else
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
             outputs_data << "0x"
@@ -105,7 +103,10 @@ module CKB
 
       def receiver_anyone_can_pay_cell?(cell_meta)
         lock = cell_meta.output.lock
-        lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH && anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
+        right_type_script = cell_meta.output.type && cell_meta.output.type.compute_hash == sudt_type_script.compute_hash
+        is_anyone_can_pay_cell = lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH && anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
+
+        right_type_script && is_anyone_can_pay_cell
       end
 
       def normal_cell?(cell_meta)
@@ -172,7 +173,7 @@ module CKB
           loop do
             begin
               cell_meta = collector.next
-              if sender_normal_cell?(cell_meta)
+              if sender_normal_cell?(cell_meta) || is_owner
                 result << cell_meta
               end
             rescue StopIteration
