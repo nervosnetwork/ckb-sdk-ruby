@@ -9,7 +9,8 @@ module CKB
       end
 
       def generate(cell_meta:, tx_generator:, context:)
-        tx_generator.transaction.inputs << CKB::Types::Input.new(since: 0, previous_output: cell_meta.out_point)
+        input = CKB::Types::Input.new(since: 0, previous_output: cell_meta.out_point)
+        tx_generator.transaction.inputs << input unless tx_generator.transaction.inputs.map(&:to_h).include?(input.to_h)
         tx_generator.transaction.cell_deps << anyone_can_pay_cell_dep unless tx_generator.transaction.cell_deps.map(&:to_h).include?(anyone_can_pay_cell_dep.to_h)
         if context.nil?
           witness = "0x"
