@@ -13,6 +13,10 @@ RSpec.describe CKB::Wallets::SudtWallet do
 
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]
+    config = CKB::Config.instance
+    # This is my locally deployed sudt type script's code hash and tx hash. This code hash and tx hash will be replaced after the real sudt type script deployed on mainnet in the future
+    config.sudt_info = { code_hash: "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212", tx_hash: "0x0f18ac6058f7e1cef8a94b4709be58077aef1ad586403c4337226af3fb12ba29" }
+    config.type_handlers[[config.sudt_info[:code_hash], CKB::Config::DATA]] = CKB::TypeHandlers::SudtHandler.new(config.sudt_info[:tx_hash])
   end
 
   let(:api) { CKB::API.new }

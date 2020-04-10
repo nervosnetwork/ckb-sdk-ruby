@@ -29,6 +29,13 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
 
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]
+    config = CKB::Config.instance
+    # This is my locally deployed sudt type script's code hash and tx hash. This code hash and tx hash will be replaced after the real sudt type script deployed on mainnet in the future
+    config.sudt_info = { code_hash: "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212", tx_hash: "0x0f18ac6058f7e1cef8a94b4709be58077aef1ad586403c4337226af3fb12ba29" }
+    # This is my locally deployed anyone can pay lock script's code hash and tx hash. This code hash and tx hash will be replaced after the real anyone can pay lock script deployed on mainnet in the future
+    config.anyone_can_pay_info = { code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", tx_hash: "0xeba5986c50e7e8215c2acd6501150cab1346119f42f4d7870bfadd5bfdf7fe57" }
+    config.type_handlers[[config.sudt_info[:code_hash], CKB::Config::DATA]] = CKB::TypeHandlers::SudtHandler.new(config.sudt_info[:tx_hash])
+    config.lock_handlers[[config.anyone_can_pay_info[:code_hash], CKB::Config::TYPE]] = CKB::LockHandlers::AnyoneCanPayHandler.new(config.anyone_can_pay_info[:tx_hash])
   end
 
   let(:api) { CKB::API.new }
@@ -38,7 +45,7 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
     anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0x59a27ef3ba84f061517d13f42cf44ed020610061", hash_type: "type")).generate
     wallet = CKB::Wallets::NewWallet.new(api: api, from_addresses: "ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37")
     sudt_args = "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947"
-    sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config::SUDT_CODE_HASH, args: sudt_args, hash_type: "data")
+    sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: "data")
 
     tx_generator = wallet.advance_generate(
       to_infos: {
