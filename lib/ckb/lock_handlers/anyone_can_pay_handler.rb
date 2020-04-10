@@ -3,7 +3,7 @@ module CKB
     class AnyoneCanPayHandler < SingleSignHandler
       attr_reader :anyone_can_pay_cell_dep
 
-      def initialize(anyone_can_pay_tx_hash = "0xeba5986c50e7e8215c2acd6501150cab1346119f42f4d7870bfadd5bfdf7fe57", index = 0)
+      def initialize(anyone_can_pay_tx_hash, index = 0)
         # This is my locally deployed anyone can pay cell dep. This cell dep info will be replaced after the real anyone can pay lock script deployed on mainnet in the future
         @anyone_can_pay_cell_dep = CKB::Types::CellDep.new(out_point: CKB::Types::OutPoint.new(tx_hash: anyone_can_pay_tx_hash, index: index), dep_type: "dep_group")
       end

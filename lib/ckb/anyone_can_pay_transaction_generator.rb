@@ -7,7 +7,7 @@ module CKB
     def generate(anyone_can_pay_collector:, udt_collector:, capacity_collector:, contexts:, fee_rate: 1)
       transaction.outputs.each_with_index do |output, index|
         if type_script = output.type
-          if type_handler = CKB::Config.new(api).type_handler(type_script)
+          if type_handler = CKB::Config.instance.type_handler(type_script)
             output_data = transaction.outputs_data[index]
             cell_meta = CKB::CellMeta.new(api: api, out_point: nil, output: output, output_data_len: Utils.hex_to_bin(output_data).bytesize, cellbase: false)
             type_handler.generate(cell_meta: cell_meta, tx_generator: self)
@@ -49,10 +49,10 @@ module CKB
           type_script = cell_meta.output.type
           next if !is_owner && (type_script || cell_meta.output_data_len > 0)
 
-          lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+          lock_handler = CKB::Config.instance.lock_handler(lock_script)
           lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
           if type_script
-            type_handler = CKB::Config.new(api).type_handler(type_script)
+            type_handler = CKB::Config.instance.type_handler(type_script)
             type_handler.generate(cell_meta: cell_meta, tx_generator: self)
           end
           if enough_capacity?(capacity_change_output_index, fee_rate)
@@ -71,10 +71,10 @@ module CKB
         udt_collector.each do |cell_meta|
           lock_script = cell_meta.output.lock
           type_script = cell_meta.output.type
-          if type_script && type_script.code_hash == CKB::Config::SUDT_CODE_HASH && type_script.args == sudt_args
-            lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+          if type_script && type_script.code_hash == CKB::Config.instance.sudt_info[:code_hash] && type_script.args == sudt_args
+            lock_handler = CKB::Config.instance.lock_handler(lock_script)
             lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
-            type_handler = CKB::Config.new(api).type_handler(type_script)
+            type_handler = CKB::Config.instance.type_handler(type_script)
             type_handler.generate(cell_meta: cell_meta, tx_generator: self)
             if enough_assets?(amount_change_output_index)
               enough_assets = true
@@ -92,16 +92,16 @@ module CKB
       anyone_can_pay_collector.each do |cell_meta|
         lock_script = cell_meta.output.lock
         type_script = cell_meta.output.type
-        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+        lock_handler = CKB::Config.instance.lock_handler(lock_script)
         lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
         if type_script
-          type_handler = CKB::Config.new(api).type_handler(type_script)
+          type_handler = CKB::Config.instance.type_handler(type_script)
           type_handler.generate(cell_meta: cell_meta, tx_generator: self)
         end
         if enough_anyone_can_pay_cells?
           enough_anyone_can_pay_cells = true
           unless is_owner
-            transaction.outputs.select { |output| output.lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH }.each do |output|
+            transaction.outputs.select { |output| output.lock.code_hash == CKB::Config.instance.anyone_can_pay_info[:code_hash] }.each do |output|
               if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
                 if need_sudt
                   output.capacity = cell_metas[index].output.capacity
@@ -113,7 +113,7 @@ module CKB
 
 
             transaction.outputs.each_with_index do |output, index|
-              next if output.lock.code_hash != CKB::Config::ANYONE_CAN_PAY_CODE_HASH
+              next if output.lock.code_hash != CKB::Config.instance.anyone_can_pay_info[:code_hash]
               transfer_amount = CKB::Utils.sudt_amount(transaction.outputs_data[index])
               if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
                 if need_sudt

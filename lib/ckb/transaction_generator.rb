@@ -18,7 +18,7 @@ module CKB
     def generate(collector:, contexts:, fee_rate: 1)
       transaction.outputs.each_with_index do |output, index|
         if type_script = output.type
-          if type_handler = CKB::Config.new(api).type_handler(type_script)
+          if type_handler = CKB::Config.instance.type_handler(type_script)
             output_data = transaction.outputs_data[index]
             cell_meta = CKB::CellMeta.new(api: api, out_point: nil, output: output, output_data_len: Utils.hex_to_bin(output_data).bytesize, cellbase: false)
             cell_meta.output_data = output_data
@@ -32,10 +32,10 @@ module CKB
       collector.each do |cell_meta|
         lock_script = cell_meta.output.lock
         type_script = cell_meta.output.type
-        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+        lock_handler = CKB::Config.instance.lock_handler(lock_script)
         lock_handler.generate(cell_meta: cell_meta, tx_generator: self, context: contexts[lock_script.compute_hash])
         if type_script
-          type_handler = CKB::Config.new(api).type_handler(type_script)
+          type_handler = CKB::Config.instance.type_handler(type_script)
           type_handler.generate(cell_meta: cell_meta, tx_generator: self)
         end
 
@@ -49,7 +49,7 @@ module CKB
     def sign(contexts)
       cell_metas.each do |cell_meta|
         lock_script = cell_meta.output.lock
-        lock_handler = CKB::Config.new(api).lock_handler(lock_script)
+        lock_handler = CKB::Config.instance.lock_handler(lock_script)
         if context = contexts[lock_script.compute_hash]
           lock_handler.sign(cell_meta: cell_meta, tx_generator: self, context: context)
         end
