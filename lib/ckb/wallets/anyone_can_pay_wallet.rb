@@ -5,6 +5,7 @@ module CKB
     class AnyoneCanPayWallet < NewWallet
       attr_reader :sudt_type_script, :sudt_args
       attr_accessor :anyone_can_pay_cell_lock_scripts, :need_sudt, :is_owner
+      SUDT_CELL_MIN_CAPACITY = 142
 
       def initialize(api:, from_addresses:, anyone_can_pay_addresses:, sudt_args:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
         super(api: api, from_addresses: from_addresses, collector_type: collector_type, mode: mode, from_block_number: from_block_number)
@@ -29,7 +30,7 @@ module CKB
           data = "0x#{'0' * 32}"
           @need_sudt = false
         when :udt
-          capacity = is_owner ? CKB::Utils.byte_to_shannon(142) : 0
+          capacity = is_owner ? CKB::Utils.byte_to_shannon(SUDT_CELL_MIN_CAPACITY) : 0
           data = CKB::Utils.generate_sudt_amount(transfer_amount)
         else
           raise "wrong transfer type, only support ckb or udt"
@@ -52,7 +53,7 @@ module CKB
           lock = CKB::AddressParser.new(address).parse.script
           raise "unexpected anyone can pay address" if lock.code_hash == CKB::Config.instance.anyone_can_pay_info[:code_hash] && !anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
 
-          capacity = is_owner && output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash ? [output_info[:capacity], CKB::Utils.byte_to_shannon(142)].max : output_info[:capacity]
+          capacity = is_owner && output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash ? [output_info[:capacity], CKB::Utils.byte_to_shannon(SUDT_CELL_MIN_CAPACITY)].max : output_info[:capacity]
           outputs << CKB::Types::Output.new(capacity: capacity, lock: lock, type: output_info[:type])
           outputs_data << (output_info[:data] || "0x")
         end
@@ -61,7 +62,7 @@ module CKB
           if to_infos.any? { |_, output_info| output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash }
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
             outputs_data << "0x"
-            outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(142), lock: input_scripts[-1], type: sudt_type_script)
+            outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(SUDT_CELL_MIN_CAPACITY), lock: input_scripts[-1], type: sudt_type_script)
             outputs_data << "0x#{'0' * 32}"
           else
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
