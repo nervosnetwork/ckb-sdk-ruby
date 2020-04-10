@@ -9,10 +9,10 @@ module CKB
       def initialize(api:, from_addresses:, anyone_can_pay_addresses:, sudt_args:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
         super(api: api, from_addresses: from_addresses, collector_type: collector_type, mode: mode, from_block_number: from_block_number)
         @sudt_args = sudt_args
-        @sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config::SUDT_CODE_HASH, args: sudt_args, hash_type: "data")
+        @sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: "data")
         @anyone_can_pay_cell_lock_scripts = (anyone_can_pay_addresses.is_a?(Array) ? anyone_can_pay_addresses : [anyone_can_pay_addresses]).map do |address|
           script = CKB::AddressParser.new(address).parse.script
-          raise "not an anyone can pay address" if script.code_hash != CKB::Config::ANYONE_CAN_PAY_CODE_HASH
+          raise "not an anyone can pay address" if script.code_hash != CKB::Config.instance.anyone_can_pay_info[:code_hash]
 
           script
         end
@@ -50,7 +50,7 @@ module CKB
 
         to_infos.each do |address, output_info|
           lock = CKB::AddressParser.new(address).parse.script
-          raise "unexpected anyone can pay address" if lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH && !anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
+          raise "unexpected anyone can pay address" if lock.code_hash == CKB::Config.instance.anyone_can_pay_info[:code_hash] && !anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
 
           capacity = is_owner && output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash ? [output_info[:capacity], CKB::Utils.byte_to_shannon(142)].max : output_info[:capacity]
           outputs << CKB::Types::Output.new(capacity: capacity, lock: lock, type: output_info[:type])
@@ -104,7 +104,7 @@ module CKB
       def receiver_anyone_can_pay_cell?(cell_meta)
         lock = cell_meta.output.lock
         right_type_script = cell_meta.output.type && cell_meta.output.type.compute_hash == sudt_type_script.compute_hash
-        is_anyone_can_pay_cell = lock.code_hash == CKB::Config::ANYONE_CAN_PAY_CODE_HASH && anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
+        is_anyone_can_pay_cell = lock.code_hash == CKB::Config.instance.anyone_can_pay_info[:code_hash] && anyone_can_pay_cell_lock_scripts.map(&:compute_hash).include?(lock.compute_hash)
 
         right_type_script && is_anyone_can_pay_cell
       end

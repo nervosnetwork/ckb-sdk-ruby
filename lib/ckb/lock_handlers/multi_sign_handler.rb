@@ -10,7 +10,7 @@ module CKB
       # @param context [Array] multisig script, format: [S, R, M, N, blake160(pubkey1), blake160(pubkey2), ...]
       def generate(cell_meta:, tx_generator:, context:)
         tx_generator.transaction.inputs << CKB::Types::Input.new(since: 0, previous_output: cell_meta.out_point)
-        cell_dep = CKB::Config.new(api).standard_secp256k1_blake160_multisig_all
+        cell_dep = CKB::Config.instance.standard_secp256k1_blake160_multisig_all
         tx_generator.transaction.cell_deps << cell_dep unless tx_generator.transaction.cell_deps.include?(cell_dep)
         witness =
           if tx_generator.cell_metas.any? { |inner_cell_meta| inner_cell_meta.output.script.compute_hash == cell_meta.output.script.compute_hash }
