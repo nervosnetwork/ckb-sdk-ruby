@@ -22,10 +22,16 @@ require "ckb/script_hash_type"
 require "ckb/config"
 require "ckb/lock_handlers/single_sign_handler"
 require "ckb/lock_handlers/multi_sign_handler"
+require "ckb/lock_handlers/anyone_can_pay_handler"
 require "ckb/cell_meta"
 require "ckb/collector"
 require "ckb/transaction_generator"
-require "ckb/new_wallet"
+require "ckb/sudt_transaction_generator"
+require "ckb/anyone_can_pay_transaction_generator"
+require "ckb/type_handlers/sudt_handler"
+require "ckb/wallets/new_wallet"
+require "ckb/wallets/sudt_wallet"
+require "ckb/wallets/anyone_can_pay_wallet"
 
 module CKB
   class Error < StandardError; end

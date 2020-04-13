@@ -48,5 +48,15 @@ module CKB
 
       raise "Can't convert to hex string!"
     end
+
+    def self.sudt_amount(output_data)
+      values = CKB::Utils.hex_to_bin(output_data)[0..15].unpack("Q<Q<")
+      (values[1] << 64) | values[0]
+    end
+
+    def self.generate_sudt_amount(sudt_amount)
+      values = [sudt_amount & 0xFFFFFFFFFFFFFFFF, (sudt_amount >> 64) & 0xFFFFFFFFFFFFFFFF]
+      CKB::Utils.bin_to_hex(values.pack("Q<Q<"))
+    end
   end
 end

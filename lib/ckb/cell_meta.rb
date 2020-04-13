@@ -2,7 +2,7 @@
 
 module CKB
   class CellMeta
-    attr_reader :out_point, :output, :output_data_len, :cellbase
+    attr_reader :out_point, :output, :output_data_len, :cellbase, :api
     attr_writer :output_data
 
     def initialize(api:, out_point:, output:, output_data_len:, cellbase:)
