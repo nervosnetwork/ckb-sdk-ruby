@@ -50,6 +50,8 @@ module CKB
     end
 
     def self.sudt_amount(output_data)
+      return 0 if output_data == "0x"
+
       values = CKB::Utils.hex_to_bin(output_data)[0..15].unpack("Q<Q<")
       (values[1] << 64) | values[0]
     end
