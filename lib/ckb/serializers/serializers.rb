@@ -30,6 +30,12 @@ require_relative "witness_serializer"
 require_relative "transaction_serializer"
 require_relative "bytes_opt_serializer"
 require_relative "witness_args_serializer"
+require_relative "block_serializer"
+require_relative "header_serializer"
+require_relative "proposal_short_id_serializer"
+require_relative "raw_header_serializer"
+require_relative "uint128_serializer"
+require_relative "uncle_block_serializer"
 
 module CKB
   module Serializers
