@@ -8,14 +8,14 @@ module CKB
       # @param block [CKB::Types::Uncle]
       def initialize(uncle_block)
         @header_serializer = HeaderSerializer.new(uncle_block.header)
-        @proposals_serializer = ProposalsSerializer.new(uncle_block.proposals)
+        @proposals_serializer = FixVecSerializer.new(uncle_block.proposals, ProposalShortIdSerializer)
 
         @items_count = 2
       end
 
       private
 
-      attr_reader :header_serializer, :proposals_serializer
+      attr_reader :header_serializer, :proposals_serializer, :items_count
 
       def body
         header_layout + proposals_layout
@@ -26,6 +26,10 @@ module CKB
         offset1 = offset0 + header_capacity
 
         [offset0, offset1]
+      end
+
+      def header_capacity
+        header_serializer.capacity
       end
 
       def header_layout
