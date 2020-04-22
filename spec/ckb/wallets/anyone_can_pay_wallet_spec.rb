@@ -75,8 +75,10 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
 
   # need pass context to generate method when use signature to unlock a anyone can pay cell
   it "transfer udt with signature" do
+    sudt_args = "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947"
+    sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: "data")
     anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", anyone_can_pay_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", sudt_args: "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947")
-    tx_generator = anyone_can_pay_wallet.generate("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", { type: :udt, amount: 10000 }, { data: "0x#{'0' * 32}", context: "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3" })
+    tx_generator = anyone_can_pay_wallet.generate("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", { type: :udt, amount: 10000 }, { type: sudt_type_script, context: "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3" })
     tx = anyone_can_pay_wallet.sign(tx_generator, "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3")
 
     expect(api.send_transaction(tx)).not_to be_nil
@@ -86,6 +88,43 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
     anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", anyone_can_pay_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", sudt_args: "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947")
     tx_generator = anyone_can_pay_wallet.generate("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", { type: :ckb, amount: CKB::Utils.byte_to_shannon(100) }, { context: "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3" })
     tx = anyone_can_pay_wallet.sign(tx_generator, "0x2a7ba51e4f02fac14b6fef7ac185cd62d9826e333b6a04ecc4ae702bdbf429d3")
+
+    expect(api.send_transaction(tx)).not_to be_nil
+  end
+
+  # need generate anyone can pay cell first
+  # alice_anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0xe1784c9d961e019c1c38a610385114b7fa66d636", hash_type: "type")).generate
+  # bob_anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0x18ae19f1eca64344a9af3d65aef8699f84447869", hash_type: "type")).generate
+  # wallet = CKB::Wallets::NewWallet.new(api: api, from_addresses: "ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37")
+  # sudt_args = "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947"
+  # sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: "data")
+
+  # tx_generator = wallet.advance_generate(
+  #   to_infos: {
+  #     alice_anyone_can_pay_address => { capacity: CKB::Utils.byte_to_shannon(1000), type: sudt_type_script, data: "0x#{'0' * 32}" },
+  #     bob_anyone_can_pay_address => { capacity: CKB::Utils.byte_to_shannon(1000), type: sudt_type_script, data: "0x#{'0' * 32}" }
+  #   }
+  # )
+  # tx = wallet.sign(tx_generator, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc")
+  it "transfer ckb from anyone can pay wallet A to anyone can pay wallet B" do
+    alice_anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0xe1784c9d961e019c1c38a610385114b7fa66d636", hash_type: "type")).generate
+    bob_anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0x18ae19f1eca64344a9af3d65aef8699f84447869", hash_type: "type")).generate
+    anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: alice_anyone_can_pay_address, anyone_can_pay_addresses: [alice_anyone_can_pay_address, bob_anyone_can_pay_address], sudt_args: "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947")
+    tx_generator = anyone_can_pay_wallet.generate(bob_anyone_can_pay_address, { type: :ckb, amount: CKB::Utils.byte_to_shannon(100) }, { context: "0x133f4ee97e74c0c103c79a914b28ec491434a582434a3ad30f9619e7d032083d" })
+    tx = anyone_can_pay_wallet.sign(tx_generator, "0x133f4ee97e74c0c103c79a914b28ec491434a582434a3ad30f9619e7d032083d")
+
+    expect(api.send_transaction(tx)).not_to be_nil
+  end
+
+  # need prepare some udt in alice anyone can pay wallet
+  it "transfer sudt from anyone can pay wallet A to anyone can pay wallet B" do
+    sudt_args = "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947"
+    sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: "data")
+    alice_anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0xe1784c9d961e019c1c38a610385114b7fa66d636", hash_type: "type")).generate
+    bob_anyone_can_pay_address = CKB::Address.new(CKB::Types::Script.new(code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", args: "0x18ae19f1eca64344a9af3d65aef8699f84447869", hash_type: "type")).generate
+    anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: alice_anyone_can_pay_address, anyone_can_pay_addresses: [alice_anyone_can_pay_address, bob_anyone_can_pay_address], sudt_args: "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947")
+    tx_generator = anyone_can_pay_wallet.generate(bob_anyone_can_pay_address, { type: :udt, amount: 1000 }, { type: sudt_type_script, context: "0x133f4ee97e74c0c103c79a914b28ec491434a582434a3ad30f9619e7d032083d" })
+    tx = anyone_can_pay_wallet.sign(tx_generator, "0x133f4ee97e74c0c103c79a914b28ec491434a582434a3ad30f9619e7d032083d")
 
     expect(api.send_transaction(tx)).not_to be_nil
   end
