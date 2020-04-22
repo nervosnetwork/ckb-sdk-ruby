@@ -88,7 +88,7 @@ module CKB
     end
 
     def handle_anyone_can_pay_cells(anyone_can_pay_collector, contexts, fee_rate)
-      enough_anyone_can_pay_cells = is_owner ? true : false
+      enough_anyone_can_pay_cells = is_owner
       anyone_can_pay_collector.each do |cell_meta|
         lock_script = cell_meta.output.lock
         type_script = cell_meta.output.type
