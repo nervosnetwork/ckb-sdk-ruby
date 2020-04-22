@@ -7,6 +7,8 @@ module CKB
       attr_accessor :anyone_can_pay_cell_lock_scripts, :need_sudt, :is_owner
       SUDT_CELL_MIN_CAPACITY = 142
 
+      # from_addresses includes receiver anyone can pay address if not owner mode, and the last address will be used as a change address
+      # anyone_can_pay_addresses includes receiver anyone can pay addresses
       def initialize(api:, from_addresses:, anyone_can_pay_addresses:, sudt_args:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
         super(api: api, from_addresses: from_addresses, collector_type: collector_type, mode: mode, from_block_number: from_block_number)
         @sudt_args = sudt_args
@@ -58,6 +60,7 @@ module CKB
           outputs_data << (output_info[:data] || "0x")
         end
 
+        # anyone can pay wallet supports transfer udt without ckb, so when sum outputs capacity is equal to zero also need a change output
         if outputs.all? { |output| output.capacity > 0 } || (outputs.map { |output| output.capacity }.sum == 0)
           if to_infos.any? { |_, output_info| output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash }
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
