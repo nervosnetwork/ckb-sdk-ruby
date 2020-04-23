@@ -5,7 +5,7 @@ module CKB
   class Config
     include Singleton
     attr_accessor :lock_handlers, :type_handlers, :sudt_info, :anyone_can_pay_info
-    attr_reader :api
+    attr_reader :api_url, :api
 
     # https://github.com/nervosnetwork/ckb/blob/develop/resource/specs/mainnet.toml#L73
     SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH = "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"
@@ -14,12 +14,9 @@ module CKB
     HASH_TYPES = [TYPE = "type", DATA = "data"]
 
     def initialize
-      @lock_handlers = {
-        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::SingleSignHandler.new(api),
-        [SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::MultiSignHandler.new(api),
-      }
+      @api_url = CKB::RPC::DEFAULT_URL
+      set_lock_handlers
       @type_handlers = {}
-      set_api(CKB::RPC::DEFAULT_URL)
     end
 
     def lock_handler(lock_script)
@@ -47,8 +44,15 @@ module CKB
     def set_api(api_url, mode = MODE::TESTNET)
       @api_url = api_url
       @api = CKB::API.new(host: @api_url, mode: mode)
+      set_lock_handlers
     end
 
+    def set_lock_handlers
+      @lock_handlers = {
+        [SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::SingleSignHandler.new(api),
+        [SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, TYPE] => CKB::LockHandlers::MultiSignHandler.new(api),
+      }
+    end
 
     def sudt_info
       @sudt_info || {}
