@@ -11,9 +11,9 @@ module CKB
       def generate(cell_meta:, tx_generator:, context:)
         tx_generator.transaction.inputs << CKB::Types::Input.new(since: 0, previous_output: cell_meta.out_point)
         cell_dep = CKB::Config.instance.standard_secp256k1_blake160_multisig_all
-        tx_generator.transaction.cell_deps << cell_dep unless tx_generator.transaction.cell_deps.include?(cell_dep)
+        tx_generator.transaction.cell_deps << cell_dep unless tx_generator.transaction.cell_deps.map(&:to_h).include?(cell_dep.to_h)
         witness =
-          if tx_generator.cell_metas.any? { |inner_cell_meta| inner_cell_meta.output.script.compute_hash == cell_meta.output.script.compute_hash }
+          if tx_generator.cell_metas.any? { |inner_cell_meta| inner_cell_meta.output.lock.compute_hash == cell_meta.output.lock.compute_hash }
             CKB::Types::Witness.new
           else
             # build witness with signature placeholder

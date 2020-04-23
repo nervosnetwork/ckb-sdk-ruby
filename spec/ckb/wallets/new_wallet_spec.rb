@@ -11,6 +11,9 @@ RSpec.describe CKB::Wallets::NewWallet do
   # ./ckb-cli tx build-multisig-address --sighash-address ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37 --sighash-address ckt1qyqywrwdchjyqeysjegpzw38fvandtktdhrs0zaxl4 --sighash-address ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld --threshold 2
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]
+
+    config = CKB::Config.instance
+    config.set_api(CKB::RPC::DEFAULT_URL)
   end
 
   let(:api) { CKB::API.new }
