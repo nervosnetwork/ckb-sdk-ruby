@@ -7,7 +7,7 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
   # wallet = CKB::Wallets::NewWallet.new(api: api, from_addresses: "ckt1qyqvsv5240xeh85wvnau2eky8pwrhh4jr8ts8vyj37")
   # args = CKB::Utils.bin_to_hex("\x00" * 32)
   # data = CKB::Utils.bin_to_hex(File.read("/your-path-to/anyone_can_pay"))
-  # tg = wallet.generate(w_m.address, 500000*10**8, { data: data1, type: CKB::Types::Script.new(code_hash: "0x00000000000000000000000000000000000000000000000000545950455f4944", hash_type: "type", args: args) })
+  # tg = wallet.generate(w_m.address, 500000*10**8, { data: data, type: CKB::Types::Script.new(code_hash: "0x00000000000000000000000000000000000000000000000000545950455f4944", hash_type: "type", args: args) })
   # tx = tg.transaction
   # serializer = CKB::Serializers::InputSerializer.new(tx.inputs.first)
   # blake2b = CKB::Blake2b.new
@@ -21,10 +21,10 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
   #
   # deploy group cell
   # out_points = [CKB::Types::OutPoint.new(tx_hash: "0x34bd494353ddcacf5a9c8a434a1563d7fb55306c4f9888413c3cac5b770d5845", index: 0), api.secp_data_out_point]
-  # out_point_vev_serializer = CKB::Serializers::FixVecSerializer.new(out_points, CKB::Serializers::OutPointSerializer)
-  # dep_group_cell_data = out_point_vev_serializer.serialize
-  # tg1 = w.generate(w_m.address, 1000*10**8, { data: dep_group_cell_data })
-  # tx1 = w.sign(tg1, "0x84ffe5a2b82ac1fbc7960a93ac6ed06fecf0271dd959bbcec5eeeafcc3e8e53f")
+  # out_point_vec_serializer = CKB::Serializers::FixVecSerializer.new(out_points, CKB::Serializers::OutPointSerializer)
+  # dep_group_cell_data = out_point_vec_serializer.serialize
+  # tg1 = wallet.generate(w_m.address, 1000*10**8, { data: dep_group_cell_data })
+  # tx1 = wallet.sign(tg1, "0x84ffe5a2b82ac1fbc7960a93ac6ed06fecf0271dd959bbcec5eeeafcc3e8e53f")
   # api.send_transaction(tx1)
 
   before do
