@@ -1,3 +1,7 @@
+# [v0.32.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.31.0...v0.32.0) (2020-05-26)
+
+Bump version to v0.32.0
+
 # [v0.31.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.30.0...v0.31.0) (2020-04-22)
 
 Bump version to v0.31.0
