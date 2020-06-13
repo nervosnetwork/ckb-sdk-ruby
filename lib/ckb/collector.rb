@@ -50,6 +50,7 @@ module CKB
             result << cell_metas[cell_meta_index]
             cell_meta_index += 1
           else
+            cell_meta_index = 0
             cell_metas = api.get_live_cells_by_lock_hash(lock_hashes[lock_hash_index], page, MAX_PAGINATES_PER).map do |cell|
               output_data_len = cell.output_data_len
               cellbase = cell.cellbase
