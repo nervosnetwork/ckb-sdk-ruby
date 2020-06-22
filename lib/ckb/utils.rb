@@ -49,10 +49,12 @@ module CKB
       raise "Can't convert to hex string!"
     end
 
-    def self.sudt_amount(output_data)
+    def self.sudt_amount!(output_data)
       return 0 if output_data == "0x"
+      output_data_bin = CKB::Utils.hex_to_bin(output_data)
+      raise "Invalid sUDT amount" if output_data_bin.bytesize < 16
 
-      values = CKB::Utils.hex_to_bin(output_data)[0..15].unpack("Q<Q<")
+      values = output_data_bin[0..15].unpack("Q<Q<")
       (values[1] << 64) | values[0]
     end
 
