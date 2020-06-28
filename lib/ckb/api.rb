@@ -250,7 +250,7 @@ module CKB
     #
     # @return [Types::LiveCell[]]
     def get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: false)
-      result = rpc.get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: reverse_order)
+      result = rpc.get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order)
       result.map { |live_cell| Types::LiveCell.from_h(live_cell) }
     end
 
@@ -267,7 +267,7 @@ module CKB
     #
     # @return [Types::CellTransaction[]]
     def get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: false)
-      result = rpc.get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: reverse_order)
+      result = rpc.get_transactions_by_lock_hash(lock_hash, page, per, reverse_order)
       result.map { |cell_tx| Types::CellTransaction.from_h(cell_tx) }
     end
 
@@ -276,7 +276,7 @@ module CKB
     #
     # @return [Types::LockHashIndexState]
     def index_lock_hash(lock_hash, index_from: 0)
-      state = rpc.index_lock_hash(lock_hash, index_from: index_from)
+      state = rpc.index_lock_hash(lock_hash, index_from)
       Types::LockHashIndexState.from_h(state)
     end
 
@@ -348,6 +348,10 @@ module CKB
     # @return block_hash [String]
     def submit_block(work_id: nil, raw_block_h: nil)
       rpc.submit_block(work_id, raw_block_h)
+    end
+
+    def batch_request(*requests)
+      rpc.batch_request(*requests)
     end
 
     def inspect
