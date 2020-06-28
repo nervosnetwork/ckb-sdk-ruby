@@ -343,4 +343,17 @@ RSpec.describe CKB::API do
       expect(result).to be_a(String)
     end
   end
+
+  context "batch request" do
+    it "should return corresponding record" do
+      result = api.batch_request(["get_block_by_number", 1], ["get_block_by_number", 2], ["get_block_by_number", 3])
+      expect(result.count).to eq 3
+    end
+
+    it "should raise RPCError when param is invalid" do
+      expect {
+        api.batch_request(%w[get_block_by_number 1], %w[get_block_by_number 2], %w[get_block_by_number 3])
+      }.to raise_error CKB::RPCError
+    end
+  end
 end
