@@ -49,8 +49,15 @@ module CKB
       unless outputs_validator.nil?
         raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w(default passthrough).include?(outputs_validator)
       end
+      single_request("send_transaction", [transaction, outputs_validator])
+    end
 
-      single_request("send_transaction", params: [transaction, outputs_validator])
+    def compute_script_hash(script_h)
+      single_request("_compute_script_hash", [script_h])
+    end
+
+    def compute_transaction_hash(transaction)
+      single_request("_compute_transaction_hash", [transaction])
     end
 
     def inspect
