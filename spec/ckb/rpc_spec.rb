@@ -140,7 +140,7 @@ RSpec.describe CKB::RPC do
       tx_hash: "0x45d086fe064ada93b6c1a6afbfd5e441d08618d326bae7b7bbae328996dfd36a",
       index: "0x0"
     }
-    result = rpc.get_live_cell(out_point)
+    result = rpc.get_live_cell(out_point, false)
     expect(result).not_to be nil
   end
 
@@ -304,6 +304,19 @@ RSpec.describe CKB::RPC do
       raw_block_h[:header][:parent_hash] = rpc.genesis_block_hash
       result = rpc.submit_block("test", raw_block_h)
       expect(result).not_to be nil
+    end
+  end
+
+  context "batch request" do
+    it "should return corresponding record" do
+      result = rpc.batch_request(["get_block_by_number", 1], ["get_block_by_number", 2], ["get_block_by_number", 3])
+      expect(result.count).to eq 3
+    end
+
+    it "should raise RPCError when param is invalid" do
+      expect {
+        rpc.batch_request(%w[get_block_by_number 1], %w[get_block_by_number 2], %w[get_block_by_number 3])
+      }.to raise_error CKB::RPCError
     end
   end
 end
