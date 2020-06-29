@@ -4,7 +4,7 @@ PATH
     ckb-sdk-ruby (0.33.0)
       bitcoin-secp256k1 (~> 0.5.2)
       net-http-persistent (~> 3.0.0)
-      rbnacl (~> 6.0, >= 6.0.1)
+      rbnacl (~> 7.1.1)
 
 GEM
   remote: https://rubygems.org/
@@ -28,7 +28,7 @@ GEM
       method_source (~> 0.9.0)
     rainbow (3.0.0)
     rake (13.0.1)
-    rbnacl (6.0.1)
+    rbnacl (7.1.1)
       ffi
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
