@@ -21,8 +21,8 @@ module CKB
     attr_reader :multi_sign_secp_cell_type_hash
     attr_reader :multi_sign_secp_group_out_point
 
-    def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET)
-      @rpc = CKB::RPC.new(host: host)
+    def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
+      @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
       if mode == MODE::TESTNET || mode == MODE::MAINNET
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
