@@ -41,7 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 0.69.0"
   spec.add_development_dependency "pry", "~> 0.12.2"
 
-  spec.add_dependency "net-http-persistent", "~> 3.0.0"
+  spec.add_dependency "net-http-persistent", "~> 3.1.0"
   spec.add_dependency "rbnacl", "~> 7.1.1"
   spec.add_dependency "bitcoin-secp256k1", "~> 0.5.2"
 end

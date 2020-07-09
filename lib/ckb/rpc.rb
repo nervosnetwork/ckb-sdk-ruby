@@ -28,9 +28,12 @@ module CKB
 
     DEFAULT_URL = "http://localhost:8114"
 
-    def initialize(host: DEFAULT_URL)
+    def initialize(host: DEFAULT_URL, timeout_config: {})
       @uri = URI(host)
       @http = Net::HTTP::Persistent.new
+      @http.open_timeout = timeout_config[:open_timeout] if timeout_config[:open_timeout]
+      @http.read_timeout = timeout_config[:read_timeout] if timeout_config[:read_timeout]
+      @http.write_timeout = timeout_config[:write_timeout] if timeout_config[:write_timeout]
     end
 
     def method_missing(method, *params)
