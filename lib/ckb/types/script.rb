@@ -61,17 +61,23 @@ module CKB
       end
 
       def validate_code_hash!
-        raise EmptyCodeHashError, "CodeHash cannot be empty" unless has_code_hash?
+        unless has_code_hash?
+          raise EmptyCodeHashError.new("CodeHash cannot be empty")
+        end
 
-        raise InvalidHexStringError, "CodeHash is an invalid hex string" unless CKB::Utils.valid_hex_string?(code_hash)
+        unless CKB::Utils.valid_hex_string?(code_hash)
+          raise InvalidHexStringError.new("CodeHash is an invalid hex string")
+        end
 
         if CKB::Utils.hex_to_bin(code_hash).size != 32
-          raise InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32"
+          raise InvalidCodeHashSizeError.new("CodeHash bytesize must equal to 32")
         end
       end
 
       def validate_args!
-        raise InvalidHexStringError, "Args is an invalid hex string" if has_args? && !CKB::Utils.valid_hex_string?(args)
+        if has_args? && !CKB::Utils.valid_hex_string?(args)
+          raise InvalidHexStringError.new("Args is an invalid hex string")
+        end
       end
 
       def has_code_hash?
@@ -83,7 +89,7 @@ module CKB
       end
 
       def validate_hash_type!
-        raise InvalidHashTypeError, "Invalid hash type error" unless CKB::ScriptHashType::TYPES.include?(hash_type)
+        raise InvalidHashTypeError.new("Invalid hash type error") unless CKB::ScriptHashType::TYPES.include?(hash_type)
       end
 
       class EmptyCodeHashError < StandardError; end
