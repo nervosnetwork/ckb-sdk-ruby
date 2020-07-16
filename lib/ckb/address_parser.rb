@@ -55,6 +55,8 @@ module CKB
       hash_type = parse_hash_type(format_type)
       offset = 1
       code_hash_size = 32
+      raise InvalidCodeHashSizeError.new("CodeHash bytesize must equal to 32") if data[1..-1].size < code_hash_size
+
       code_hash = "0x#{data.slice(1..code_hash_size).unpack("H*").first}"
       offset += code_hash_size
       args = CKB::Utils.bin_to_hex(data[offset..-1])
@@ -99,5 +101,6 @@ module CKB
     class InvalidArgSizeError < StandardError; end
     class InvalidPrefixError < StandardError; end
     class InvalidCodeHashIndexError < StandardError; end
+    class InvalidCodeHashSizeError < StandardError; end
   end
 end
