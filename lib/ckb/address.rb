@@ -25,7 +25,7 @@ module CKB
     # payload = type(01) | code hash index(00) | pubkey blake160
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     def generate
-      return generate_full_payload_address unless CKB::ScriptHashType::TYPE == script.hash_type && CKB::Utils.hex_to_bin(script.args).bytesize == 20
+      return generate_full_payload_address unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && CKB::Utils.hex_to_bin(script.args).bytesize == 20
 
       if SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_singlesig_address
@@ -83,7 +83,8 @@ module CKB
     # @return [String]
     def generate_full_payload_address
       format_type = CKB::ScriptHashType::TYPE == script.hash_type ? FULL_TYPE_FORMAT : FULL_DATA_FORMAT
-      payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(script.code_hash) + CKB::Utils.hex_to_bin(script.args)
+      args = script.has_args? ? CKB::Utils.hex_to_bin(script.args) : ""
+      payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(script.code_hash) + args
 
       CKB::ConvertAddress.encode(prefix, payload)
     end
