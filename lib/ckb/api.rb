@@ -161,12 +161,14 @@ module CKB
       rpc.send_transaction(transaction.to_raw_transaction_h, outputs_validator)
     end
 
-    def compute_transaction_hash(transaction)
-      rpc.compute_transaction_hash(transaction.to_raw_transaction_h)
+    def _compute_transaction_hash(transaction)
+      warn "[DEPRECATION] `_compute_transaction_hash` will be removed in a later version."
+      rpc._compute_transaction_hash(transaction.to_raw_transaction_h)
     end
 
-    def compute_script_hash(script)
-      rpc.compute_script_hash(script.to_h)
+    def _compute_script_hash(script)
+      warn "[DEPRECATION] `_compute_script_hash` will be removed in a later version."
+      rpc._compute_script_hash(script.to_h)
     end
 
     # @return [CKB::Type::Peer]

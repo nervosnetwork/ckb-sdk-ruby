@@ -369,7 +369,7 @@ RSpec.describe CKB::Types::Transaction do
 
         expect(
           tx.compute_hash
-        ).to eq api.compute_transaction_hash(tx)
+        ).to eq api._compute_transaction_hash(tx)
       end
 
       it "should build correct hash when tx has one cell_deps" do
@@ -377,7 +377,7 @@ RSpec.describe CKB::Types::Transaction do
 
         expect(
           tx.compute_hash
-        ).to eq api.compute_transaction_hash(tx)
+        ).to eq api._compute_transaction_hash(tx)
       end
 
       it "should build correct hash when tx has multiple cell_deps" do
@@ -385,7 +385,7 @@ RSpec.describe CKB::Types::Transaction do
 
         expect(
           tx.compute_hash
-        ).to eq api.compute_transaction_hash(tx)
+        ).to eq api._compute_transaction_hash(tx)
       end
 
       it "should build correct hash when has type script" do
@@ -393,7 +393,7 @@ RSpec.describe CKB::Types::Transaction do
 
         expect(
           tx.compute_hash
-        ).to eq api.compute_transaction_hash(tx)
+        ).to eq api._compute_transaction_hash(tx)
       end
     end
   end
