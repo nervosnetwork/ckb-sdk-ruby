@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.69.0"
+  spec.add_development_dependency "rubocop-performance"
   spec.add_development_dependency "pry", "~> 0.12.2"
 
   spec.add_dependency "net-http-persistent", "~> 3.1.0"
