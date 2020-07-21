@@ -38,4 +38,3 @@ module CKB
     end
   end
 end
-

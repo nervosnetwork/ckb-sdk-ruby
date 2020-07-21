@@ -23,7 +23,7 @@ RSpec.describe CKB::Types::Script do
     it "should build correct hash when args is empty " do
       expect(
         script.compute_hash
-      ).to eq api.compute_script_hash(script)
+      ).to eq api._compute_script_hash(script)
     end
 
     it "should build correct hash when there is only one arg" do
@@ -34,7 +34,7 @@ RSpec.describe CKB::Types::Script do
 
       expect(
         script.compute_hash
-      ).to eq api.compute_script_hash(script)
+      ).to eq api._compute_script_hash(script)
     end
 
     it "should build correct hash when args more than one" do
@@ -44,7 +44,7 @@ RSpec.describe CKB::Types::Script do
       )
       expect(
         script.compute_hash
-      ).to eq api.compute_script_hash(script)
+      ).to eq api._compute_script_hash(script)
     end
   end
 
@@ -64,6 +64,38 @@ RSpec.describe CKB::Types::Script do
       expect(
         lock_script.calculate_bytesize
       ).to eq (min_capacity)
+    end
+  end
+
+  context "attributes validation" do
+    it "should raise EmptyCodeHashError when code hash is empty string" do
+      expect {
+        CKB::Types::Script.new(code_hash: "", args: "", hash_type: "type")
+      }.to raise_error(CKB::Types::Script::EmptyCodeHashError, "CodeHash cannot be empty")
+    end
+
+    it "should raise EmptyCodeHashError when code hash is nil" do
+      expect {
+        CKB::Types::Script.new(code_hash: nil, args: "", hash_type: "type")
+      }.to raise_error(CKB::Types::Script::EmptyCodeHashError, "CodeHash cannot be empty")
+    end
+
+    it "should raise InvalidHexStringError when code hash is an invalid hex string" do
+      expect {
+        CKB::Types::Script.new(code_hash: "0x9", args: "", hash_type: "type")
+      }.to raise_error(CKB::Types::Script::InvalidHexStringError, "CodeHash is an invalid hex string")
+    end
+
+    it "should raise InvalidCodeHashSizeError when code hash size is less than 32" do
+      expect {
+        CKB::Types::Script.new(code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cc", args: "", hash_type: "type")
+      }.to raise_error(CKB::Types::Script::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
+
+    it "should raise InvalidHexStringError when args is an invalid hex string" do
+      expect {
+        CKB::Types::Script.new(code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8", args: "0x1", hash_type: "type")
+      }.to raise_error(CKB::Types::Script::InvalidHexStringError, "Args is an invalid hex string")
     end
   end
 end

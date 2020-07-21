@@ -28,11 +28,11 @@ module CKB
             live_cell = api.get_live_cell(cell.out_point, true)
             output = live_cell.cell.output
             output_data = live_cell.cell.data.content
-            if (output_data.nil? || output_data == "0x") && output.type.nil?
-              results << cell
-              total_capacities += cell.capacity
-              break if need_capacities && total_capacities >= need_capacities
-            end
+            next unless (output_data.nil? || output_data == "0x") && output.type.nil?
+
+            results << cell
+            total_capacities += cell.capacity
+            break if need_capacities && total_capacities >= need_capacities
           end
           break if need_capacities && total_capacities >= need_capacities
         else

@@ -15,7 +15,7 @@ module CKB
       def to_h
         {
           out_point: out_point.to_h,
-          dep_type: dep_type,
+          dep_type: dep_type
         }
       end
 

@@ -26,8 +26,8 @@ module CKB
         return if hash.nil?
 
         new(
-         primary: hash[:primary],
-         secondary: hash[:secondary]
+          primary: hash[:primary],
+          secondary: hash[:secondary]
         )
       end
     end

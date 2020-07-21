@@ -47,6 +47,13 @@ RSpec.describe CKB::Address do
         address.generate
       end.to raise_error(CKB::Address::InvalidModeError, "Invalid mode")
     end
+
+    it "should generate full payload address when there are no args" do
+      expect do
+        script = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", args: "", hash_type: "type")
+        CKB::Address.new(script)
+      end.not_to raise_error
+    end
   end
 
   context "mainnet mode" do

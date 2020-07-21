@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Naming/AccessorMethodName
-
 # hotfix for Windows
 if Gem.win_platform?
   module Process
@@ -50,17 +48,9 @@ module CKB
 
     def send_transaction(transaction, outputs_validator = nil)
       unless outputs_validator.nil?
-        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w(default passthrough).include?(outputs_validator)
+        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w[default passthrough].include?(outputs_validator)
       end
       single_request("send_transaction", [transaction, outputs_validator])
-    end
-
-    def compute_script_hash(script_h)
-      single_request("_compute_script_hash", [script_h])
-    end
-
-    def compute_transaction_hash(transaction)
-      single_request("_compute_transaction_hash", [transaction])
     end
 
     def inspect
@@ -100,7 +90,7 @@ module CKB
         JSON.parse(response.body, symbolize_names: true)
       else
         error_messages = { body: response.body, code: response.code }
-        raise RuntimeError, error_messages
+        raise error_messages
       end
     end
   end

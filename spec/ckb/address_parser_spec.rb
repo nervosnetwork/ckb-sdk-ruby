@@ -77,6 +77,20 @@ RSpec.describe CKB::AddressParser do
         CKB::AddressParser.new(invalid_args_address).parse
       }.to raise_error(CKB::AddressParser::InvalidArgSizeError, "Short payload format address args bytesize must equal to 20")
     end
+
+    it "should raise invalid code hash size error when code hash size is less than 32 without args" do
+      invalid_code_hash_address = "ckt1qsyng32y"
+      expect {
+        CKB::AddressParser.new(invalid_code_hash_address).parse
+      }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
+
+    it "should raise invalid code hash size error when code hash size is less than 32 with args" do
+      invalid_code_hash_address = "ckt1qjhsalswwkwvz"
+      expect {
+        CKB::AddressParser.new(invalid_code_hash_address).parse
+      }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
   end
 
   context "mainnet mode" do
@@ -157,6 +171,20 @@ RSpec.describe CKB::AddressParser do
       expect {
         CKB::AddressParser.new(invalid_args_address).parse
       }.to raise_error(CKB::AddressParser::InvalidArgSizeError, "Short payload format address args bytesize must equal to 20")
+    end
+
+    it "should raise invalid code hash size error when code hash size is less than 32 without args" do
+      invalid_code_hash_address = "ckb1qspk2ff3"
+      expect {
+        CKB::AddressParser.new(invalid_code_hash_address).parse
+      }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
+
+    it "should raise invalid code hash size error when code hash size is less than 32 with args" do
+      invalid_code_hash_address = "ckb1qjhsals8zkecn"
+      expect {
+        CKB::AddressParser.new(invalid_code_hash_address).parse
+      }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
     end
   end
 end

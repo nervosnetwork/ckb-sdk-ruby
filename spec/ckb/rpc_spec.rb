@@ -195,6 +195,7 @@ RSpec.describe CKB::RPC do
     expect(result.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
   end
 
+  # need to mine more than 12 blocks locally
   it "get block economic state" do
     block_hash = rpc.get_block_hash(12)
     result = rpc.get_block_economic_state(block_hash)
@@ -247,6 +248,7 @@ RSpec.describe CKB::RPC do
     expect(result[:number].hex).to eq block_number
   end
 
+  # need to mine more than 12 blocks locally
   it "get block reward by block hash" do
     block_hash = rpc.get_block_hash(12)
     result = rpc.get_cellbase_output_capacity_details(block_hash)
@@ -262,15 +264,6 @@ RSpec.describe CKB::RPC do
   it "get banned addresses" do
     result = rpc.get_banned_addresses
     expect(result).not_to be nil
-  end
-
-  it "estimate fee rate" do
-    begin
-      result = rpc.estimate_fee_rate(4)
-      expect(result).not_to be nil
-    rescue Exception => e
-      expect(e).to be_a CKB::RPCError
-    end
   end
 
   context "miner RPCs" do

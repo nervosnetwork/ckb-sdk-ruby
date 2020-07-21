@@ -1,12 +1,11 @@
 # frozen_string_literal: true
+
 module CKB
   module Serializers
     class WitnessArgsSerializer
       include TableSerializer
 
-      # @param witness_for_input_lock [String]
-      # @param witness_for_input_type [String]
-      # @param witness_for_output_type [String]
+      # @param witness [CKB::Types::Witness]
       def initialize(witness)
         @witness_for_input_lock_serializer = BytesOptSerializer.new(witness.lock)
         @witness_for_input_type_serializer = BytesOptSerializer.new(witness.input_type)

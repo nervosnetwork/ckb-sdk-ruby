@@ -7,11 +7,11 @@ module CKB
 
       # @param value [String]
       def initialize(value)
-        if value
-          @value = value.start_with?("0x") ? value[2..-1] : value
-        else
-          @value = ""
-        end
+        @value = if value
+                   value.start_with?("0x") ? value[2..-1] : value
+                 else
+                   ""
+                 end
       end
 
       private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CKB
   module Serializers
     module TableSerializer
@@ -20,11 +22,11 @@ module CKB
 
       def full_length_hex
         full_length = (items_count + 1) * UINT32_CAPACITY + body_capacity
-        [full_length].pack("V").unpack1("H*")
+        [full_length].pack("V").unpack("H*").first
       end
 
       def offsets_hex
-        offsets.map { |offset| [offset].pack("V").unpack1("H*") }.join("")
+        offsets.map { |offset| [offset].pack("V").unpack("H*").first }.join("")
       end
 
       def body_capacity

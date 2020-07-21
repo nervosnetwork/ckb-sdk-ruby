@@ -22,9 +22,7 @@ RSpec.describe CKB::Types::CellbaseTemplate do
             :capacity=>"0x174876e800",
             :lock=>{
               :code_hash=>"0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08",
-              :args=>[
-                "0xe2193df51d78411601796b35b17b4f8f2cd85bd0"
-              ],
+              :args=>"0xe2193df51d78411601796b35b17b4f8f2cd85bd0",
               :hash_type=>"type"
             },
             :type=>nil

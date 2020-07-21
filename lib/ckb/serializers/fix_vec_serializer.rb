@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CKB
   module Serializers
     class FixVecSerializer
@@ -18,7 +20,7 @@ module CKB
       end
 
       def header
-        [items_count].pack("V").unpack1("H*")
+        [items_count].pack("V").unpack("H*").first
       end
 
       def body

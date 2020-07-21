@@ -26,7 +26,7 @@ module CKB
           primary: Utils.to_hex(primary),
           secondary: Utils.to_hex(secondary),
           committed: Utils.to_hex(committed),
-          proposal: Utils.to_hex(proposal),
+          proposal: Utils.to_hex(proposal)
         }
       end
 
@@ -34,10 +34,10 @@ module CKB
         return if hash.nil?
 
         new(
-         primary: hash[:primary],
-         secondary: hash[:secondary],
-         committed: hash[:committed],
-         proposal: hash[:proposal],
+          primary: hash[:primary],
+          secondary: hash[:secondary],
+          committed: hash[:committed],
+          proposal: hash[:proposal]
         )
       end
     end
