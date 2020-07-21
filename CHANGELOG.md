@@ -1,17 +1,39 @@
-# [v0.33.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.32.0...v0.33.0) (2020-06-22)
+# [v0.34.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.33.0...v0.34.0) (2020-07-21)
+
+
+### Code Refactoring
+
+* remove estimate_fee_rate RPC ([5fa2b1c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5fa2b1c))
+
+
+### Features
+
+* add attributes validations ([20883a9](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/20883a9))
+* add batch rpc requests ([04963df](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/04963df))
+* add clear_tx_pool api ([66bdf1b](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/66bdf1b))
+* support manually config http timeout ([564b5e4](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/564b5e4))
+
+
+### BREAKING CHANGES
+
+* remove estimate_fee_rate API and RPC method ([5fa2b1c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/5fa2b1c))
+
+
+
+# [v0.33.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.32.0...v0.33.0) (2020-06-22)
 
 Bump version to v0.33.0
 
-# [v0.32.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.31.0...v0.32.0) (2020-05-26)
+# [v0.32.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.31.0...v0.32.0) (2020-05-26)
 
 Bump version to v0.32.0
 
-# [v0.31.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.30.0...v0.31.0) (2020-04-22)
+# [v0.31.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.30.0...v0.31.0) (2020-04-22)
 
 Bump version to v0.31.0
 
 
-# [v0.30.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.29.1...v0.30.0) (2020-03-23)
+# [v0.30.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.29.1...v0.30.0) (2020-03-23)
 
 
 ### Features
@@ -21,7 +43,7 @@ Bump version to v0.31.0
 * add `from_block_number` to `cell_collecotr` ([4095b0d](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/4095b0d))
 
 
-# [v0.29.1](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.29.0...v0.29.1) (2020-03-05)
+# [v0.29.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.29.0...v0.29.1) (2020-03-05)
 
 * Bump rake to 13.0.1
 
