@@ -18,11 +18,11 @@ module CKB
 
       def init_args(script)
         args = script.args
-        if args
-          args = args.start_with?("0x") ? args[2..-1] : args
-        else
-          args = ""
-        end
+        args = if args
+                 args.start_with?("0x") ? args[2..-1] : args
+               else
+                 ""
+               end
 
         args
       end

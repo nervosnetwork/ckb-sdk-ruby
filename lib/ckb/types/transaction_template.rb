@@ -36,10 +36,9 @@ module CKB
           required: hash[:required],
           cycles: hash[:cycles],
           depends: hash[:depends],
-          data: Transaction.from_h(hash[:data]),
+          data: Transaction.from_h(hash[:data])
         )
       end
     end
   end
 end
-

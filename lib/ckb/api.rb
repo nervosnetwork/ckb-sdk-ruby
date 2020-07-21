@@ -49,6 +49,7 @@ module CKB
 
         secp_cell_type_hash = system_cell_transaction.outputs[1].type.compute_hash
         raise "System script type_hash error!" unless secp_cell_type_hash == SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
+
         set_secp_group_dep(secp_group_out_point, secp_cell_type_hash)
 
         dao_out_point = Types::OutPoint.new(
@@ -154,7 +155,7 @@ module CKB
     # @return [String] tx_hash
     def send_transaction(transaction, outputs_validator = nil)
       unless outputs_validator.nil?
-        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w(default passthrough).include?(outputs_validator)
+        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w[default passthrough].include?(outputs_validator)
       end
 
       rpc.send_transaction(transaction.to_raw_transaction_h, outputs_validator)
@@ -335,7 +336,6 @@ module CKB
       block_template_h = rpc.get_block_template(bytes_limit, proposals_limit, max_version)
       Types::BlockTemplate.from_h(block_template_h)
     end
-
 
     # @param work_id [String | Integer] integer or hex number
     # @param raw_block_h [hash]

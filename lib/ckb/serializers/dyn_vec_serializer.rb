@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CKB
   module Serializers
     class DynVecSerializer
@@ -32,7 +34,7 @@ module CKB
         offsets = []
         previous_offset = offset0
         items.each.with_index do |_item, index|
-          offsets << previous_offset and next if index == 0
+          offsets << previous_offset && next if index == 0
 
           new_offset = previous_offset + item_serializer.new(items[index - 1]).capacity
           offsets << new_offset

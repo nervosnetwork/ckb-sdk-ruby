@@ -38,7 +38,7 @@ module CKB
         work_id:,
         dao:
       )
-        @version =  Utils.to_int(version)
+        @version = Utils.to_int(version)
         @compact_target = Utils.to_int(compact_target)
         @current_time = Utils.to_int(current_time)
         @number = Utils.to_int(number)

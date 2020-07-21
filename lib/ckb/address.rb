@@ -45,7 +45,7 @@ module CKB
       when MODE::MAINNET
         PREFIX_MAINNET
       else
-        raise InvalidModeError.new("Invalid mode")
+        raise InvalidModeError, "Invalid mode"
       end
     end
 

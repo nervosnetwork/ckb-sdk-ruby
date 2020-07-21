@@ -59,7 +59,7 @@ module CKB
           uncles_hash: @uncles_hash,
           version: Utils.to_hex(@version),
           epoch: Utils.to_hex(@epoch),
-          dao: @dao,
+          dao: @dao
         }
       end
 
@@ -78,7 +78,7 @@ module CKB
           uncles_hash: hash[:uncles_hash],
           version: hash[:version],
           epoch: hash[:epoch],
-          dao: hash[:dao],
+          dao: hash[:dao]
         )
       end
     end

@@ -39,7 +39,7 @@ module CKB
 
     def self.hexdigest(message)
       Utils.bin_to_hex(
-        self.digest(message)
+        digest(message)
       )
     end
   end
