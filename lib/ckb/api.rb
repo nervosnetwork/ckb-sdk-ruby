@@ -354,6 +354,10 @@ module CKB
       rpc.batch_request(*requests)
     end
 
+    def clear_tx_pool
+      rpc.clear_tx_pool
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
