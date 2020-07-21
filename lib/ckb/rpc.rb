@@ -53,14 +53,6 @@ module CKB
       single_request("send_transaction", [transaction, outputs_validator])
     end
 
-    def compute_script_hash(script_h)
-      single_request("_compute_script_hash", [script_h])
-    end
-
-    def compute_transaction_hash(transaction)
-      single_request("_compute_transaction_hash", [transaction])
-    end
-
     def inspect
       "\#<RPC@#{uri}>"
     end
