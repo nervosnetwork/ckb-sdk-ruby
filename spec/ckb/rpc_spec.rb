@@ -264,15 +264,6 @@ RSpec.describe CKB::RPC do
     expect(result).not_to be nil
   end
 
-  it "estimate fee rate" do
-    begin
-      result = rpc.estimate_fee_rate(4)
-      expect(result).not_to be nil
-    rescue Exception => e
-      expect(e).to be_a CKB::RPCError
-    end
-  end
-
   context "miner RPCs" do
     it "get_block_template" do
       result = rpc.get_block_template
