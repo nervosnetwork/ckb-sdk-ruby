@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module CKB
   module Serializers
     class WitnessArgsSerializer
@@ -15,9 +16,9 @@ module CKB
       end
 
       def self.from(witness)
-        self.new(witness_for_input_lock: witness.lock,
-                 witness_for_input_type: witness.input_type,
-                 witness_for_output_type: witness.output_type)
+        new(witness_for_input_lock: witness.lock,
+            witness_for_input_type: witness.input_type,
+            witness_for_output_type: witness.output_type)
       end
 
       private

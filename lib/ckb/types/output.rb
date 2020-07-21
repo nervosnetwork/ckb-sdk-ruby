@@ -22,6 +22,7 @@ module CKB
       # @param data [String] 0x...
       def calculate_bytesize(data)
         raise "Please provide a valid data" if data.nil?
+
         bytesize = 8 + Utils.hex_to_bin(data).bytesize + @lock.calculate_bytesize
         bytesize += @type.calculate_bytesize if @type
         bytesize

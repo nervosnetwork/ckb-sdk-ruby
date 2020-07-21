@@ -22,10 +22,10 @@ module CKB
       pubkeys = private_keys.map do |privkey|
         CKB::Key.new(privkey).pubkey
       end
-      self.new(require_n: require_n,
-               threshold: threshold,
-               pubkeys: pubkeys,
-               since: since)
+      new(require_n: require_n,
+          threshold: threshold,
+          pubkeys: pubkeys,
+          since: since)
     end
 
     def serialize
@@ -147,7 +147,8 @@ module CKB
       emptied_witness = tx.witnesses[0].dup
       emptied_witness.lock = Utils.hex_concat(configuration.serialize, empty_signature)
       emptied_witness_data_binary = Utils.hex_to_bin(
-        Serializers::WitnessArgsSerializer.from(emptied_witness).serialize)
+        Serializers::WitnessArgsSerializer.from(emptied_witness).serialize
+      )
       emptied_witness_data_size = emptied_witness_data_binary.bytesize
 
       blake2b.update([emptied_witness_data_size].pack("Q<"))
@@ -161,10 +162,10 @@ module CKB
           else
             Utils.hex_to_bin(witness)
           end
-          data_size = data_binary.bytesize
+        data_size = data_binary.bytesize
 
-          blake2b.update([data_size].pack("Q<"))
-          blake2b.update(data_binary)
+        blake2b.update([data_size].pack("Q<"))
+        blake2b.update(data_binary)
       end
       message = blake2b.hexdigest
 
@@ -177,7 +178,8 @@ module CKB
       end
 
       tx.witnesses[0].lock = Utils.hex_concat(
-        configuration.serialize, concatenated_signatures)
+        configuration.serialize, concatenated_signatures
+      )
 
       tx
     end
