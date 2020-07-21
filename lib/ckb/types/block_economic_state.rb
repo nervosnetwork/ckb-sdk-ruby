@@ -34,10 +34,10 @@ module CKB
         return if hash.nil?
 
         new(
-         issuance: CKB::Types::BlockIssuance.from_h(hash[:issuance]),
-         miner_reward: CKB::Types::MinerReward.from_h(hash[:miner_reward]),
-         txs_fee: Utils.to_int(hash[:txs_fee]),
-         finalized_at: hash[:finalized_at]
+          issuance: CKB::Types::BlockIssuance.from_h(hash[:issuance]),
+          miner_reward: CKB::Types::MinerReward.from_h(hash[:miner_reward]),
+          txs_fee: Utils.to_int(hash[:txs_fee]),
+          finalized_at: hash[:finalized_at]
         )
       end
     end

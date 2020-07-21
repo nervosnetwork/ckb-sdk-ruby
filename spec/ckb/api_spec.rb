@@ -188,12 +188,23 @@ RSpec.describe CKB::API do
     expect(result).to be_a(Types::Peer)
   end
 
-   it "tx pool info" do
+  it "tx pool info" do
     result = api.tx_pool_info
     expect(result).not_to be nil
     expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
   end
 
+  it "clear tx pool" do
+    wallet = CKB::Wallet.from_hex(api, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc")
+    wallet.send_capacity("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", 1000 * 10**8, fee: 1100)
+    tx_pool_info = api.tx_pool_info
+    expect(tx_pool_info.pending).to eq 1
+    api.clear_tx_pool
+    tx_pool_info = api.tx_pool_info
+    expect(tx_pool_info.pending).to eq 0
+  end
+
+  # need to mine more than 12 blocks locally
   it "get block economic state" do
     block_hash = api.get_block_hash(12)
     result = api.get_block_economic_state(block_hash)
@@ -283,6 +294,7 @@ RSpec.describe CKB::API do
     expect(result.number).to eq block_number
   end
 
+  # need to mine more than 12 blocks locally
   it "get block reward by block hash" do
     block_hash = api.get_block_hash(12)
     result = api.get_cellbase_output_capacity_details(block_hash)
@@ -299,15 +311,6 @@ RSpec.describe CKB::API do
     result = api.get_banned_addresses
     expect(result).not_to be nil
     expect(result).to all(be_a(Types::BannedAddress))
-  end
-
-  it "estimate fee rate" do
-    begin
-      result = api.estimate_fee_rate(4)
-      expect(result).not_to be_a Types::EstimateResult
-    rescue Exception => e
-      expect(e).to be_a CKB::RPCError
-    end
   end
 
   context "miner APIs" do

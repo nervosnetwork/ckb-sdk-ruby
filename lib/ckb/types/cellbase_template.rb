@@ -28,10 +28,9 @@ module CKB
         new(
           hash: hash[:hash],
           cycles: hash[:cycles],
-          data: Transaction.from_h(hash[:data]),
+          data: Transaction.from_h(hash[:data])
         )
       end
     end
   end
 end
-

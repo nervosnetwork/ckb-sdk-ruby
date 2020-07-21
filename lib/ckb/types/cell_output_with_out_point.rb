@@ -54,7 +54,7 @@ module CKB
           block_hash: hash[:block_hash],
           output_data_len: hash[:output_data_len],
           cellbase: hash[:cellbase],
-          type: Script.from_h(hash[:type]),
+          type: Script.from_h(hash[:type])
         )
       end
     end

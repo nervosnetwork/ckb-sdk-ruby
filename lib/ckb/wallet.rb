@@ -5,7 +5,7 @@ module CKB
   DAO_MATURITY_BLOCKS = 5
 
   class Wallet
-    attr_reader :api, :key, :pubkey, :address, :hash_type , :blake160
+    attr_reader :api, :key, :pubkey, :address, :hash_type, :blake160
 
     attr_accessor :skip_data_and_type
 
@@ -193,13 +193,10 @@ module CKB
       key = get_key(key)
 
       cell_status = api.get_live_cell(out_point)
-      unless cell_status.status == "live"
-        raise "Cell is not yet live!"
-      end
+      raise "Cell is not yet live!" unless cell_status.status == "live"
+
       tx = api.get_transaction(out_point.tx_hash)
-      unless tx.tx_status.status == "committed"
-        raise "Transaction is not commtted yet!"
-      end
+      raise "Transaction is not commtted yet!" unless tx.tx_status.status == "committed"
 
       deposit_block = api.get_block(tx.tx_status.block_hash).header
       deposit_block_number = deposit_block.number
@@ -263,13 +260,10 @@ module CKB
       key = get_key(key)
 
       cell_status = api.get_live_cell(withdrawing_out_point, true)
-      unless cell_status.status == "live"
-        raise "Cell is not yet live!"
-      end
+      raise "Cell is not yet live!" unless cell_status.status == "live"
+
       tx = api.get_transaction(withdrawing_out_point.tx_hash)
-      unless tx.tx_status.status == "committed"
-        raise "Transaction is not commtted yet!"
-      end
+      raise "Transaction is not commtted yet!" unless tx.tx_status.status == "committed"
 
       deposit_block_number = CKB::Utils.hex_to_bin(cell_status.cell.data.content).unpack("Q<")[0]
       deposit_block = api.get_block_by_number(deposit_block_number).header
@@ -323,7 +317,7 @@ module CKB
       OpenStruct.new(
         length: (epoch >> 40) & 0xFFFF,
         index: (epoch >> 24) & 0xFFFF,
-        number: (epoch) & 0xFFFFFF
+        number: epoch & 0xFFFFFF
       )
     end
 
@@ -331,8 +325,7 @@ module CKB
       (0x20 << 56) + (length << 40) + (index << 24) + number
     end
 
-    # @param hash_hex [String] "0x..."
-    #
+    # @param hash [String] "0x..."
     # @return [CKB::Types::Transaction]
     def get_transaction(hash)
       api.get_transaction(hash)
@@ -372,6 +365,7 @@ args = #{lock.args}
     # @param fee [Integer]
     def gather_inputs(capacity, min_capacity, min_change_capacity, fee, from_block_number: 0)
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
+
       CellCollector.new(
         @api,
         skip_data_and_type: @skip_data_and_type,

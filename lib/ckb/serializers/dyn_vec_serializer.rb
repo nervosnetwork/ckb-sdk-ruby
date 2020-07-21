@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CKB
   module Serializers
     class DynVecSerializer
@@ -32,7 +34,7 @@ module CKB
         offsets = []
         previous_offset = offset0
         items.each.with_index do |_item, index|
-          offsets << previous_offset and next if index == 0
+          offsets << previous_offset && next if index == 0
 
           new_offset = previous_offset + item_serializer.new(items[index - 1]).capacity
           offsets << new_offset
@@ -50,11 +52,11 @@ module CKB
 
       def full_length_hex
         full_length = (items_count + 1) * UINT32_CAPACITY + body_capacity
-        [full_length].pack("V").unpack1("H*")
+        [full_length].pack("V").unpack("H*").first
       end
 
       def offsets_hex
-        offsets.map { |offset| [offset].pack("V").unpack1("H*") }.join("")
+        offsets.map { |offset| [offset].pack("V").unpack("H*").first }.join("")
       end
 
       def body_capacity

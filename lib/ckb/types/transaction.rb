@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module CKB
   module Types
     class Transaction
@@ -36,6 +37,7 @@ module CKB
       def sign(key)
         raise "Need at least one witness! " if witnesses.empty?
         raise "First witness must be of Witness type!" unless witnesses[0].instance_of?(CKB::Types::Witness)
+
         tx_hash = compute_hash
         emptied_witness = witnesses[0].dup
         emptied_witness.lock = "0x#{'0' * 130}"
@@ -49,10 +51,10 @@ module CKB
 
         witnesses[1..-1].each do |witness|
           data_binary = case witness
-          when CKB::Types::Witness
-            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(witness).serialize)
-          else
-            Utils.hex_to_bin(witness)
+                        when CKB::Types::Witness
+                          Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(witness).serialize)
+                        else
+                          Utils.hex_to_bin(witness)
           end
           data_size = data_binary.bytesize
 
@@ -125,7 +127,7 @@ module CKB
 
       # @param fee_rate [Integer]
       def fee(fee_rate)
-        self.class.fee(self.serialized_size_in_block, fee_rate)
+        self.class.fee(serialized_size_in_block, fee_rate)
       end
 
       def self.from_h(hash)

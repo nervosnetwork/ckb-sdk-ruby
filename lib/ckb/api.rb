@@ -49,6 +49,7 @@ module CKB
 
         secp_cell_type_hash = system_cell_transaction.outputs[1].type.compute_hash
         raise "System script type_hash error!" unless secp_cell_type_hash == SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
+
         set_secp_group_dep(secp_group_out_point, secp_cell_type_hash)
 
         dao_out_point = Types::OutPoint.new(
@@ -154,18 +155,20 @@ module CKB
     # @return [String] tx_hash
     def send_transaction(transaction, outputs_validator = nil)
       unless outputs_validator.nil?
-        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w(default passthrough).include?(outputs_validator)
+        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w[default passthrough].include?(outputs_validator)
       end
 
       rpc.send_transaction(transaction.to_raw_transaction_h, outputs_validator)
     end
 
-    def compute_transaction_hash(transaction)
-      rpc.compute_transaction_hash(transaction.to_raw_transaction_h)
+    def _compute_transaction_hash(transaction)
+      warn "[DEPRECATION] `_compute_transaction_hash` will be removed in a later version."
+      rpc._compute_transaction_hash(transaction.to_raw_transaction_h)
     end
 
-    def compute_script_hash(script)
-      rpc.compute_script_hash(script.to_h)
+    def _compute_script_hash(script)
+      warn "[DEPRECATION] `_compute_script_hash` will be removed in a later version."
+      rpc._compute_script_hash(script.to_h)
     end
 
     # @return [CKB::Type::Peer]
@@ -327,12 +330,6 @@ module CKB
       result.map { |addr| Types::BannedAddress.from_h(addr) }
     end
 
-    # @param expect_confirm_blocks [Integer]
-    def estimate_fee_rate(expect_confirm_blocks)
-      result = rpc.estimate_fee_rate(expect_confirm_blocks)
-      Types::EstimateResult.from_h(result)
-    end
-
     # @param bytes_limit [String | Integer] integer or hex number
     # @param proposals_limit [String | Integer] integer or hex number
     # @param max_version [String | Integer] integer or hex number
@@ -341,7 +338,6 @@ module CKB
       block_template_h = rpc.get_block_template(bytes_limit, proposals_limit, max_version)
       Types::BlockTemplate.from_h(block_template_h)
     end
-
 
     # @param work_id [String | Integer] integer or hex number
     # @param raw_block_h [hash]
@@ -352,6 +348,10 @@ module CKB
 
     def batch_request(*requests)
       rpc.batch_request(*requests)
+    end
+
+    def clear_tx_pool
+      rpc.clear_tx_pool
     end
 
     def inspect

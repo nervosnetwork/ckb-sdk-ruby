@@ -19,7 +19,7 @@ module CKB
       when Address::FULL_DATA_FORMAT, Address::FULL_TYPE_FORMAT
         parse_full_payload_address(decoded_prefix, data)
       else
-        raise InvalidFormatTypeError.new("Invalid format type")
+        raise InvalidFormatTypeError, "Invalid format type"
       end
     end
 
@@ -34,7 +34,7 @@ module CKB
       when Address::CODE_HASH_INDEX_MULTISIG_SIG
         "SHORTMULTISIG"
       else
-        raise InvalidCodeHashIndexError.new("Invalid code hash index")
+        raise InvalidCodeHashIndexError, "Invalid code hash index"
       end
     end
 
@@ -44,7 +44,7 @@ module CKB
       mode = parse_mode(decoded_prefix)
       code_hash = parse_code_hash(code_hash_index)
       args = CKB::Utils.bin_to_hex(data.slice(2..-1))
-      raise InvalidArgSizeError.new("Short payload format address args bytesize must equal to 20") if CKB::Utils.hex_to_bin(args).bytesize != 20
+      raise InvalidArgSizeError, "Short payload format address args bytesize must equal to 20" if CKB::Utils.hex_to_bin(args).bytesize != 20
 
       OpenStruct.new(mode: mode, script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPE), address_type: parse_address_type(format_type, code_hash_index))
     end
@@ -55,9 +55,9 @@ module CKB
       hash_type = parse_hash_type(format_type)
       offset = 1
       code_hash_size = 32
-      raise InvalidCodeHashSizeError.new("CodeHash bytesize must equal to 32") if data[1..-1].size < code_hash_size
+      raise InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32" if data[1..-1].size < code_hash_size
 
-      code_hash = "0x#{data.slice(1..code_hash_size).unpack("H*").first}"
+      code_hash = "0x#{data.slice(1..code_hash_size).unpack('H*').first}"
       offset += code_hash_size
       args = CKB::Utils.bin_to_hex(data[offset..-1])
 
@@ -71,7 +71,7 @@ module CKB
       when Address::FULL_TYPE_FORMAT
         CKB::ScriptHashType::TYPE
       else
-        raise InvalidFormatTypeError.new("Invalid format type")
+        raise InvalidFormatTypeError, "Invalid format type"
       end
     end
 
@@ -82,7 +82,7 @@ module CKB
       when Address::CODE_HASH_INDEX_MULTISIG_SIG
         SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH
       else
-        raise InvalidCodeHashIndexError.new("Invalid code hash index")
+        raise InvalidCodeHashIndexError, "Invalid code hash index"
       end
     end
 
@@ -93,7 +93,7 @@ module CKB
       when Address::PREFIX_MAINNET
         MODE::MAINNET
       else
-        raise InvalidPrefixError.new("Invalid prefix")
+        raise InvalidPrefixError, "Invalid prefix"
       end
     end
 

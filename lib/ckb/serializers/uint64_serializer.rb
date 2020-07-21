@@ -19,7 +19,7 @@ module CKB
       end
 
       def body
-        [value.to_i].pack("Q<").unpack1("H*")
+        [value.to_i].pack("Q<").unpack("H*").first
       end
     end
   end

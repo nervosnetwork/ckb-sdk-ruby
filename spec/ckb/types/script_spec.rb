@@ -23,7 +23,7 @@ RSpec.describe CKB::Types::Script do
     it "should build correct hash when args is empty " do
       expect(
         script.compute_hash
-      ).to eq api.compute_script_hash(script)
+      ).to eq api._compute_script_hash(script)
     end
 
     it "should build correct hash when there is only one arg" do
@@ -34,7 +34,7 @@ RSpec.describe CKB::Types::Script do
 
       expect(
         script.compute_hash
-      ).to eq api.compute_script_hash(script)
+      ).to eq api._compute_script_hash(script)
     end
 
     it "should build correct hash when args more than one" do
@@ -44,7 +44,7 @@ RSpec.describe CKB::Types::Script do
       )
       expect(
         script.compute_hash
-      ).to eq api.compute_script_hash(script)
+      ).to eq api._compute_script_hash(script)
     end
   end
 
