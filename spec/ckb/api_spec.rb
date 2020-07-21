@@ -199,7 +199,6 @@ RSpec.describe CKB::API do
     expect(tx_pool_info.pending).to eq 0
   end
 
-  # need to mine more than 12 blocks locally
   it "get block economic state" do
     block_hash = api.get_block_hash(12)
     result = api.get_block_economic_state(block_hash)
