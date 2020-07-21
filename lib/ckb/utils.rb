@@ -3,7 +3,7 @@
 module CKB
   module Utils
     def self.bin_to_hex(bin)
-      "0x#{bin.unpack1('H*')}"
+      "0x#{bin.unpack('H*').first}"
     end
 
     def self.valid_hex_string?(hex)
