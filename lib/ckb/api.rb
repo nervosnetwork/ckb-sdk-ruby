@@ -327,12 +327,6 @@ module CKB
       result.map { |addr| Types::BannedAddress.from_h(addr) }
     end
 
-    # @param expect_confirm_blocks [Integer]
-    def estimate_fee_rate(expect_confirm_blocks)
-      result = rpc.estimate_fee_rate(expect_confirm_blocks)
-      Types::EstimateResult.from_h(result)
-    end
-
     # @param bytes_limit [String | Integer] integer or hex number
     # @param proposals_limit [String | Integer] integer or hex number
     # @param max_version [String | Integer] integer or hex number
