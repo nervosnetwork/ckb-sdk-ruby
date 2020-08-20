@@ -369,4 +369,14 @@ RSpec.describe CKB::API do
     result = api.set_network_active(true)
     expect(result).to be_nil
   end
+
+  it "add_node should return nil" do
+    result = api.add_node(peer_id: "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", address: "/ip4/192.168.2.100/tcp/8114")
+    expect(result).to be_nil
+  end
+
+  it "remove_node should return nil" do
+    result = api.remove_node("QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
+    expect(result).to be_nil
+  end
 end

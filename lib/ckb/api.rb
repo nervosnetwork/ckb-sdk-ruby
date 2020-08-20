@@ -365,6 +365,17 @@ module CKB
       rpc.set_network_active(state)
     end
 
+    # @param peer_id [String]
+    # @param address [String]
+    # @return nil
+    def add_node(peer_id:, address:)
+      rpc.add_node(peer_id, address)
+    end
+
+    def remove_node(peer_id)
+      rpc.remove_node(peer_id)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
