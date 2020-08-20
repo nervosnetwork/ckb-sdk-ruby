@@ -359,4 +359,9 @@ RSpec.describe CKB::API do
       }.to raise_error CKB::RPCError
     end
   end
+
+  it "sync_state should return sync_state model" do
+    result = api.sync_state
+    expect(result).to be_a(Types::SyncState)
+  end
 end

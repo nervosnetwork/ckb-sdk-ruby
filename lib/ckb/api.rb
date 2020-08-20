@@ -354,6 +354,10 @@ module CKB
       rpc.clear_tx_pool
     end
 
+    def sync_state
+      Types::SyncState.from_h(rpc.sync_state)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
