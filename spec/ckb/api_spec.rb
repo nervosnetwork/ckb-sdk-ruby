@@ -185,7 +185,7 @@ RSpec.describe CKB::API do
 
   it "local node info" do
     result = api.local_node_info
-    expect(result).to be_a(Types::Peer)
+    expect(result).to be_a(Types::LocalNode)
   end
 
   it "tx pool info" do

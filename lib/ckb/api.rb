@@ -171,9 +171,9 @@ module CKB
       rpc._compute_script_hash(script.to_h)
     end
 
-    # @return [CKB::Type::Peer]
+    # @return [CKB::Type::LocalNode]
     def local_node_info
-      Types::Peer.from_h(
+      Types::LocalNode.from_h(
         rpc.local_node_info
       )
     end

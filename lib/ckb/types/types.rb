@@ -41,6 +41,8 @@ require_relative "block_issuance"
 require_relative "miner_reward"
 require_relative "sync_state"
 require_relative "peer_sync_state"
+require_relative "local_node"
+require_relative "local_node_protocol"
 
 module CKB
   module Types
