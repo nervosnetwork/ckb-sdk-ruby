@@ -354,8 +354,15 @@ module CKB
       rpc.clear_tx_pool
     end
 
+    # @return sync_state [SyncState]
     def sync_state
       Types::SyncState.from_h(rpc.sync_state)
+    end
+
+    # @param state [Boolean]
+    # @return nil
+    def set_network_active(state)
+      rpc.set_network_active(state)
     end
 
     def inspect

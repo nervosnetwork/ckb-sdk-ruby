@@ -364,4 +364,9 @@ RSpec.describe CKB::API do
     result = api.sync_state
     expect(result).to be_a(Types::SyncState)
   end
+
+  it "set_network_active should return nil" do
+    result = api.set_network_active(true)
+    expect(result).to be_nil
+  end
 end
