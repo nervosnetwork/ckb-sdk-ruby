@@ -191,7 +191,7 @@ RSpec.describe CKB::API do
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).not_to be nil
-    expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
+    expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size tip_hash tip_number).sort
   end
 
   it "clear tx pool" do
