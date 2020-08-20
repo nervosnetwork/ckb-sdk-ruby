@@ -39,6 +39,7 @@ require_relative "lock_hash_capacity"
 require_relative "block_economic_state"
 require_relative "block_issuance"
 require_relative "miner_reward"
+require_relative "sync_state"
 
 module CKB
   module Types
