@@ -75,4 +75,28 @@ RSpec.describe CKB::Utils do
       }.to raise_error "Can't convert to hex string!"
     end
   end
+
+  context "sudt amount" do
+    it "should perse sudt amount correctly" do
+      sudt_amount = 10_0000
+      output_data = Utils.generate_sudt_amount(sudt_amount)
+
+      expect(Utils.sudt_amount!(output_data)).to eq sudt_amount
+    end
+
+    it "should raise RuntimeError when amount bytesize is less than 16" do
+      expect {
+        Utils.sudt_amount!("0x03")
+      }.to raise_error("Invalid sUDT amount")
+    end
+
+    it "should return 0 when output data is empty" do
+      expect(Utils.sudt_amount!("0x")).to eq 0
+    end
+
+    it "should generate sudt amount output data correctly" do
+      output_data = "0x00e1f505000000000000000000000000"
+      expect(Utils.generate_sudt_amount(1_0000_0000)).to eq output_data
+    end
+  end
 end
