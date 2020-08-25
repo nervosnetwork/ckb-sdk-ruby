@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 RSpec.describe CKB::RPC do
   before do
     skip "not test rpc" if ENV["SKIP_RPC_TESTS"]
@@ -192,7 +191,7 @@ RSpec.describe CKB::RPC do
   it "tx pool info" do
     result = rpc.tx_pool_info
     expect(result).not_to be nil
-    expect(result.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
+    expect(result.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size tip_hash tip_number).sort
   end
 
   # need to mine more than 12 blocks locally

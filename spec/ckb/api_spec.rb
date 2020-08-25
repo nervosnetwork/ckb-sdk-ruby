@@ -185,13 +185,13 @@ RSpec.describe CKB::API do
 
   it "local node info" do
     result = api.local_node_info
-    expect(result).to be_a(Types::Peer)
+    expect(result).to be_a(Types::LocalNode)
   end
 
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).not_to be nil
-    expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size).sort
+    expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size tip_hash tip_number).sort
   end
 
   it "clear tx pool" do
@@ -358,5 +358,25 @@ RSpec.describe CKB::API do
         api.batch_request(%w[get_block_by_number 1], %w[get_block_by_number 2], %w[get_block_by_number 3])
       }.to raise_error CKB::RPCError
     end
+  end
+
+  it "sync_state should return sync_state model" do
+    result = api.sync_state
+    expect(result).to be_a(Types::SyncState)
+  end
+
+  it "set_network_active should return nil" do
+    result = api.set_network_active(true)
+    expect(result).to be_nil
+  end
+
+  it "add_node should return nil" do
+    result = api.add_node(peer_id: "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", address: "/ip4/192.168.2.100/tcp/8114")
+    expect(result).to be_nil
+  end
+
+  it "remove_node should return nil" do
+    result = api.remove_node("QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
+    expect(result).to be_nil
   end
 end

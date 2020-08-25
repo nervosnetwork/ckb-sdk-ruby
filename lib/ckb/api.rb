@@ -171,9 +171,9 @@ module CKB
       rpc._compute_script_hash(script.to_h)
     end
 
-    # @return [CKB::Type::Peer]
+    # @return [CKB::Type::LocalNode]
     def local_node_info
-      Types::Peer.from_h(
+      Types::LocalNode.from_h(
         rpc.local_node_info
       )
     end
@@ -352,6 +352,28 @@ module CKB
 
     def clear_tx_pool
       rpc.clear_tx_pool
+    end
+
+    # @return sync_state [SyncState]
+    def sync_state
+      Types::SyncState.from_h(rpc.sync_state)
+    end
+
+    # @param state [Boolean]
+    # @return nil
+    def set_network_active(state)
+      rpc.set_network_active(state)
+    end
+
+    # @param peer_id [String]
+    # @param address [String]
+    # @return nil
+    def add_node(peer_id:, address:)
+      rpc.add_node(peer_id, address)
+    end
+
+    def remove_node(peer_id)
+      rpc.remove_node(peer_id)
     end
 
     def inspect
