@@ -28,8 +28,8 @@ module CKB
     end
 
     def enough_assets?(change_output_index)
-      inputs_sudt_amount = cell_metas.select { |cell_meta| !cell_meta.output.type.nil? }.map { |cell_meta| CKB::Utils.sudt_amount(cell_meta.output_data) }.sum
-      outputs_sudt_amount = transaction.outputs_data.map { |output_data| CKB::Utils.sudt_amount(output_data) }.sum
+      inputs_sudt_amount = cell_metas.select { |cell_meta| !cell_meta.output.type.nil? }.map { |cell_meta| CKB::Utils.sudt_amount!(cell_meta.output_data) }.sum
+      outputs_sudt_amount = transaction.outputs_data.map { |output_data| CKB::Utils.sudt_amount!(output_data) }.sum
       change_sudt_amount = inputs_sudt_amount - outputs_sudt_amount
       if change_sudt_amount >= 0
         data = CKB::Utils.generate_sudt_amount(change_sudt_amount)
@@ -114,13 +114,13 @@ module CKB
 
             transaction.outputs.each_with_index do |output, index|
               next if output.lock.code_hash != CKB::Config.instance.anyone_can_pay_info[:code_hash]
-              transfer_amount = CKB::Utils.sudt_amount(transaction.outputs_data[index])
+              transfer_amount = CKB::Utils.sudt_amount!(transaction.outputs_data[index])
               if index = cell_metas.find_index { |inner_cell_meta| inner_cell_meta.output.lock.code_hash == output.lock.code_hash }
                 if need_sudt
-                  origin_amount = CKB::Utils.sudt_amount(cell_metas[index].output_data)
+                  origin_amount = CKB::Utils.sudt_amount!(cell_metas[index].output_data)
                   transaction.outputs_data[index] = CKB::Utils.generate_sudt_amount(transfer_amount + origin_amount)
                 else
-                  origin_amount = CKB::Utils.sudt_amount(cell_metas[index].output_data)
+                  origin_amount = CKB::Utils.sudt_amount!(cell_metas[index].output_data)
                   transaction.outputs_data[index] = CKB::Utils.generate_sudt_amount(origin_amount)
                 end
               end

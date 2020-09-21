@@ -12,7 +12,7 @@ module CKB
       def initialize(api:, from_addresses:, anyone_can_pay_addresses:, sudt_args:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
         super(api: api, from_addresses: from_addresses, collector_type: collector_type, mode: mode, from_block_number: from_block_number)
         @sudt_args = sudt_args
-        @sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: "data")
+        @sudt_type_script = CKB::Types::Script.new(code_hash: CKB::Config.instance.sudt_info[:code_hash], args: sudt_args, hash_type: CKB::Config.instance.sudt_info[:hash_type])
         @anyone_can_pay_cell_lock_scripts = (anyone_can_pay_addresses.is_a?(Array) ? anyone_can_pay_addresses : [anyone_can_pay_addresses]).map do |address|
           script = CKB::AddressParser.new(address).parse.script
           raise "not an anyone can pay address" if script.code_hash != CKB::Config.instance.anyone_can_pay_info[:code_hash]
@@ -63,10 +63,12 @@ module CKB
         # anyone can pay wallet supports transfer udt without ckb, so when sum outputs capacity is equal to zero also need a change output
         if outputs.all? { |output| output.capacity > 0 } || (outputs.map { |output| output.capacity }.sum == 0)
           if to_infos.any? { |_, output_info| output_info[:type] && output_info[:type].compute_hash == sudt_type_script.compute_hash }
+            if need_sudt
+              outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(SUDT_CELL_MIN_CAPACITY), lock: input_scripts[-1], type: sudt_type_script)
+              outputs_data << "0x#{'0' * 32}"
+            end
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
             outputs_data << "0x"
-            outputs << CKB::Types::Output.new(capacity: CKB::Utils.byte_to_shannon(SUDT_CELL_MIN_CAPACITY), lock: input_scripts[-1], type: sudt_type_script)
-            outputs_data << "0x#{'0' * 32}"
           else
             outputs << CKB::Types::Output.new(capacity: 0, lock: input_scripts[-1], type: nil)
             outputs_data << "0x"

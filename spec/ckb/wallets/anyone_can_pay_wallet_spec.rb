@@ -32,11 +32,11 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
     config = CKB::Config.instance
     config.set_api(CKB::RPC::DEFAULT_URL)
     # This is my locally deployed sudt type script's code hash and tx hash. This code hash and tx hash will be replaced after the real sudt type script deployed on mainnet in the future
-    config.sudt_info = { code_hash: "0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212", tx_hash: "0x0f18ac6058f7e1cef8a94b4709be58077aef1ad586403c4337226af3fb12ba29" }
+    config.sudt_info = { code_hash: "0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5", tx_hash: "0xc7813f6a415144643970c2e88e0bb6ca6a8edc5dd7c1022746f628284a9936d5", hash_type: "type" }
     # This is my locally deployed anyone can pay lock script's code hash and tx hash. This code hash and tx hash will be replaced after the real anyone can pay lock script deployed on mainnet in the future
-    config.anyone_can_pay_info = { code_hash: "0xc1b763ef3958fdc5502e8b8c3f8da374a041f231ec08ea0a65cb4cdd12599abd", tx_hash: "0xeba5986c50e7e8215c2acd6501150cab1346119f42f4d7870bfadd5bfdf7fe57" }
-    config.type_handlers[[config.sudt_info[:code_hash], CKB::Config::DATA]] = CKB::TypeHandlers::SudtHandler.new(config.sudt_info[:tx_hash])
-    config.lock_handlers[[config.anyone_can_pay_info[:code_hash], CKB::Config::TYPE]] = CKB::LockHandlers::AnyoneCanPayHandler.new(config.anyone_can_pay_info[:tx_hash])
+    config.anyone_can_pay_info = { code_hash: "0x0fb343953ee78c9986b091defb6252154e0bb51044fd2879fde5b27314506111", tx_hash: "0xa05f28c9b867f8c5682039c10d8e864cf661685252aa74a008d255c33813bb81" }
+    config.type_handlers[[config.sudt_info[:code_hash], CKB::Config::TYPE]] = CKB::TypeHandlers::SudtHandler.new(config.sudt_info[:tx_hash])
+    config.lock_handlers[[config.anyone_can_pay_info[:code_hash], CKB::Config::DATA]] = CKB::LockHandlers::AnyoneCanPayHandler.new(config.anyone_can_pay_info[:tx_hash])
   end
 
   let(:api) { CKB::API.new }
@@ -67,9 +67,9 @@ RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
   end
 
   it "transfer ckb without signature" do
-    anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: ["ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", "ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld"], anyone_can_pay_addresses: "ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", sudt_args: "0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947")
-    tx_generator = anyone_can_pay_wallet.generate("ckt1qnqmwcl089v0m32s969cc0ud5d62qs0jx8kq36s2vh95ehgjtxdt6kdz0mem4p8sv9gh6yl59n6ya5pqvyqxznkgfxa", { type: :ckb, amount: CKB::Utils.byte_to_shannon(100) })
-    tx = anyone_can_pay_wallet.advance_sign(tx_generator: tx_generator, contexts: [nil, "0x84ffe5a2b82ac1fbc7960a93ac6ed06fecf0271dd959bbcec5eeeafcc3e8e53f"])
+    anyone_can_pay_wallet = CKB::Wallets::AnyoneCanPayWallet.new(api: api, from_addresses: ["ckb1qg8mxsu48mncexvxkzgaa7mz2g25uza4zpz062relhjmyuc52ps3r55nna966c84sy3tuuqj4nkajf47dpqfgnhjlgu", "ckb1qyqd9yulfwkkpavpy2l8qy4vahvjd0nggz2qhv848u"], anyone_can_pay_addresses: "ckb1qg8mxsu48mncexvxkzgaa7mz2g25uza4zpz062relhjmyuc52ps3r55nna966c84sy3tuuqj4nkajf47dpqfgnhjlgu", sudt_args: "0x278e9c538c354bd3ca7872799d330e8a9ff932351d191ff68a2517f2208a4c81", mode: "mainnet", from_block_number: 2626685, collector_type: :indexer)
+    tx_generator = anyone_can_pay_wallet.generate("ckb1qg8mxsu48mncexvxkzgaa7mz2g25uza4zpz062relhjmyuc52ps3r55nna966c84sy3tuuqj4nkajf47dpqfgnhjlgu", { type: :ckb, amount: CKB::Utils.byte_to_shannon(1) })
+    tx = anyone_can_pay_wallet.advance_sign(tx_generator: tx_generator, contexts: [nil, "0x144188b5b00c9758c6543c97f98ba6d591b2d5abddf3ff83f6001d608565604b"])
 
     expect(api.send_transaction(tx)).not_to be_nil
   end
