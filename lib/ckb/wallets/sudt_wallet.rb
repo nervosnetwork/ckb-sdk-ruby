@@ -58,7 +58,7 @@ module CKB
       end
 
       def total_amount
-        collector.select { |cell_meta| cell_meta.output.type && cell_meta.output.type.compute_hash == sudt_type_script.compute_hash }.map{ |cell_meta| CKB::Utils.sudt_amount(cell_meta.output_data) }.sum
+        collector.select { |cell_meta| cell_meta.output.type && cell_meta.output.type.compute_hash == sudt_type_script.compute_hash }.map{ |cell_meta| CKB::Utils.sudt_amount!(cell_meta.output_data) }.sum
       end
 
       private
