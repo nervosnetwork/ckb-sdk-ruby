@@ -1,3 +1,14 @@
+# [v0.36.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.35.0...v0.36.0) (2020-09-21)
+
+* add deprecated warning on methods in Indexer module ([97f2f47](https://github.com/shaojunda/ckb-sdk-ruby/commit/97f2f47))
+
+
+### BREAKING CHANGES
+
+* deprecate methods in Indexer module
+
+
+
 # [v0.35.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.34.0...v0.35.0) (2020-08-25)
 
 
