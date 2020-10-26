@@ -113,11 +113,6 @@ RSpec.describe CKB::RPC do
     expect(result.hex > 0).to be true
   end
 
-  it "get cells by lock hash" do
-    result = rpc.get_cells_by_lock_hash(lock_hash, 0, 100)
-    expect(result).not_to be nil
-  end
-
   it "get transaction" do
     tx = rpc.genesis_block[:transactions].first
     result = rpc.get_transaction(tx[:hash])

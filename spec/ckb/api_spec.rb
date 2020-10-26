@@ -115,11 +115,6 @@ RSpec.describe CKB::API do
     expect(result > 0).to be true
   end
 
-  it "get cells by lock hash" do
-    result = api.get_cells_by_lock_hash(lock_hash, 0, 100)
-    expect(result).not_to be nil
-  end
-
   it "get transaction" do
     tx = api.genesis_block.transactions.first
     result = api.get_transaction(tx.hash)

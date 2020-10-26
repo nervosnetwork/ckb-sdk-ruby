@@ -123,16 +123,6 @@ module CKB
       Utils.to_int(rpc.get_tip_block_number)
     end
 
-    # @param hash [String] 0x...
-    # @param from [String | Integer]
-    # @param to [String | Integer]
-    #
-    # @return [CKB::Types::CellOutputWithOutPoint[]]
-    def get_cells_by_lock_hash(hash, from, to)
-      outputs = rpc.get_cells_by_lock_hash(hash, from, to)
-      outputs.map { |output| Types::CellOutputWithOutPoint.from_h(output) }
-    end
-
     # @param tx_hash [String]
     #
     # @return [CKB::Types::TransactionWithStatus]
