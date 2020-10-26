@@ -190,7 +190,7 @@ RSpec.describe CKB::API do
   end
 
   it "clear tx pool" do
-    wallet = CKB::Wallet.from_hex(api, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc")
+    wallet = CKB::Wallet.from_hex(api, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc", indexer_api: CKB::Indexer::API.new("http://localhost:8116"))
     wallet.send_capacity("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", 1000 * 10**8, fee: 1100)
     tx_pool_info = api.tx_pool_info
     expect(tx_pool_info.pending).to eq 1
@@ -240,39 +240,6 @@ RSpec.describe CKB::API do
     result = api.dry_run_transaction(tx)
     expect(result).to be_a(Types::DryRunResult)
     expect(result.cycles >= 0).to be true
-  end
-
-  context "indexer RPCs" do
-    it "index_lock_hash" do
-      result = api.index_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
-
-    it "deindex_lock_hash" do
-      result = api.deindex_lock_hash(lock_hash)
-      expect(result).to be nil
-    end
-
-    it "get_lock_hash_index_states" do
-      result = api.get_lock_hash_index_states
-      expect(result).not_to be nil
-    end
-
-    it "get_live_cells_by_lock_hash" do
-      result = api.get_live_cells_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_transactions_by_lock_hash" do
-      result = api.get_transactions_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_capacity_by_lock_hash" do
-      api.index_lock_hash(lock_hash)
-      result = api.get_capacity_by_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
   end
 
   it "get block header" do

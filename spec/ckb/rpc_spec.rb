@@ -197,39 +197,6 @@ RSpec.describe CKB::RPC do
     expect(result.keys.sort).to eq %i(finalized_at issuance miner_reward txs_fee).sort
   end
 
-  context "indexer RPCs" do
-    it "index_lock_hash" do
-      result = rpc.index_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
-
-    it "deindex_lock_hash" do
-      result = rpc.deindex_lock_hash(lock_hash)
-      expect(result).to be nil
-    end
-
-    it "get_lock_hash_index_states" do
-      result = rpc.get_lock_hash_index_states
-      expect(result).not_to be nil
-    end
-
-    it "get_live_cells_by_lock_hash" do
-      result = rpc.get_live_cells_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_transactions_by_lock_hash" do
-      result = rpc.get_transactions_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_capacity_by_lock_hash" do
-      rpc.index_lock_hash(lock_hash)
-      result = rpc.get_capacity_by_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
-  end
-
   it "get block header" do
     block_hash = rpc.get_block_hash(1)
     result = rpc.get_header(block_hash)
