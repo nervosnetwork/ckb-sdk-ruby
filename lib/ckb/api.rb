@@ -382,6 +382,27 @@ module CKB
       rpc.remove_node(peer_id)
     end
 
+    def ping_peers
+      rpc.ping_peers
+    end
+
+    # @param tx_hashes [string[]]
+    # @param block_hash [string]
+    def get_transaction_proof(tx_hashes:, block_hash: nil)
+      transaction_proof_h = rpc.get_transaction_proof(tx_hashes, block_hash)
+      CKB::Types::TransactionProof.from_h(transaction_proof_h)
+    end
+
+
+    # @param proof [CKB::Types::TransactionProof]
+    def verify_transaction_proof(proof)
+      rpc.verify_transaction_proof(proof)
+    end
+
+    def clear_banned_addresses
+      rpc.clear_banned_addresses
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
