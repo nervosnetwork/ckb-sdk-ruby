@@ -82,7 +82,7 @@ module CKB
     def get_balance
       CellCollector.new(
         indexer_api,
-        skip_data_and_type: skip_data_and_type,
+        skip_data_and_type: skip_data_and_type
       ).get_unspent_cells(
         search_key: search_key
       )[:total_capacities]
@@ -92,7 +92,9 @@ module CKB
       raise "Invalid number of keys" if private_keys.length != configuration.threshold
 
       parsed_address = AddressParser.new(target_address).parse
-      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type != "SHORTSINGLESIG"
+      if parsed_address.address_type != "SHORTSINGLESIG"
+        raise "Right now only supports sending to default single signed lock!"
+      end
 
       output = Types::Output.new(
         capacity: capacity,
@@ -111,7 +113,7 @@ module CKB
 
       i = CellCollector.new(
         indexer_api,
-        skip_data_and_type: skip_data_and_type,
+        skip_data_and_type: skip_data_and_type
       ).gather_inputs(
         [search_key],
         capacity,

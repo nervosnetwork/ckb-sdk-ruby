@@ -31,6 +31,7 @@ module CKB
         if liveCells.objects.size < limit || liveCells.last_cursor == "" || need_capacities && total_capacities >= need_capacities
           break
         end
+
         cursor = liveCells.last_cursor
       end
       {

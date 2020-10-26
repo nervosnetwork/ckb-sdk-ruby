@@ -12,7 +12,9 @@ module CKB
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
     def initialize(api, key, skip_data_and_type: true, hash_type: "type", mode: MODE::TESTNET, indexer_api: nil)
-      raise "Wrong hash_type, hash_type should be `data` or `type`" unless CKB::ScriptHashType::TYPES.include?(hash_type)
+      unless CKB::ScriptHashType::TYPES.include?(hash_type)
+        raise "Wrong hash_type, hash_type should be `data` or `type`"
+      end
 
       @api = api
       if key.is_a?(CKB::Key)
@@ -54,9 +56,9 @@ module CKB
     def get_balance
       CellCollector.new(
         indexer_api,
-        skip_data_and_type: @skip_data_and_type,
+        skip_data_and_type: @skip_data_and_type
       ).get_unspent_cells(
-        search_key: search_key,
+        search_key: search_key
       )[:total_capacities]
     end
 
@@ -68,7 +70,9 @@ module CKB
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true, from_block_number: 0)
       key = get_key(key)
       parsed_address = AddressParser.new(target_address).parse
-      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
+      if parsed_address.address_type == "SHORTMULTISIG"
+        raise "Right now only supports sending to default single signed lock!"
+      end
 
       output = Types::Output.new(
         capacity: capacity,
@@ -366,7 +370,7 @@ args = #{lock.args}
 
       CellCollector.new(
         indexer_api,
-        skip_data_and_type: @skip_data_and_type,
+        skip_data_and_type: @skip_data_and_type
       ).gather_inputs(
         [search_key],
         capacity,

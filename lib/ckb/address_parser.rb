@@ -44,7 +44,9 @@ module CKB
       mode = parse_mode(decoded_prefix)
       code_hash = parse_code_hash(code_hash_index)
       args = CKB::Utils.bin_to_hex(data.slice(2..-1))
-      raise InvalidArgSizeError, "Short payload format address args bytesize must equal to 20" if CKB::Utils.hex_to_bin(args).bytesize != 20
+      if CKB::Utils.hex_to_bin(args).bytesize != 20
+        raise InvalidArgSizeError, "Short payload format address args bytesize must equal to 20"
+      end
 
       OpenStruct.new(mode: mode, script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPE), address_type: parse_address_type(format_type, code_hash_index))
     end

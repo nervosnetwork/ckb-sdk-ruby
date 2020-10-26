@@ -5,8 +5,8 @@ require_relative "live_cell"
 require_relative "live_cells"
 
 module CKB
-	module Indexer
-		module Types
-		end
-	end
+  module Indexer
+    module Types
+    end
+  end
 end

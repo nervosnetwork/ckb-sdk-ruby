@@ -16,9 +16,9 @@ module CKB
 
       def to_h
         {
-            id: Utils.to_hex(id),
-            name: name,
-            support_versions: support_versions
+          id: Utils.to_hex(id),
+          name: name,
+          support_versions: support_versions
         }
       end
 
@@ -26,9 +26,9 @@ module CKB
         return if hash.nil?
 
         new(
-            id: hash[:id],
-            name: hash[:name],
-            support_versions: hash[:support_versions]
+          id: hash[:id],
+          name: hash[:name],
+          support_versions: hash[:support_versions]
         )
       end
     end
