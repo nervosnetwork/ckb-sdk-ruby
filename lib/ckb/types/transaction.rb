@@ -51,11 +51,11 @@ module CKB
 
         witnesses[1..-1].each do |witness|
           data_binary = case witness
-          when CKB::Types::Witness
-            Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.new(witness).serialize)
-          else
-            Utils.hex_to_bin(witness)
-          end
+                        when CKB::Types::Witness
+                          Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.new(witness).serialize)
+                        else
+                          Utils.hex_to_bin(witness)
+                        end
           data_size = data_binary.bytesize
 
           blake2b.update([data_size].pack("Q<"))

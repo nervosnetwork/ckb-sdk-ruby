@@ -24,13 +24,13 @@ module CKB
 
       def to_h
         {
-            best_known_header_hash: best_known_header_hash,
-            best_known_header_number: Utils.to_hex(best_known_header_number),
-            last_common_header_hash: last_common_header_hash,
-            last_common_header_number: Utils.to_hex(last_common_header_number),
-            unknown_header_list_size: Utils.to_hex(unknown_header_list_size),
-            inflight_count: Utils.to_hex(inflight_count),
-            can_fetch_count: Utils.to_hex(can_fetch_count)
+          best_known_header_hash: best_known_header_hash,
+          best_known_header_number: Utils.to_hex(best_known_header_number),
+          last_common_header_hash: last_common_header_hash,
+          last_common_header_number: Utils.to_hex(last_common_header_number),
+          unknown_header_list_size: Utils.to_hex(unknown_header_list_size),
+          inflight_count: Utils.to_hex(inflight_count),
+          can_fetch_count: Utils.to_hex(can_fetch_count)
         }
       end
 
@@ -38,13 +38,13 @@ module CKB
         return if hash.nil?
 
         new(
-            best_known_header_hash: hash[:best_known_header_hash],
-            best_known_header_number: hash[:best_known_header_number],
-            last_common_header_hash: hash[:last_common_header_hash],
-            last_common_header_number: hash[:last_common_header_number],
-            unknown_header_list_size: hash[:unknown_header_list_size],
-            inflight_count: hash[:inflight_count],
-            can_fetch_count: hash[:can_fetch_count],
+          best_known_header_hash: hash[:best_known_header_hash],
+          best_known_header_number: hash[:best_known_header_number],
+          last_common_header_hash: hash[:last_common_header_hash],
+          last_common_header_number: hash[:last_common_header_number],
+          unknown_header_list_size: hash[:unknown_header_list_size],
+          inflight_count: hash[:inflight_count],
+          can_fetch_count: hash[:can_fetch_count]
         )
       end
     end

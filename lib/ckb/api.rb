@@ -48,7 +48,9 @@ module CKB
         )
 
         secp_cell_type_hash = system_cell_transaction.outputs[1].type.compute_hash
-        raise "System script type_hash error!" unless secp_cell_type_hash == SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
+        unless secp_cell_type_hash == SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
+          raise "System script type_hash error!"
+        end
 
         set_secp_group_dep(secp_group_out_point, secp_cell_type_hash)
 
@@ -123,16 +125,6 @@ module CKB
       Utils.to_int(rpc.get_tip_block_number)
     end
 
-    # @param hash [String] 0x...
-    # @param from [String | Integer]
-    # @param to [String | Integer]
-    #
-    # @return [CKB::Types::CellOutputWithOutPoint[]]
-    def get_cells_by_lock_hash(hash, from, to)
-      outputs = rpc.get_cells_by_lock_hash(hash, from, to)
-      outputs.map { |output| Types::CellOutputWithOutPoint.from_h(output) }
-    end
-
     # @param tx_hash [String]
     #
     # @return [CKB::Types::TransactionWithStatus]
@@ -155,7 +147,9 @@ module CKB
     # @return [String] tx_hash
     def send_transaction(transaction, outputs_validator = nil)
       unless outputs_validator.nil?
-        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w[default passthrough].include?(outputs_validator)
+        unless %w[default passthrough].include?(outputs_validator)
+          raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`"
+        end
       end
 
       rpc.send_transaction(transaction.to_raw_transaction_h, outputs_validator)
@@ -237,64 +231,6 @@ module CKB
     # @return [String]
     def calculate_dao_maximum_withdraw(out_point, hash)
       rpc.calculate_dao_maximum_withdraw(out_point.to_h, hash)
-    end
-
-    # Indexer
-
-    # @param lock_hash [String]
-    def deindex_lock_hash(lock_hash)
-      warn "[DEPRECATION] This method is deprecated since version 0.36.0 for reasons of flexibility, please use ckb-indexer as an alternate solution"
-      rpc.deindex_lock_hash(lock_hash)
-    end
-
-    # @param lock_hash [String]
-    # @param page [String]
-    # @param per [String]
-    # @param reverse_order [Boolean]
-    #
-    # @return [Types::LiveCell[]]
-    def get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order: false)
-      warn "[DEPRECATION] This method is deprecated since version 0.36.0 for reasons of flexibility, please use ckb-indexer as an alternate solution"
-      result = rpc.get_live_cells_by_lock_hash(lock_hash, page, per, reverse_order)
-      result.map { |live_cell| Types::LiveCell.from_h(live_cell) }
-    end
-
-    # @return [Types::LockHashIndexState[]]
-    def get_lock_hash_index_states
-      warn "[DEPRECATION] This method is deprecated since version 0.36.0 for reasons of flexibility, please use ckb-indexer as an alternate solution"
-      result = rpc.get_lock_hash_index_states
-      result.map { |state| Types::LockHashIndexState.from_h(state) }
-    end
-
-    # @param lock_hash [String]
-    # @param page [String]
-    # @param per [String]
-    # @param reverse_order [Boolean]
-    #
-    # @return [Types::CellTransaction[]]
-    def get_transactions_by_lock_hash(lock_hash, page, per, reverse_order: false)
-      warn "[DEPRECATION] This method is deprecated since version 0.36.0 for reasons of flexibility, please use ckb-indexer as an alternate solution"
-      result = rpc.get_transactions_by_lock_hash(lock_hash, page, per, reverse_order)
-      result.map { |cell_tx| Types::CellTransaction.from_h(cell_tx) }
-    end
-
-    # @param lock_hash [String]
-    # @param index_from [String]
-    #
-    # @return [Types::LockHashIndexState]
-    def index_lock_hash(lock_hash, index_from: 0)
-      warn "[DEPRECATION] This method is deprecated since version 0.36.0 for reasons of flexibility, please use ckb-indexer as an alternate solution"
-      state = rpc.index_lock_hash(lock_hash, index_from)
-      Types::LockHashIndexState.from_h(state)
-    end
-
-    # @param lock_hash [String]
-    #
-    # @return [CKB::Types::LockHashCapacity]
-    def get_capacity_by_lock_hash(lock_hash)
-      warn "[DEPRECATION] This method is deprecated since version 0.36.0 for reasons of flexibility, please use ckb-indexer as an alternate solution"
-      result = rpc.get_capacity_by_lock_hash(lock_hash)
-      Types::LockHashCapacity.from_h(result) unless result.nil?
     end
 
     # @param block_hash [String] 0x...
@@ -380,6 +316,26 @@ module CKB
 
     def remove_node(peer_id)
       rpc.remove_node(peer_id)
+    end
+
+    def ping_peers
+      rpc.ping_peers
+    end
+
+    # @param tx_hashes [string[]]
+    # @param block_hash [string]
+    def get_transaction_proof(tx_hashes:, block_hash: nil)
+      transaction_proof_h = rpc.get_transaction_proof(tx_hashes, block_hash)
+      CKB::Types::TransactionProof.from_h(transaction_proof_h)
+    end
+
+    # @param proof [CKB::Types::TransactionProof]
+    def verify_transaction_proof(proof)
+      rpc.verify_transaction_proof(proof)
+    end
+
+    def clear_banned_addresses
+      rpc.clear_banned_addresses
     end
 
     def inspect

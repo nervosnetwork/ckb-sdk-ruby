@@ -5,14 +5,16 @@ module CKB
   DAO_MATURITY_BLOCKS = 5
 
   class Wallet
-    attr_reader :api, :key, :pubkey, :address, :hash_type, :blake160
+    attr_reader :api, :key, :pubkey, :address, :hash_type, :blake160, :indexer_api
 
     attr_accessor :skip_data_and_type
 
     # @param api [CKB::API]
     # @param key [CKB::Key | String] Key or pubkey
-    def initialize(api, key, skip_data_and_type: true, hash_type: "type", mode: MODE::TESTNET)
-      raise "Wrong hash_type, hash_type should be `data` or `type`" unless CKB::ScriptHashType::TYPES.include?(hash_type)
+    def initialize(api, key, skip_data_and_type: true, hash_type: "type", mode: MODE::TESTNET, indexer_api: nil)
+      unless CKB::ScriptHashType::TYPES.include?(hash_type)
+        raise "Wrong hash_type, hash_type should be `data` or `type`"
+      end
 
       @api = api
       if key.is_a?(CKB::Key)
@@ -27,10 +29,11 @@ module CKB
       @addr = Address.new(lock, mode: mode)
       @address = @addr.to_s
       @skip_data_and_type = skip_data_and_type
+      @indexer_api = indexer_api
     end
 
-    def self.from_hex(api, privkey, hash_type: "type", skip_data_and_type: true, mode: MODE::TESTNET)
-      new(api, Key.new(privkey), hash_type: hash_type, skip_data_and_type: skip_data_and_type, mode: mode)
+    def self.from_hex(api, privkey, hash_type: "type", skip_data_and_type: true, mode: MODE::TESTNET, indexer_api: nil)
+      new(api, Key.new(privkey), hash_type: hash_type, skip_data_and_type: skip_data_and_type, mode: mode, indexer_api: indexer_api)
     end
 
     def hash_type=(hash_type)
@@ -42,23 +45,20 @@ module CKB
     # @return [CKB::Types::Output[]]
     def get_unspent_cells(need_capacities: nil)
       CellCollector.new(
-        @api,
-        skip_data_and_type: @skip_data_and_type,
-        hash_type: @hash_type
+        indexer_api,
+        skip_data_and_type: @skip_data_and_type
       ).get_unspent_cells(
-        lock_hash,
+        search_key: search_key,
         need_capacities: need_capacities
       )[:outputs]
     end
 
-    def get_balance(from_block_number: 0)
+    def get_balance
       CellCollector.new(
-        @api,
-        skip_data_and_type: @skip_data_and_type,
-        hash_type: @hash_type,
-        from_block_number: from_block_number
+        indexer_api,
+        skip_data_and_type: @skip_data_and_type
       ).get_unspent_cells(
-        lock_hash
+        search_key: search_key
       )[:total_capacities]
     end
 
@@ -70,7 +70,9 @@ module CKB
     def generate_tx(target_address, capacity, data = "0x", key: nil, fee: 0, use_dep_group: true, from_block_number: 0)
       key = get_key(key)
       parsed_address = AddressParser.new(target_address).parse
-      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type == "SHORTMULTISIG"
+      if parsed_address.address_type == "SHORTMULTISIG"
+        raise "Right now only supports sending to default single signed lock!"
+      end
 
       output = Types::Output.new(
         capacity: capacity,
@@ -367,12 +369,10 @@ args = #{lock.args}
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
       CellCollector.new(
-        @api,
-        skip_data_and_type: @skip_data_and_type,
-        hash_type: @hash_type,
-        from_block_number: from_block_number
+        indexer_api,
+        skip_data_and_type: @skip_data_and_type
       ).gather_inputs(
-        [lock_hash],
+        [search_key],
         capacity,
         min_change_capacity,
         fee
@@ -406,6 +406,10 @@ args = #{lock.args}
       return key if key.is_a?(CKB::Key)
 
       CKB::Key.new(key)
+    end
+
+    def search_key
+      @search_key ||= CKB::Indexer::Types::SearchKey.new(lock, "lock")
     end
   end
 end

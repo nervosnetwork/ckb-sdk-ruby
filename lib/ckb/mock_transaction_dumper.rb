@@ -30,9 +30,9 @@ module CKB
         raise "Cannot find cell dep: #{cell_dep.out_point}" unless cell_with_status&.cell
 
         {
-          cell_dep: cell_dep.to_h,
-          output: cell_with_status.cell.output.to_h,
-          data: cell_with_status.cell.data.content
+            cell_dep: cell_dep.to_h,
+            output: cell_with_status.cell.output.to_h,
+            data: cell_with_status.cell.data.content
         }
       end
       mock_headers = transaction.header_deps.map do |header_dep|
@@ -42,12 +42,12 @@ module CKB
         header.to_h
       end
       {
-        mock_info: {
-          inputs: mock_inputs,
-          cell_deps: mock_cell_deps,
-          header_deps: mock_headers
-        },
-        tx: transaction.to_raw_transaction_h
+          mock_info: {
+              inputs: mock_inputs,
+              cell_deps: mock_cell_deps,
+              header_deps: mock_headers
+          },
+          tx: transaction.to_raw_transaction_h
       }
     end
 

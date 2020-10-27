@@ -43,6 +43,8 @@ require_relative "sync_state"
 require_relative "peer_sync_state"
 require_relative "local_node"
 require_relative "local_node_protocol"
+require_relative "transaction_proof"
+require_relative "merkle_proof"
 
 module CKB
   module Types

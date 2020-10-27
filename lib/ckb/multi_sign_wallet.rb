@@ -52,9 +52,11 @@ module CKB
     attr_reader :configuration
     attr_reader :skip_data_and_type
     attr_reader :prefix
+    attr_reader :indexer_api
 
-    def initialize(api, configuration, skip_data_and_type: true, prefix: CKB::Address::PREFIX_TESTNET)
+    def initialize(api, configuration, skip_data_and_type: true, prefix: CKB::Address::PREFIX_TESTNET, indexer_api: nil)
       @api = api
+      @indexer_api = indexer_api
       @configuration = configuration
       @skip_data_and_type = skip_data_and_type
       @prefix = prefix
@@ -73,13 +75,16 @@ module CKB
       )
     end
 
+    def search_key
+      @search_key ||= CKB::Indexer::Types::SearchKey.new(lock, "lock")
+    end
+
     def get_balance
       CellCollector.new(
-        api,
-        skip_data_and_type: skip_data_and_type,
-        hash_type: "type"
+        indexer_api,
+        skip_data_and_type: skip_data_and_type
       ).get_unspent_cells(
-        lock.compute_hash
+        search_key: search_key
       )[:total_capacities]
     end
 
@@ -87,7 +92,9 @@ module CKB
       raise "Invalid number of keys" if private_keys.length != configuration.threshold
 
       parsed_address = AddressParser.new(target_address).parse
-      raise "Right now only supports sending to default single signed lock!" if parsed_address.address_type != "SHORTSINGLESIG"
+      if parsed_address.address_type != "SHORTSINGLESIG"
+        raise "Right now only supports sending to default single signed lock!"
+      end
 
       output = Types::Output.new(
         capacity: capacity,
@@ -105,11 +112,10 @@ module CKB
       raise "capacity cannot be less than #{min_capacity}" if capacity < min_capacity
 
       i = CellCollector.new(
-        api,
-        skip_data_and_type: skip_data_and_type,
-        hash_type: "type"
+        indexer_api,
+        skip_data_and_type: skip_data_and_type
       ).gather_inputs(
-        [lock.compute_hash],
+        [search_key],
         capacity,
         change_output.calculate_min_capacity(change_output_data),
         fee

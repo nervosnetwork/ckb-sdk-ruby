@@ -2,45 +2,37 @@
 
 module CKB
   class CellCollector
-    attr_reader :api, :skip_data_and_type, :hash_type, :from_block_number
+    attr_reader :indexer_api, :skip_data_and_type
 
-    # @param api [CKB::API]
-    def initialize(api, skip_data_and_type: true, hash_type: "type", from_block_number: 0)
-      @api = api
+    # @param indexer_api [CKB::Indexer::API]
+    # @param skip_data_and_type [Boolean]
+    def initialize(indexer_api, skip_data_and_type: true)
+      @indexer_api = indexer_api
       @skip_data_and_type = skip_data_and_type
-      @hash_type = hash_type
-      @from_block_number = from_block_number
     end
 
-    # @param lock_hash [String]
-    # @param need_capacities [Integer | nil] capacity in shannon, nil means collect all
-    #
-    # @return [Hash]
-    def get_unspent_cells(lock_hash, need_capacities: nil)
-      to = api.get_tip_block_number.to_i
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    # @param order [String]
+    # @param limit [Integer]
+    # @param cursor [string]
+    def get_unspent_cells(search_key:, order: "asc", limit: CKB::Indexer::API::DEFAULT_LIMIT, cursor: nil, need_capacities: nil)
       results = []
       total_capacities = 0
-      while from_block_number <= to
-        current_to = [from_block_number + 100, to].min
-        cells = api.get_cells_by_lock_hash(lock_hash, from_block_number, current_to)
-        if skip_data_and_type
-          cells.each do |cell|
-            live_cell = api.get_live_cell(cell.out_point, true)
-            output = live_cell.cell.output
-            output_data = live_cell.cell.data.content
-            next unless (output_data.nil? || output_data == "0x") && output.type.nil?
+      loop do
+        liveCells = indexer_api.get_cells(search_key: search_key, order: order, limit: limit, after_cursor: cursor)
+        liveCells.objects.each do |cell|
+          next if skip_data_and_type && (cell.output_data != "0x" || !cell.output.type.nil?)
 
-            results << cell
-            total_capacities += cell.capacity
-            break if need_capacities && total_capacities >= need_capacities
-          end
-          break if need_capacities && total_capacities >= need_capacities
-        else
-          results.concat(cells)
-          total_capacities += cells.map(&:capacity).reduce(0, :+)
+          results << cell
+          total_capacities += cell.output.capacity
           break if need_capacities && total_capacities >= need_capacities
         end
-        @from_block_number = current_to + 1
+
+        if liveCells.objects.size < limit || liveCells.last_cursor == "" || need_capacities && total_capacities >= need_capacities
+          break
+        end
+
+        cursor = liveCells.last_cursor
       end
       {
         outputs: results,
@@ -48,16 +40,19 @@ module CKB
       }
     end
 
-    # @param lock_hashes [String[]]
-    # @param need_capacities [Integer | nil] capacity in shannon, nil means collect all
-    #
-    # @return [Hash]
-    def get_unspent_cells_by_lock_hashes(lock_hashes, need_capacities: nil)
+    # @param search_keys [CKB::Indexer::Types::SearchKey[]]
+    # @param order [String]
+    # @param limit [Integer]
+    # @param cursor [string]
+    def get_unspent_cells_by_search_keys(search_keys:, order: "asc", limit: CKB::Indexer::API::DEFAULT_LIMIT, cursor: nil, need_capacities: nil)
       total_capacities = 0
       outputs = []
-      lock_hashes.map do |lock_hash|
+      search_keys.map do |search_key|
         result = get_unspent_cells(
-          lock_hash,
+          search_key: search_key,
+          order: order,
+          limit: limit,
+          cursor: cursor,
           need_capacities: need_capacities && need_capacities - total_capacities
         )
         outputs += result[:outputs]
@@ -71,23 +66,23 @@ module CKB
       }
     end
 
-    # @param lock_hashes [String[]]
+    # @param search_keys [CKB::Indexer::Types::SearchKey[]]
     # @param capacity [Integer]
     # @param min_change_capacity [Integer]
     # @param fee [Integer]
-    def gather_inputs(lock_hashes, capacity, min_change_capacity, fee)
+    def gather_inputs(search_keys, capacity, min_change_capacity, fee, order: "asc", limit: CKB::Indexer::API::DEFAULT_LIMIT, cursor: nil)
       total_capacities = capacity + fee
       input_capacities = 0
       inputs = []
       witnesses = []
-      get_unspent_cells_by_lock_hashes(lock_hashes, need_capacities: total_capacities + min_change_capacity)[:outputs].each do |cell|
+      get_unspent_cells_by_search_keys(search_keys: search_keys, order: order, limit: limit, cursor: cursor, need_capacities: total_capacities + min_change_capacity)[:outputs].each do |cell|
         input = Types::Input.new(
           previous_output: cell.out_point,
           since: 0
         )
         inputs << input
         witnesses << CKB::Types::Witness.new
-        input_capacities += cell.capacity.to_i
+        input_capacities += cell.output.capacity.to_i
 
         diff = input_capacities - total_capacities
         break if diff >= min_change_capacity || diff.zero?
