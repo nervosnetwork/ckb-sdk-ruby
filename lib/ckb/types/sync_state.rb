@@ -26,14 +26,14 @@ module CKB
 
       def to_h
         {
-            best_known_block_number: Utils.to_hex(best_known_block_number),
-            best_known_block_timestamp: Utils.to_hex(best_known_block_timestamp),
-            fast_time: Utils.to_hex(fast_time),
-            ibd: ibd,
-            inflight_blocks_count: Utils.to_hex(inflight_blocks_count),
-            low_time: Utils.to_hex(low_time),
-            normal_time: Utils.to_hex(normal_time),
-            orphan_blocks_count: Utils.to_hex(orphan_blocks_count)
+          best_known_block_number: Utils.to_hex(best_known_block_number),
+          best_known_block_timestamp: Utils.to_hex(best_known_block_timestamp),
+          fast_time: Utils.to_hex(fast_time),
+          ibd: ibd,
+          inflight_blocks_count: Utils.to_hex(inflight_blocks_count),
+          low_time: Utils.to_hex(low_time),
+          normal_time: Utils.to_hex(normal_time),
+          orphan_blocks_count: Utils.to_hex(orphan_blocks_count)
         }
       end
 
@@ -41,14 +41,14 @@ module CKB
         return if hash.nil?
 
         new(
-            best_known_block_number: hash[:best_known_block_number],
-            best_known_block_timestamp: hash[:best_known_block_timestamp],
-            fast_time: hash[:fast_time],
-            ibd: hash[:ibd],
-            inflight_blocks_count: hash[:inflight_blocks_count],
-            low_time: hash[:low_time],
-            normal_time: hash[:normal_time],
-            orphan_blocks_count: hash[:orphan_blocks_count]
+          best_known_block_number: hash[:best_known_block_number],
+          best_known_block_timestamp: hash[:best_known_block_timestamp],
+          fast_time: hash[:fast_time],
+          ibd: hash[:ibd],
+          inflight_blocks_count: hash[:inflight_blocks_count],
+          low_time: hash[:low_time],
+          normal_time: hash[:normal_time],
+          orphan_blocks_count: hash[:orphan_blocks_count]
         )
       end
     end

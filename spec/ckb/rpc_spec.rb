@@ -113,11 +113,6 @@ RSpec.describe CKB::RPC do
     expect(result.hex > 0).to be true
   end
 
-  it "get cells by lock hash" do
-    result = rpc.get_cells_by_lock_hash(lock_hash, 0, 100)
-    expect(result).not_to be nil
-  end
-
   it "get transaction" do
     tx = rpc.genesis_block[:transactions].first
     result = rpc.get_transaction(tx[:hash])
@@ -200,39 +195,6 @@ RSpec.describe CKB::RPC do
     result = rpc.get_block_economic_state(block_hash)
     expect(result).not_to be nil
     expect(result.keys.sort).to eq %i(finalized_at issuance miner_reward txs_fee).sort
-  end
-
-  context "indexer RPCs" do
-    it "index_lock_hash" do
-      result = rpc.index_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
-
-    it "deindex_lock_hash" do
-      result = rpc.deindex_lock_hash(lock_hash)
-      expect(result).to be nil
-    end
-
-    it "get_lock_hash_index_states" do
-      result = rpc.get_lock_hash_index_states
-      expect(result).not_to be nil
-    end
-
-    it "get_live_cells_by_lock_hash" do
-      result = rpc.get_live_cells_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_transactions_by_lock_hash" do
-      result = rpc.get_transactions_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_capacity_by_lock_hash" do
-      rpc.index_lock_hash(lock_hash)
-      result = rpc.get_capacity_by_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
   end
 
   it "get block header" do

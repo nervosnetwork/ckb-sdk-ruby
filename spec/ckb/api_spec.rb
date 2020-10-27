@@ -75,9 +75,9 @@ RSpec.describe CKB::API do
           "type": nil
         }
       ],
-      "outputs_data": [
-        "0x",
-        "0x"
+      "outputs_data": %w[
+        0x
+        0x
       ],
       "witnesses": ["0x5500000010000000550000005500000041000000fd8d32a3e1a4276d479379357d8dda72f68672db9a21919bdc6f24d7b91cc6de5e7f76b835b9038303d9cae171ab47428eabdfa310d09254b8fadae19026605300"]
     }
@@ -113,11 +113,6 @@ RSpec.describe CKB::API do
   it "get tip block number" do
     result = api.get_tip_block_number
     expect(result > 0).to be true
-  end
-
-  it "get cells by lock hash" do
-    result = api.get_cells_by_lock_hash(lock_hash, 0, 100)
-    expect(result).not_to be nil
   end
 
   it "get transaction" do
@@ -191,11 +186,11 @@ RSpec.describe CKB::API do
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).not_to be nil
-    expect(result.to_h.keys.sort).to eq %i(pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size tip_hash tip_number).sort
+    expect(result.to_h.keys.sort).to eq %i[pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size tip_hash tip_number].sort
   end
 
   it "clear tx pool" do
-    wallet = CKB::Wallet.from_hex(api, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc")
+    wallet = CKB::Wallet.from_hex(api, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc", indexer_api: CKB::Indexer::API.new("http://localhost:8116"))
     wallet.send_capacity("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", 1000 * 10**8, fee: 1100)
     tx_pool_info = api.tx_pool_info
     expect(tx_pool_info.pending).to eq 1
@@ -209,7 +204,7 @@ RSpec.describe CKB::API do
     block_hash = api.get_block_hash(12)
     result = api.get_block_economic_state(block_hash)
     expect(result).not_to be nil
-    expect(result.to_h.keys.sort).to eq %i(finalized_at issuance miner_reward txs_fee).sort
+    expect(result.to_h.keys.sort).to eq %i[finalized_at issuance miner_reward txs_fee].sort
   end
 
   it "get peers" do
@@ -247,39 +242,6 @@ RSpec.describe CKB::API do
     expect(result.cycles >= 0).to be true
   end
 
-  context "indexer RPCs" do
-    it "index_lock_hash" do
-      result = api.index_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
-
-    it "deindex_lock_hash" do
-      result = api.deindex_lock_hash(lock_hash)
-      expect(result).to be nil
-    end
-
-    it "get_lock_hash_index_states" do
-      result = api.get_lock_hash_index_states
-      expect(result).not_to be nil
-    end
-
-    it "get_live_cells_by_lock_hash" do
-      result = api.get_live_cells_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_transactions_by_lock_hash" do
-      result = api.get_transactions_by_lock_hash(lock_hash, 0, 10)
-      expect(result).not_to be nil
-    end
-
-    it "get_capacity_by_lock_hash" do
-      api.index_lock_hash(lock_hash)
-      result = api.get_capacity_by_lock_hash(lock_hash)
-      expect(result).not_to be nil
-    end
-  end
-
   it "get block header" do
     block_hash = api.get_block_hash(1)
     result = api.get_header(block_hash)
@@ -311,6 +273,46 @@ RSpec.describe CKB::API do
     result = api.get_banned_addresses
     expect(result).not_to be nil
     expect(result).to all(be_a(Types::BannedAddress))
+  end
+
+  it "ping peers" do
+    result = api.ping_peers
+    expect(result).to be_nil
+  end
+
+  it "get transaction proof" do
+	  proof_hash = {
+      "block_hash": "0x7978ec7ce5b507cfb52e149e36b1a23f6062ed150503c85bbf825da3599095ed",
+      "proof": {
+        "indices": ["0x0"],
+        "lemmas": []
+      },
+      "witnesses_root": "0x2bb631f4a251ec39d943cc238fc1e39c7f0e99776e8a1e7be28a03c70c4f4853"
+    }
+    stub = instance_double("CKB::API")
+    allow(stub).to receive(:get_transaction_proof).with(tx_hashes: ["0xa4037a893eb48e18ed4ef61034ce26eba9c585f15c9cee102ae58505565eccc3"]) do
+      CKB::Types::TransactionProof.from_h(proof_hash)
+    end
+  end
+
+  it "verify transaction proof" do
+    proof_hash = {
+      "block_hash": "0x7978ec7ce5b507cfb52e149e36b1a23f6062ed150503c85bbf825da3599095ed",
+      "proof": {
+          "indices": ["0x0"],
+          "lemmas": []
+      },
+      "witnesses_root": "0x2bb631f4a251ec39d943cc238fc1e39c7f0e99776e8a1e7be28a03c70c4f4853"
+    }
+    stub = instance_double("CKB::API")
+    allow(stub).to receive(:verify_transaction_proof).with(proof_hash) do
+	    ["0xa4037a893eb48e18ed4ef61034ce26eba9c585f15c9cee102ae58505565eccc3"]
+    end
+  end
+
+  it "clear banned addresses" do
+	  result = api.clear_banned_addresses
+	  expect(result).to be_nil
   end
 
   context "miner APIs" do
@@ -354,9 +356,9 @@ RSpec.describe CKB::API do
     end
 
     it "should raise RPCError when param is invalid" do
-      expect {
+      expect do
         api.batch_request(%w[get_block_by_number 1], %w[get_block_by_number 2], %w[get_block_by_number 3])
-      }.to raise_error CKB::RPCError
+      end.to raise_error CKB::RPCError
     end
   end
 

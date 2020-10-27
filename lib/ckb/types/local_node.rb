@@ -35,12 +35,12 @@ module CKB
         return if hash.nil?
 
         new(
-            version: hash[:version],
-            node_id: hash[:node_id],
-            active: hash[:active],
-            addresses: hash[:addresses].map { |addr| AddressInfo.from_h(addr) },
-            protocols: hash[:protocols].map { |protocol| LocalNodeProtocol.from_h(protocol) },
-            connections: hash[:connections]
+          version: hash[:version],
+          node_id: hash[:node_id],
+          active: hash[:active],
+          addresses: hash[:addresses].map { |addr| AddressInfo.from_h(addr) },
+          protocols: hash[:protocols].map { |protocol| LocalNodeProtocol.from_h(protocol) },
+          connections: hash[:connections]
         )
       end
     end

@@ -48,7 +48,9 @@ module CKB
 
     def send_transaction(transaction, outputs_validator = nil)
       unless outputs_validator.nil?
-        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`" unless %w[default passthrough].include?(outputs_validator)
+        unless %w[default passthrough].include?(outputs_validator)
+          raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`"
+        end
       end
       single_request("send_transaction", [transaction, outputs_validator])
     end
@@ -95,5 +97,3 @@ module CKB
     end
   end
 end
-
-# rubocop:enable Naming/AccessorMethodName

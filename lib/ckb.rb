@@ -19,6 +19,8 @@ require "ckb/serializers/serializers"
 require "ckb/mock_transaction_dumper"
 require "ckb/system_code_hash"
 require "ckb/script_hash_type"
+require "ckb/indexer/types/types"
+require "ckb/indexer/api"
 
 module CKB
   class Error < StandardError; end
