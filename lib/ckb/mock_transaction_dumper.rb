@@ -23,6 +23,7 @@ module CKB
       mock_cell_deps = transaction.cell_deps.map do |cell_dep|
         # TODO: add group cell dep support once we have molecule parser in
         # Ruby to parse group cell dep contents.
+
         raise "Group cell dep is not supported yet" unless cell_dep.dep_type == "code"
 
         cell_with_status = api.get_live_cell(cell_dep.out_point, true)
