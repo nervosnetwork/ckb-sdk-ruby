@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ckb-sdk-ruby (0.37.0)
+    ckb-sdk-ruby (0.38.0)
       bitcoin-secp256k1 (~> 0.5.2)
       net-http-persistent (~> 3.1.0)
       rbnacl (~> 7.1.1)

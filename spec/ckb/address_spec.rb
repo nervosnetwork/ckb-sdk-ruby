@@ -20,6 +20,30 @@ RSpec.describe CKB::Address do
       ).to eq "ckt1qyqlqn8vsj7r0a5rvya76tey9jd2rdnca8lqh4kcuq"
     end
 
+    it "generate short payload anyone can pay address without minimum limit" do
+	    acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a")
+	    address = CKB::Address.new(acp_lock)
+	    expect(
+		    address.generate
+	    ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaq3xzhsz"
+    end
+
+    it "generate short payload anyone can pay address with ckb minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c")
+      address = CKB::Address.new(acp_lock)
+      expect(
+        address.generate
+      ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqc9q8fqw"
+    end
+
+    it "generate short payload anyone can pay address with ckb and udt minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01")
+      address = CKB::Address.new(acp_lock)
+      expect(
+        address.generate
+      ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz"
+    end
+
     it "generate full payload data address" do
       address = CKB::Address.new(full_data_script)
       expect(
@@ -69,6 +93,30 @@ RSpec.describe CKB::Address do
       expect(
         address.generate
       ).to eq "ckb1qyqlqn8vsj7r0a5rvya76tey9jd2rdnca8lq2sg8su"
+    end
+
+    it "generate short payload anyone can pay address without minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a")
+      address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
+      expect(
+        address.generate
+      ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqvrugu7"
+    end
+
+    it "generate short payload anyone can pay address with ckb minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c")
+      address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
+      expect(
+        address.generate
+      ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcehzz9g"
+    end
+
+    it "generate short payload anyone can pay address with ckb and udt minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01")
+      address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
+      expect(
+        address.generate
+      ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw"
     end
 
     it "generate full payload data address" do
