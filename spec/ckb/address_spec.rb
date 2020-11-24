@@ -44,6 +44,14 @@ RSpec.describe CKB::Address do
       ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz"
     end
 
+    it "generate full payload address when acp lock args is more than 22 bytes" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      address = CKB::Address.new(acp_lock)
+      expect(
+        address.generate
+      ).to eq "ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4"
+    end
+
     it "generate full payload data address" do
       address = CKB::Address.new(full_data_script)
       expect(
@@ -117,6 +125,14 @@ RSpec.describe CKB::Address do
       expect(
         address.generate
       ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw"
+    end
+
+    it "generate full payload address when acp lock args is more than 22 bytes" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
+      expect(
+        address.generate
+      ).to eq "ckb1qnfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy532xj3"
     end
 
     it "generate full payload data address" do
