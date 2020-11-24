@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require "pry"
+
 module CKB
   class Address
     attr_reader :script, :prefix, :mode
