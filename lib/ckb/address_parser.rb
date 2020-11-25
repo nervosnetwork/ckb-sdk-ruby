@@ -33,6 +33,8 @@ module CKB
         "SHORTSINGLESIG"
       when Address::CODE_HASH_INDEX_MULTISIG_SIG
         "SHORTMULTISIG"
+      when Address::CODE_HASH_INDEX_ANYONE_CAN_PAY
+        "SHORTANYONECANPAY"
       else
         raise InvalidCodeHashIndexError, "Invalid code hash index"
       end
@@ -42,9 +44,9 @@ module CKB
       format_type = data[0].unpack("H*").first
       code_hash_index = data[1].unpack("H*").first
       mode = parse_mode(decoded_prefix)
-      code_hash = parse_code_hash(code_hash_index)
+      code_hash = parse_code_hash(code_hash_index, mode)
       args = CKB::Utils.bin_to_hex(data.slice(2..-1))
-      if CKB::Utils.hex_to_bin(args).bytesize != 20
+      if code_hash_index != CKB::Address::CODE_HASH_INDEX_ANYONE_CAN_PAY && CKB::Utils.hex_to_bin(args).bytesize != 20
         raise InvalidArgSizeError, "Short payload format address args bytesize must equal to 20"
       end
 
@@ -77,12 +79,18 @@ module CKB
       end
     end
 
-    def parse_code_hash(code_hash_index)
+    def parse_code_hash(code_hash_index, mode)
       case code_hash_index
       when Address::CODE_HASH_INDEX_SINGLESIG
         SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH
       when Address::CODE_HASH_INDEX_MULTISIG_SIG
         SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH
+      when Address::CODE_HASH_INDEX_ANYONE_CAN_PAY
+        if mode == CKB::MODE::TESTNET
+          SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON
+        else
+          SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA
+        end
       else
         raise InvalidCodeHashIndexError, "Invalid code hash index"
       end

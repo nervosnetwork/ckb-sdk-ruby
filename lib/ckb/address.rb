@@ -12,6 +12,8 @@ module CKB
     FULL_TYPE_FORMAT = "04"
     CODE_HASH_INDEX_SINGLESIG = "00"
     CODE_HASH_INDEX_MULTISIG_SIG = "01"
+    CODE_HASH_INDEX_ANYONE_CAN_PAY = "02"
+    SHORT_PAYLOAD_AVAILABLE_ARGS_LEN = [20, 21, 22]
 
     # @param script [CKB::Types::Script]
     # @param mode [String]
@@ -25,14 +27,15 @@ module CKB
     # payload = type(01) | code hash index(00) | pubkey blake160
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     def generate
-      unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && CKB::Utils.hex_to_bin(script.args).bytesize == 20
+      unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && (SHORT_PAYLOAD_AVAILABLE_ARGS_LEN.include?(CKB::Utils.hex_to_bin(script.args).bytesize))
         return generate_full_payload_address
       end
-
       if SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_singlesig_address
       elsif SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_multisig_address
+      elsif [SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON].include?(script.code_hash)
+        generate_short_payload_anyone_can_pay_address
       else
         generate_full_payload_address
       end
@@ -76,6 +79,15 @@ module CKB
     # @return [String]
     def generate_short_payload_multisig_address
       ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_MULTISIG_SIG))
+    end
+
+    # Generates short payload format address
+    # payload = type(01) | code hash index(02) | args
+    # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
+    #
+    # @return [String]
+    def generate_short_payload_anyone_can_pay_address
+      ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_ANYONE_CAN_PAY))
     end
 
     # Generates full payload format address

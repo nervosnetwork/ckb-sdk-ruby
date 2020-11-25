@@ -30,6 +30,46 @@ RSpec.describe CKB::AddressParser do
       expect(parsed_address.address_type).to eq "SHORTMULTISIG"
     end
 
+    it "parse short payload acp address without minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a")
+	    parsed_address = CKB::AddressParser.new("ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaq3xzhsz").parse
+	    expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+	    expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "SHORTANYONECANPAY"
+    end
+
+    it "parse short payload acp address with ckb minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c")
+      parsed_address = CKB::AddressParser.new("ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqc9q8fqw").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "SHORTANYONECANPAY"
+    end
+
+    it "parse short payload acp address with ckb and udt minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01")
+      parsed_address = CKB::AddressParser.new("ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "SHORTANYONECANPAY"
+    end
+
+    it "parse full payload acp address with ckb and udt minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      parsed_address = CKB::AddressParser.new("ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
+    end
+
     it "parse full payload data address" do
       parsed_address = CKB::AddressParser.new(full_payload_data_address).parse
       expect(parsed_address.mode).to eq CKB::MODE::TESTNET
@@ -116,6 +156,36 @@ RSpec.describe CKB::AddressParser do
       expect(parsed_address.script.code_hash).to eq multisig_script.code_hash
       expect(parsed_address.script.hash_type).to eq multisig_script.hash_type
       expect(parsed_address.address_type).to eq "SHORTMULTISIG"
+    end
+
+    it "parse short payload acp address without minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a")
+      parsed_address = CKB::AddressParser.new("ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqvrugu7").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "SHORTANYONECANPAY"
+    end
+
+    it "parse short payload acp address with ckb minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c")
+      parsed_address = CKB::AddressParser.new("ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcehzz9g").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "SHORTANYONECANPAY"
+    end
+
+    it "parse short payload acp address with ckb and udt minimum limit" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01")
+      parsed_address = CKB::AddressParser.new("ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "SHORTANYONECANPAY"
     end
 
     it "parse full payload data address" do
