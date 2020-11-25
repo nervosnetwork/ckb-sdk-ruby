@@ -25,6 +25,7 @@ module CKB
     attr_reader :uri, :http
 
     DEFAULT_URL = "http://localhost:8114"
+    DEFAULT_INDEXER_URL = "http://localhost:8116"
 
     def initialize(host: DEFAULT_URL, timeout_config: {})
       @uri = URI(host)
