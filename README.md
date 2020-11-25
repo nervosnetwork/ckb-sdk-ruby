@@ -72,12 +72,15 @@ Send capacity
 # create api first
 api = CKB::API.new
 
+# create ckb-indexer api
+indexer_api = CKB::Indexer::API.new
+
 # create two wallet object
-bob = CKB::Wallet.from_hex(api, "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
-alice = CKB::Wallet.from_hex(api, "0x76e853efa8245389e33f6fe49dcbd359eb56be2f6c3594e12521d2a806d32156")
+bob = CKB::Wallet.from_hex(api, "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3", indexer_api: indexer_api)
+alice = CKB::Wallet.from_hex(api, "0x76e853efa8245389e33f6fe49dcbd359eb56be2f6c3594e12521d2a806d32156", indexer_api: indexer_api)
 
 # bob send 1000 bytes to alice
-tx_hash = bob.send_capacity(alice.address, 1000 * 10**8)
+tx_hash = bob.send_capacity(alice.address, 1000 * 10**8, fee: 1000)
 
 # loop up the transaction by tx_hash
 api.get_transaction(tx_hash)
@@ -87,9 +90,10 @@ Provide wallet with a public key
 
 ```ruby
 api = CKB::API.new
+indexer_api = CKB::Indexer::API.new
 
-bob = CKB::Wallet.new(api, "0x024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01")
-alice = CKB::Wallet.new(api, "0x0257623ec521657a27204c5590384cd59d9267c06d75ab308070be692251b67c57")
+bob = CKB::Wallet.new(api, "0x024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01", indexer_api: indexer_api)
+alice = CKB::Wallet.new(api, "0x0257623ec521657a27204c5590384cd59d9267c06d75ab308070be692251b67c57", indexer_api: indexer_api)
 
 bob_key = "0xe79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3"
 

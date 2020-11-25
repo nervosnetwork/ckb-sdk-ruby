@@ -1,17 +1,31 @@
-# [v0.37.0](https://github.com/shaojunda/ckb-sdk-ruby/compare/v0.36.0...v0.37.0) (2020-10-27)
-
-
-### Code Refactoring
-
-* use ckb-indexer replace get_cells_by_lock_hash RPC ([2a62ce3](https://github.com/shaojunda/ckb-sdk-ruby/commit/2a62ce3))
+# [v0.38.1](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.38.0...v0.38.1) (2020-11-25)
 
 
 ### Features
 
-* add ckb-indexer types and get_cells api ([92ca150](https://github.com/shaojunda/ckb-sdk-ruby/commit/92ca150))
-* add more types ([bfd881c](https://github.com/shaojunda/ckb-sdk-ruby/commit/bfd881c))
-* add new RPCs ([48626ca](https://github.com/shaojunda/ckb-sdk-ruby/commit/48626ca))
-* remove RPC get_cells_by_lock_hash ([a935a7c](https://github.com/shaojunda/ckb-sdk-ruby/commit/a935a7c))
+* support generate short payload acp address ([092a89f](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/092a89f))
+* support parse short payload acp address ([f747a30](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/f747a30))
+
+
+
+# [v0.38.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.37.0...v0.38.0) (2020-11-23)
+Bump version to v0.38.0
+
+
+# [v0.37.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.36.0...v0.37.0) (2020-10-27)
+
+
+### Code Refactoring
+
+* use ckb-indexer replace get_cells_by_lock_hash RPC ([2a62ce3](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/2a62ce3))
+
+
+### Features
+
+* add ckb-indexer types and get_cells api ([92ca150](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/92ca150))
+* add more types ([bfd881c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/bfd881c))
+* add new RPCs ([48626ca](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/48626ca))
+* remove RPC get_cells_by_lock_hash ([a935a7c](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/a935a7c))
 
 
 ### BREAKING CHANGES
@@ -23,7 +37,7 @@
 
 # [v0.36.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.35.0...v0.36.0) (2020-09-21)
 
-* add deprecated warning on methods in Indexer module ([97f2f47](https://github.com/shaojunda/ckb-sdk-ruby/commit/97f2f47))
+* add deprecated warning on methods in Indexer module ([97f2f47](https://github.com/nervosnetwork/ckb-sdk-ruby/commit/97f2f47))
 
 
 ### BREAKING CHANGES
