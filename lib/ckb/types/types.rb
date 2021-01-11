@@ -48,6 +48,9 @@ require_relative "merkle_proof"
 require_relative "tx_pool_ids"
 require_relative "tx_pool_verbosity"
 require_relative "tx_verbosity"
+require_relative "consensus"
+require_relative "rational_u256"
+require_relative "proposal_window"
 
 module CKB
   module Types
