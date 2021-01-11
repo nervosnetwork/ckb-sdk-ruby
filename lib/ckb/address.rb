@@ -13,7 +13,7 @@ module CKB
     CODE_HASH_INDEX_SINGLESIG = "00"
     CODE_HASH_INDEX_MULTISIG_SIG = "01"
     CODE_HASH_INDEX_ANYONE_CAN_PAY = "02"
-    SHORT_PAYLOAD_AVAILABLE_ARGS_LEN = [20, 21, 22]
+    SHORT_PAYLOAD_AVAILABLE_ARGS_LEN = [20, 21, 22].freeze
 
     # @param script [CKB::Types::Script]
     # @param mode [String]
@@ -27,9 +27,10 @@ module CKB
     # payload = type(01) | code hash index(00) | pubkey blake160
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     def generate
-      unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && (SHORT_PAYLOAD_AVAILABLE_ARGS_LEN.include?(CKB::Utils.hex_to_bin(script.args).bytesize))
+      unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && SHORT_PAYLOAD_AVAILABLE_ARGS_LEN.include?(CKB::Utils.hex_to_bin(script.args).bytesize)
         return generate_full_payload_address
       end
+
       if SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_singlesig_address
       elsif SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash

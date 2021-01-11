@@ -45,6 +45,9 @@ require_relative "local_node"
 require_relative "local_node_protocol"
 require_relative "transaction_proof"
 require_relative "merkle_proof"
+require_relative "tx_pool_ids"
+require_relative "tx_pool_verbosity"
+require_relative "tx_verbosity"
 
 module CKB
   module Types
