@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CKB
   module Types
     class TxPoolVerbosity
@@ -12,8 +14,8 @@ module CKB
 
       def to_h
         {
-          pending: pending,
-          proposed: proposed
+          pending: pending.transform_values { |v| v.to_h }.to_h,
+          proposed: proposed.transform_values { |v| v.to_h }.to_h
         }
       end
 
@@ -21,8 +23,8 @@ module CKB
         return if hash.nil?
 
         new(
-          pending: hash[:pending].map { |k, v| [k, TxVerbosity.from_h(v)] }.to_h,
-          proposed: hash[:proposed].map { |k, v| [k, TxVerbosity.from_h(v)] }.to_h
+          pending: hash[:pending].transform_values { |v| TxVerbosity.from_h(v) }.to_h,
+          proposed: hash[:proposed].transform_values { |v| TxVerbosity.from_h(v) }.to_h
         )
       end
     end
