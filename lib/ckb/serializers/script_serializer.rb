@@ -18,13 +18,11 @@ module CKB
 
       def init_args(script)
         args = script.args
-        args = if args
-                 args.start_with?("0x") ? args[2..-1] : args
-               else
-                 ""
-               end
-
-        args
+        if args
+          args.start_with?("0x") ? args[2..-1] : args
+        else
+          ""
+        end
       end
 
       attr_reader :code_hash_serializer, :hash_type_serializer, :args_serializer, :items_count
