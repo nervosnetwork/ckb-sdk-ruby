@@ -193,6 +193,11 @@ RSpec.describe CKB::API do
     expect(result).to be_a(Types::TxPoolIds)
   end
 
+  it "get consensus" do
+    result = api.get_consensus
+    expect(result).to be_a(Types::Consensus)
+  end
+
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).not_to be nil
