@@ -17,7 +17,7 @@ RSpec.describe CKB::Types::TxPoolVerbosity do
 	it "from h" do
 		expect(tx_pool_verbosity).to be_a(CKB::Types::TxPoolVerbosity)
 		tx_pool_verbosity_h.each do |key, value|
-			expect(tx_pool_verbosity.public_send(key).map { |k, v| [k, v.to_h] }.to_h).to eq value
+			expect(tx_pool_verbosity.public_send(key).transform_values { |v| v.to_h }.to_h).to eq value
 		end
 	end
 
