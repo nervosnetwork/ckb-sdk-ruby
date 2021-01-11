@@ -294,6 +294,10 @@ module CKB
       end
     end
 
+    def get_consensus
+      Types::Consensus.from_h(rpc.get_consensus)
+    end
+
     # @return sync_state [SyncState]
     def sync_state
       Types::SyncState.from_h(rpc.sync_state)
