@@ -5,6 +5,7 @@ module CKB
     module Types
       class LiveCells
         attr_reader :last_cursor, :objects
+
         # @param last_cursor [String]
         # @param objects [CKB::Types::LiveCell[]]
         def initialize(last_cursor:, objects:)

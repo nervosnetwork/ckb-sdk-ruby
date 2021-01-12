@@ -4,6 +4,7 @@ module CKB
   module Indexer
     class API
       attr_reader :rpc
+
       DEFAULT_LIMIT = 1000
 
       def initialize(indexer_host = CKB::RPC::DEFAULT_INDEXER_URL, timeout_config = {})

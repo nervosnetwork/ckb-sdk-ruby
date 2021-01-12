@@ -7,7 +7,7 @@ module CKB
 
       # @param output [CKB::Types::Output]
       # @param data [CKB::Types::CellData | nil]
-      def initialize(output: nil, data:)
+      def initialize(data:, output: nil)
         @output = output
         @data = data
       end

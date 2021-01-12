@@ -55,7 +55,7 @@ module CKB
                           Utils.hex_to_bin(CKB::Serializers::WitnessArgsSerializer.from(witness).serialize)
                         else
                           Utils.hex_to_bin(witness)
-          end
+                        end
           data_size = data_binary.bytesize
 
           blake2b.update([data_size].pack("Q<"))
