@@ -7,21 +7,28 @@ module CKB
 
       # @param arg [String]
       def initialize(arg)
-        arg = if arg
+        @item = if arg
                 arg.start_with?("0x") ? arg[2..-1] : arg
               else
                 ""
               end
-        items = arg.scan(/../)
-        @bytes_serializer = FixVecSerializer.new(items, ByteSerializer)
+        @items_count = item.size / 2
       end
 
       private
 
-      attr_reader :bytes_serializer
+      attr_reader :item, :items_count
+
+      def header
+        [items_count].pack("V").unpack("H*").first
+      end
+
+      def body
+        item
+      end
 
       def layout
-        bytes_serializer.serialize[2..-1]
+        header + body
       end
     end
   end
