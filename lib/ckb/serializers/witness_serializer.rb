@@ -7,18 +7,28 @@ module CKB
 
       # @param witness [String]
       def initialize(witness)
-        witness ||= ""
-        witness = witness.start_with?("0x") ? witness[2..-1] : witness
-        items = witness.scan(/../)
-        @bytes_serializer = FixVecSerializer.new(items, ByteSerializer)
+        @item = if witness
+                  witness.start_with?("0x") ? witness[2..-1] : witness
+                else
+                  ""
+                end
+        @items_count = item.size / 2
       end
 
       private
 
-      attr_reader :bytes_serializer
+      attr_reader :item, :items_count
+
+      def header
+        [items_count].pack("V").unpack("H*").first
+      end
+
+      def body
+        item
+      end
 
       def layout
-        bytes_serializer.serialize[2..-1]
+        header + body
       end
     end
   end

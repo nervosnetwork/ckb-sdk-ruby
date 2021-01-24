@@ -17,7 +17,7 @@ module CKB
 
       private
 
-      attr_reader :bytes_serializer, :item, :items_count
+      attr_reader :item, :items_count
 
       def header
         [items_count].pack("V").unpack("H*").first

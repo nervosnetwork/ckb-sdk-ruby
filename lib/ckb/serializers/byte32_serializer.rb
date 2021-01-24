@@ -23,8 +23,7 @@ module CKB
       end
 
       def body
-        items = value.scan(/../)
-        items.map { |item| ByteSerializer.new(item).serialize[2..-1] }.join("")
+        value
       end
     end
   end
