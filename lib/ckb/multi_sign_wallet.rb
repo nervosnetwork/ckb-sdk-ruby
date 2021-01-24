@@ -2,10 +2,7 @@
 
 module CKB
   class MultiSignConfiguration
-    attr_reader :require_n
-    attr_reader :threshold
-    attr_reader :pubkeys
-    attr_reader :since
+    attr_reader :require_n, :threshold, :pubkeys, :since
 
     def initialize(require_n:, threshold:, pubkeys:, since:)
       raise "require_n should be less than 256" if require_n > 255 || require_n < 0
@@ -48,11 +45,7 @@ module CKB
   end
 
   class MultiSignWallet
-    attr_reader :api
-    attr_reader :configuration
-    attr_reader :skip_data_and_type
-    attr_reader :prefix
-    attr_reader :indexer_api
+    attr_reader :api, :configuration, :skip_data_and_type, :prefix, :indexer_api
 
     def initialize(api, configuration, skip_data_and_type: true, prefix: CKB::Address::PREFIX_TESTNET, indexer_api: nil)
       @api = api

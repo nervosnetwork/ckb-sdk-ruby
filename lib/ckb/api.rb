@@ -8,22 +8,11 @@ require "uri"
 
 module CKB
   class API
-    attr_reader :rpc
-    attr_reader :secp_group_out_point
-    attr_reader :secp_code_out_point
-    attr_reader :secp_data_out_point
-    attr_reader :secp_cell_type_hash
-    attr_reader :secp_cell_code_hash
-    attr_reader :dao_out_point
-    attr_reader :dao_code_hash
-    attr_reader :dao_type_hash
-
-    attr_reader :multi_sign_secp_cell_type_hash
-    attr_reader :multi_sign_secp_group_out_point
+    attr_reader :rpc, :secp_group_out_point, :secp_code_out_point, :secp_data_out_point, :secp_cell_type_hash, :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
-      if mode == MODE::TESTNET || mode == MODE::MAINNET
+      if [MODE::TESTNET, MODE::MAINNET].include?(mode)
         # For testnet chain, we can assume the second cell of the first transaction
         # in the genesis block contains default lock script we can use here.
         system_cell_transaction = genesis_block.transactions.first
@@ -294,6 +283,19 @@ module CKB
 
     def clear_tx_pool
       rpc.clear_tx_pool
+    end
+
+    def get_raw_tx_pool(verbose = false)
+      rs = rpc.get_raw_tx_pool(verbose)
+      if verbose
+        Types::TxPoolVerbosity.from_h(rs)
+      else
+        Types::TxPoolIds.from_h(rs)
+      end
+    end
+
+    def get_consensus
+      Types::Consensus.from_h(rpc.get_consensus)
     end
 
     # @return sync_state [SyncState]

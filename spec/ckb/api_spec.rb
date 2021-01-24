@@ -183,12 +183,28 @@ RSpec.describe CKB::API do
     expect(result).to be_a(Types::LocalNode)
   end
 
+  it "get verbose raw_tx_pool info" do
+    result = api.get_raw_tx_pool(true)
+    expect(result).to be_a(Types::TxPoolVerbosity)
+  end
+
+  it "get raw_tx_pool info" do
+    result = api.get_raw_tx_pool
+    expect(result).to be_a(Types::TxPoolIds)
+  end
+
+  it "get consensus" do
+    result = api.get_consensus
+    expect(result).to be_a(Types::Consensus)
+  end
+
   it "tx pool info" do
     result = api.tx_pool_info
     expect(result).not_to be nil
     expect(result.to_h.keys.sort).to eq %i[pending proposed orphan last_txs_updated_at min_fee_rate total_tx_cycles total_tx_size tip_hash tip_number].sort
   end
 
+  # need to clear the tx pool first
   it "clear tx pool" do
     wallet = CKB::Wallet.from_hex(api, "0xd00c06bfd800d27397002dca6fb0993d5ba6399b4238b2f29ee9deb97593d2bc", indexer_api: CKB::Indexer::API.new("http://localhost:8116"))
     wallet.send_capacity("ckt1qyqqg2rcmvgwq9ypycgqgmp5ghs3vcj8vm0s2ppgld", 1000 * 10**8, fee: 1100)
