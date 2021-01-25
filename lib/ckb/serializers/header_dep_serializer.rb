@@ -7,19 +7,23 @@ module CKB
 
       # @param header_dep [String]
       def initialize(header_dep)
-        @byte32_serializer = Byte32Serializer.new(header_dep)
+        @item = if header_dep
+                  header_dep.start_with?("0x") ? header_dep[2..-1] : header_dep
+                else
+                  ""
+                end
       end
 
       private
 
-      attr_reader :byte32_serializer
+      attr_reader :item
 
       def layout
         body
       end
 
       def body
-        byte32_serializer.serialize[2..-1]
+        item
       end
     end
   end
