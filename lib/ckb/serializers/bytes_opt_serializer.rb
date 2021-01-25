@@ -7,22 +7,32 @@ module CKB
 
       # @param bytes [String]
       def initialize(bytes = "")
-        bytes = bytes.start_with?("0x") ? bytes[2..-1] : bytes
-
-        if !bytes.empty?
-          items = bytes.scan(/../)
-          @bytes_serializer = FixVecSerializer.new(items, ByteSerializer)
-        else
-          @bytes_serializer = OpenStruct.new(serialize: "0x")
-        end
+        @item = if bytes
+                  bytes.start_with?("0x") ? bytes[2..-1] : bytes
+                else
+                  ""
+                end
+        @items_count = item.size / 2
       end
 
       private
 
-      attr_reader :bytes_serializer
+      attr_reader :bytes, :item, :items_count
+
+      def header
+        [items_count].pack("V").unpack("H*").first
+      end
+
+      def body
+        item
+      end
 
       def layout
-        bytes_serializer.serialize[2..-1]
+        if !item.empty?
+          header + body
+        else
+          ""
+        end
       end
     end
   end
