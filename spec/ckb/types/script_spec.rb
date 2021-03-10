@@ -13,41 +13,6 @@ RSpec.describe CKB::Types::Script do
 
   let(:code_hash) { "0xc00073200d2b2f4ad816a8d04bb2431ce0d3ebd49141b086eda4ab4e06bc3a21" }
 
-  context "to_hash" do
-    before do
-      skip if ENV["SKIP_RPC_TESTS"]
-    end
-
-    let(:api) { CKB::API.new }
-
-    it "should build correct hash when args is empty " do
-      expect(
-        script.compute_hash
-      ).to eq api._compute_script_hash(script)
-    end
-
-    it "should build correct hash when there is only one arg" do
-      script = CKB::Types::Script.new(
-        code_hash: code_hash,
-        args: "0x3954acece65096bfa81258983ddb83915fc56bd8"
-      )
-
-      expect(
-        script.compute_hash
-      ).to eq api._compute_script_hash(script)
-    end
-
-    it "should build correct hash when args more than one" do
-      script = CKB::Types::Script.new(
-        code_hash: code_hash,
-        args: "0x3954acece65096bfa81258983ddb83915fc56bd83954acece65096bfa81258983ddb83915fc56bd8"
-      )
-      expect(
-        script.compute_hash
-      ).to eq api._compute_script_hash(script)
-    end
-  end
-
   context "calculate bytesize" do
     let(:code_hash) { "0x9e3b3557f11b2b3532ce352bfe8017e9fd11d154c4c7f9b7aaaa1e621b539a08" }
     let(:args) { "0x36c329ed630d6ce750712a477543672adab57f4c" }
