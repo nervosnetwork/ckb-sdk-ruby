@@ -7,7 +7,7 @@ Ruby SDK for CKB
 The ckb-sdk-ruby is still under development and NOT production ready. You should get familiar with CKB transaction structure and RPC before using it.
 
 ## WARNING
-Module Indexer hash been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
+Module Indexer has been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
 
 The following RPCs hash been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0):
 * `get_live_cells_by_lock_hash`
