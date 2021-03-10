@@ -240,11 +240,6 @@ RSpec.describe CKB::API do
     expect(result.epoch >= 0).to be true
   end
 
-  it "get peers state" do
-    result = api.get_peers_state
-    expect(result).to be_an(Array)
-  end
-
   it "dry run transaction" do
     tx = Types::Transaction.new(
       version: 0,
@@ -270,13 +265,6 @@ RSpec.describe CKB::API do
     result = api.get_header_by_number(block_number)
     expect(result).to be_a(Types::BlockHeader)
     expect(result.number).to eq block_number
-  end
-
-  # need to mine more than 12 blocks locally
-  it "get block reward by block hash" do
-    block_hash = api.get_block_hash(12)
-    result = api.get_cellbase_output_capacity_details(block_hash)
-    expect(result).to be_a(Types::BlockReward)
   end
 
   it "set ban" do

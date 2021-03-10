@@ -145,12 +145,12 @@ module CKB
     end
 
     def _compute_transaction_hash(transaction)
-      warn "[DEPRECATION] `_compute_transaction_hash` will be removed in a later version."
+      warn "[DEPRECATION] `_compute_transaction_hash` will be disabled by default from v0.40.0 and will be removed from v0.41.0."
       rpc._compute_transaction_hash(transaction.to_raw_transaction_h)
     end
 
     def _compute_script_hash(script)
-      warn "[DEPRECATION] `_compute_script_hash` will be removed in a later version."
+      warn "[DEPRECATION] `_compute_script_hash` will be disabled by default from v0.40.0 and will be removed from v0.41.0."
       rpc._compute_script_hash(script.to_h)
     end
 
@@ -203,6 +203,7 @@ module CKB
 
     # @return [CKB::Types::PeerState[]]
     def get_peers_state
+      warn "[DEPRECATION] `get_peers_state` will be disabled by default from v0.40.0 and will be removed from v0.41.0."
       rpc.get_peers_state.map { |peer| Types::PeerState.from_h(peer) }
     end
 
@@ -242,6 +243,7 @@ module CKB
     #
     # @return [CKB::Types::BlockReward]
     def get_cellbase_output_capacity_details(block_hash)
+      warn "[DEPRECATION] `get_cellbase_output_capacity_details` will be disabled by default from v0.40.0 and will be removed from v0.41.0."
       block_reward_h = rpc.get_cellbase_output_capacity_details(block_hash)
       Types::BlockReward.from_h(block_reward_h)
     end
