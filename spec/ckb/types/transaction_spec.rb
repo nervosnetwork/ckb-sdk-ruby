@@ -356,45 +356,5 @@ RSpec.describe CKB::Types::Transaction do
         tx.compute_hash
       ).to eq tx.hash
     end
-
-    context "compared with rpc result" do
-      before do
-        skip "not call rpc" if ENV["SKIP_RPC_TESTS"]
-      end
-
-      let(:api) { CKB::API.new }
-
-      it "should build correct hash for specific transaction" do
-        tx = CKB::Types::Transaction.from_h(specific_tx_h)
-
-        expect(
-          tx.compute_hash
-        ).to eq api._compute_transaction_hash(tx)
-      end
-
-      it "should build correct hash when tx has one cell_deps" do
-        tx = CKB::Types::Transaction.from_h(one_cell_dep_tx_h)
-
-        expect(
-          tx.compute_hash
-        ).to eq api._compute_transaction_hash(tx)
-      end
-
-      it "should build correct hash when tx has multiple cell_deps" do
-        tx = CKB::Types::Transaction.from_h(multiple_cell_dep_tx_h)
-
-        expect(
-          tx.compute_hash
-        ).to eq api._compute_transaction_hash(tx)
-      end
-
-      it "should build correct hash when has type script" do
-        tx = CKB::Types::Transaction.from_h(has_type_script_tx_h)
-
-        expect(
-          tx.compute_hash
-        ).to eq api._compute_transaction_hash(tx)
-      end
-    end
   end
 end

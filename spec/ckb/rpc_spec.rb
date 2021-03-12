@@ -209,13 +209,6 @@ RSpec.describe CKB::RPC do
     expect(result[:number].hex).to eq block_number
   end
 
-  # need to mine more than 12 blocks locally
-  it "get block reward by block hash" do
-    block_hash = rpc.get_block_hash(12)
-    result = rpc.get_cellbase_output_capacity_details(block_hash)
-    expect(result).not_to be nil
-  end
-
   it "set ban" do
     params = ["192.168.0.2", "insert", 1_840_546_800_000, true, "test set_ban rpc"]
     result = rpc.set_ban(*params)
