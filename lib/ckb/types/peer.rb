@@ -3,7 +3,8 @@
 module CKB
   module Types
     class Peer
-      attr_accessor :addresses, :is_outbound, :node_id, :version, :connected_duration, :last_ping_duration, :protocols, :sync_state
+      attr_accessor :addresses, :is_outbound, :node_id, :version, :connected_duration, :last_ping_duration,
+                    :protocols, :sync_state
 
       # @param addresses [AddressInfo[]]
       # @param is_outbound [Boolean]

@@ -75,7 +75,8 @@ module CKB
       input_capacities = 0
       inputs = []
       witnesses = []
-      get_unspent_cells_by_search_keys(search_keys: search_keys, order: order, limit: limit, cursor: cursor, need_capacities: total_capacities + min_change_capacity)[:outputs].each do |cell|
+      get_unspent_cells_by_search_keys(search_keys: search_keys, order: order, limit: limit, cursor: cursor,
+                                       need_capacities: total_capacities + min_change_capacity)[:outputs].each do |cell|
         input = Types::Input.new(
           previous_output: cell.out_point,
           since: 0

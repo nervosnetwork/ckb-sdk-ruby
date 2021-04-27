@@ -8,7 +8,8 @@ require "uri"
 
 module CKB
   class API
-    attr_reader :rpc, :secp_group_out_point, :secp_code_out_point, :secp_data_out_point, :secp_cell_type_hash, :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
+    attr_reader :rpc, :secp_group_out_point, :secp_code_out_point, :secp_data_out_point, :secp_cell_type_hash,
+                :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
@@ -135,10 +136,8 @@ module CKB
     #
     # @return [String] tx_hash
     def send_transaction(transaction, outputs_validator = nil)
-      unless outputs_validator.nil?
-        unless %w[default passthrough].include?(outputs_validator)
-          raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`"
-        end
+      if !outputs_validator.nil? && !%w[default passthrough].include?(outputs_validator)
+        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`"
       end
 
       rpc.send_transaction(transaction.to_raw_transaction_h, outputs_validator)

@@ -3,7 +3,8 @@
 module CKB
   module Types
     class SyncState
-      attr_accessor :best_known_block_number, :best_known_block_timestamp, :fast_time, :ibd, :inflight_blocks_count, :low_time, :normal_time, :orphan_blocks_count
+      attr_accessor :best_known_block_number, :best_known_block_timestamp, :fast_time, :ibd, :inflight_blocks_count,
+                    :low_time, :normal_time, :orphan_blocks_count
 
       # @param best_known_block_number [String | Integer] integer or hex number
       # @param best_known_block_timestamp [String | Integer] integer or hex number

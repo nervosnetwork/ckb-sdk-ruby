@@ -18,7 +18,8 @@ module CKB
 
       private
 
-      attr_reader :version_serializer, :cell_deps_serializer, :header_deps_serializer, :inputs_serializer, :outputs_serializer, :outputs_data_serializer, :items_count
+      attr_reader :version_serializer, :cell_deps_serializer, :header_deps_serializer, :inputs_serializer,
+                  :outputs_serializer, :outputs_data_serializer, :items_count
 
       def body
         version_layout + cell_deps_layout + header_deps_layout + inputs_layout + outputs_layout + outputs_data_layout
