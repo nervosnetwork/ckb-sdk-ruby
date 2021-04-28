@@ -42,7 +42,7 @@ module CKB
     def self.to_hex(num)
       return if num.nil?
 
-      return "0x" + num.to_s(16) if num.is_a?(Integer)
+      return "0x#{num.to_s(16)}" if num.is_a?(Integer)
 
       return num if num.is_a?(String) && num.start_with?("0x")
 

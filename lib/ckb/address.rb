@@ -35,7 +35,8 @@ module CKB
         generate_short_payload_singlesig_address
       elsif SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
         generate_short_payload_multisig_address
-      elsif [SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON].include?(script.code_hash)
+      elsif [SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA,
+             SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON].include?(script.code_hash)
         generate_short_payload_anyone_can_pay_address
       else
         generate_full_payload_address

@@ -48,11 +48,10 @@ module CKB
     end
 
     def send_transaction(transaction, outputs_validator = nil)
-      unless outputs_validator.nil?
-        unless %w[default passthrough].include?(outputs_validator)
-          raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`"
-        end
+      if !outputs_validator.nil? && !%w[default passthrough].include?(outputs_validator)
+        raise ArgumentError, "Invalid outputs_validator, outputs_validator should be `default` or `passthrough`"
       end
+
       single_request("send_transaction", [transaction, outputs_validator])
     end
 
@@ -62,7 +61,9 @@ module CKB
 
     def batch_request(*requests)
       body = requests.map do |request|
-        { id: SecureRandom.uuid, jsonrpc: "2.0", method: request[0], params: request[1..-1].map { |param| param.is_a?(Integer) ? Utils.to_hex(param) : param } }
+        { id: SecureRandom.uuid, jsonrpc: "2.0", method: request[0], params: request[1..-1].map do |param|
+                                                                               param.is_a?(Integer) ? Utils.to_hex(param) : param
+                                                                             end }
       end
       parsed_response = parse_response(post(body))
       errors = parsed_response.select { |response| response[:error] }
@@ -74,7 +75,9 @@ module CKB
     private
 
     def single_request(method, params)
-      response = post(id: SecureRandom.uuid, jsonrpc: "2.0", method: method, params: params.map { |param| param.is_a?(Integer) ? Utils.to_hex(param) : param })
+      response = post(id: SecureRandom.uuid, jsonrpc: "2.0", method: method, params: params.map do |param|
+                                                                                       param.is_a?(Integer) ? Utils.to_hex(param) : param
+                                                                                     end)
       parsed_response = parse_response(response)
       raise RPCError, "jsonrpc error: #{parsed_response[:error]}" if parsed_response[:error]
 

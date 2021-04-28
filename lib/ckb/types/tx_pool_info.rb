@@ -3,7 +3,8 @@
 module CKB
   module Types
     class TxPoolInfo
-      attr_accessor :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at, :min_fee_rate, :tip_hash, :tip_number
+      attr_accessor :pending, :proposed, :orphan, :total_tx_cycles, :total_tx_size, :last_txs_updated_at,
+                    :min_fee_rate, :tip_hash, :tip_number
 
       # @param pending [String | Integer] integer or hex number
       # @param proposed [String | Integer] integer or hex number

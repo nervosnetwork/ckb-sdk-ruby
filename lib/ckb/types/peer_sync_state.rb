@@ -3,7 +3,8 @@
 module CKB
   module Types
     class PeerSyncState
-      attr_accessor :best_known_header_hash, :best_known_header_number, :last_common_header_hash, :last_common_header_number, :unknown_header_list_size, :inflight_count, :can_fetch_count
+      attr_accessor :best_known_header_hash, :best_known_header_number, :last_common_header_hash,
+                    :last_common_header_number, :unknown_header_list_size, :inflight_count, :can_fetch_count
 
       # @param best_known_header_hash [String] 0x
       # @param best_known_header_number [String | Integer] integer or hex number

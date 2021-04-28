@@ -14,8 +14,8 @@ module CKB
 
       def to_h
         {
-          pending: pending.transform_values { |v| v.to_h }.to_h,
-          proposed: proposed.transform_values { |v| v.to_h }.to_h
+          pending: pending.transform_values(&:to_h).to_h,
+          proposed: proposed.transform_values(&:to_h).to_h
         }
       end
 

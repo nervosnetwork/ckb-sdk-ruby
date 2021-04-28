@@ -87,8 +87,11 @@ module CKB
       end
 
       class EmptyCodeHashError < StandardError; end
+
       class InvalidHexStringError < StandardError; end
+
       class InvalidHashTypeError < StandardError; end
+
       class InvalidCodeHashSizeError < StandardError; end
     end
   end
