@@ -15,6 +15,11 @@ module CKB
         result = rpc.get_cells(search_key.to_h, order, Utils.to_hex(limit), after_cursor)
         CKB::Indexer::Types::LiveCells.from_h(result)
       end
+
+      def get_cells_capacity(search_key)
+        result = rpc.get_cells_capacity(search_key.to_h)
+        CKB::Indexer::Types::CellsCapacity.from_h(result)
+      end
     end
   end
 end

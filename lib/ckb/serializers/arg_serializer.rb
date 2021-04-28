@@ -8,10 +8,10 @@ module CKB
       # @param arg [String]
       def initialize(arg)
         @item = if arg
-                arg.start_with?("0x") ? arg[2..-1] : arg
-              else
-                ""
-              end
+                  arg.start_with?("0x") ? arg[2..-1] : arg
+                else
+                  ""
+                end
         @items_count = item.size / 2
       end
 

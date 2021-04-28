@@ -32,7 +32,7 @@ module CKB
       end
 
       def item_layouts
-        return "" if items_count == 0
+        return "" if items_count.zero?
 
         items.map { |item| item_serializer.new(item).serialize[2..-1] }.join("")
       end

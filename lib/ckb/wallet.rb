@@ -33,7 +33,8 @@ module CKB
     end
 
     def self.from_hex(api, privkey, hash_type: "type", skip_data_and_type: true, mode: MODE::TESTNET, indexer_api: nil)
-      new(api, Key.new(privkey), hash_type: hash_type, skip_data_and_type: skip_data_and_type, mode: mode, indexer_api: indexer_api)
+      new(api, Key.new(privkey), hash_type: hash_type, skip_data_and_type: skip_data_and_type, mode: mode,
+                                 indexer_api: indexer_api)
     end
 
     def hash_type=(hash_type)
@@ -98,7 +99,7 @@ module CKB
       outputs = [output]
       outputs_data = [output_data]
       change_output.capacity = input_capacities - (capacity + fee)
-      if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i.positive?
         outputs << change_output
         outputs_data << change_output_data
       end
@@ -168,7 +169,7 @@ module CKB
       outputs = [output]
       outputs_data = [output_data]
       change_output.capacity = input_capacities - (capacity + fee)
-      if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i.positive?
         outputs << change_output
         outputs_data << change_output_data
       end
@@ -223,7 +224,7 @@ module CKB
       outputs_data = [output_data]
 
       change_output.capacity = i.capacities - fee
-      if change_output.capacity.to_i > 0
+      if change_output.capacity.to_i.positive?
         outputs << change_output
         outputs_data << change_output_data
       end
@@ -267,7 +268,7 @@ module CKB
       tx = api.get_transaction(withdrawing_out_point.tx_hash)
       raise "Transaction is not commtted yet!" unless tx.tx_status.status == "committed"
 
-      deposit_block_number = CKB::Utils.hex_to_bin(cell_status.cell.data.content).unpack("Q<")[0]
+      deposit_block_number = CKB::Utils.hex_to_bin(cell_status.cell.data.content).unpack("Q<").first
       deposit_block = api.get_block_by_number(deposit_block_number).header
       deposit_epoch = self.class.parse_epoch(deposit_block.epoch)
 
@@ -283,7 +284,8 @@ module CKB
       minimal_since_epoch_index = deposit_epoch.index
       minimal_since_epoch_length = deposit_epoch.length
 
-      minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index, minimal_since_epoch_number)
+      minimal_since = self.class.epoch_since(minimal_since_epoch_length, minimal_since_epoch_index,
+                                             minimal_since_epoch_number)
 
       # a hex string
       output_capacity = api.calculate_dao_maximum_withdraw(deposit_out_point.dup, withdraw_block.hash).hex

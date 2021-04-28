@@ -23,7 +23,8 @@ module CKB
 
       private
 
-      attr_reader :witness_for_input_lock_serializer, :witness_for_input_type_serializer, :witness_for_output_type_serializer, :items_count
+      attr_reader :witness_for_input_lock_serializer, :witness_for_input_type_serializer,
+                  :witness_for_output_type_serializer, :items_count
 
       def body
         witness_for_input_lock_layout + witness_for_input_type_layout + witness_for_output_type_layout

@@ -120,7 +120,7 @@ module CKB
       def self.fee(tx_serialized_size_in_block, fee_rate)
         base = tx_serialized_size_in_block * fee_rate
         result = base / 1000
-        return result + 1 if base % 1000 > 0
+        return result + 1 if (base % 1000).positive?
 
         result
       end

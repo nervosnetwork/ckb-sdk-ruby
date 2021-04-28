@@ -50,7 +50,8 @@ module CKB
         raise InvalidArgSizeError, "Short payload format address args bytesize must equal to 20"
       end
 
-      OpenStruct.new(mode: mode, script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPE), address_type: parse_address_type(format_type, code_hash_index))
+      OpenStruct.new(mode: mode,
+                     script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPE), address_type: parse_address_type(format_type, code_hash_index))
     end
 
     def parse_full_payload_address(decoded_prefix, data)
@@ -65,7 +66,8 @@ module CKB
       offset += code_hash_size
       args = CKB::Utils.bin_to_hex(data[offset..-1])
 
-      OpenStruct.new(mode: mode, script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: hash_type), address_type: parse_address_type(format_type))
+      OpenStruct.new(mode: mode,
+                     script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: hash_type), address_type: parse_address_type(format_type))
     end
 
     def parse_hash_type(format_type)
@@ -108,9 +110,13 @@ module CKB
     end
 
     class InvalidFormatTypeError < StandardError; end
+
     class InvalidArgSizeError < StandardError; end
+
     class InvalidPrefixError < StandardError; end
+
     class InvalidCodeHashIndexError < StandardError; end
+
     class InvalidCodeHashSizeError < StandardError; end
   end
 end

@@ -19,7 +19,11 @@ module CKB
       # https://github.com/nervosnetwork/ckb/blob/develop/util/types/src/extension/serialized_size.rs#L22-L30
       def serialized_size_without_uncle_proposals
         block_size = CKB::Serializers::BlockSerializer.new(self).capacity
-        uncles_proposals_size = self.uncles.map { |uncle| uncle.proposals.map { |proposal| CKB::Serializers::ProposalShortIdSerializer.new(proposal).capacity - CKB::Serializers::TableSerializer::UINT32_CAPACITY }.sum }.sum
+        uncles_proposals_size = uncles.map do |uncle|
+          uncle.proposals.map do |proposal|
+            CKB::Serializers::ProposalShortIdSerializer.new(proposal).capacity - CKB::Serializers::TableSerializer::UINT32_CAPACITY
+          end.sum
+        end.sum
 
         block_size - uncles_proposals_size
       end

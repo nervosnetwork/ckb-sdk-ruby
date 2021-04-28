@@ -34,7 +34,7 @@ module CKB
         offsets = []
         previous_offset = offset0
         items.each.with_index do |_item, index|
-          offsets << previous_offset && next if index == 0
+          offsets << previous_offset && next if index.zero?
 
           new_offset = previous_offset + item_serializer.new(items[index - 1]).capacity
           offsets << new_offset
@@ -45,7 +45,7 @@ module CKB
       end
 
       def item_layouts
-        return "" if items_count == 0
+        return "" if items_count.zero?
 
         items.map { |item| item_serializer.new(item).serialize[2..-1] }.join("")
       end
