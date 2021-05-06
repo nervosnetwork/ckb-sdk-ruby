@@ -70,7 +70,7 @@ module CKB
           transactions: transactions.map(&:to_h),
           proposals: proposals,
           cellbase: cellbase.to_h,
-          work_id: work_id,
+          work_id: Utils.to_hex(work_id),
           dao: dao
         }
       end

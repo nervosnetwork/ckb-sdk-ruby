@@ -341,6 +341,13 @@ module CKB
       rpc.clear_banned_addresses
     end
 
+
+    # @param block_template [CKB::Types::BlockTemplate]
+    # @return block_hash [string]
+    def generate_block_with_template(block_template)
+      rpc.generate_block_with_template(block_template.to_h)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
