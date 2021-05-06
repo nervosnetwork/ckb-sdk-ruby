@@ -35,7 +35,7 @@ RSpec.describe CKB::Types::BlockTemplate do
                  ["0x1892ea40d82b53c678ff88312450bbb17e164d7a3e0a90941aa58839f56f8df201",
                   "0x3954acece65096bfa81258983ddb83915fc56bd8"]}]},
         :hash=>"0x6d6e478ae632208f4cc4120078bba78852e88ef136e8c5cc8c102b1e21c62dad"},
-     :work_id=>4,
+     :work_id=>"0x4",
      :dao=>"0xbcbcf54f7e4b090038b2d9a13464250018f37dd3985a000000f678cfa9890100"}
   end
 
