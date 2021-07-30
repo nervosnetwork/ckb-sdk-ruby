@@ -351,6 +351,12 @@ RSpec.describe CKB::API do
       result = api.submit_block(work_id: "test", raw_block_h: block.to_raw_block_h)
       expect(result).to be_a(String)
     end
+
+    it "generate_block_with_template should return block hash" do
+	    block_template = api.get_block_template
+	    result = api.generate_block_with_template(block_template)
+	    expect(result).to be_a(String)
+    end
   end
 
   context "batch request" do
