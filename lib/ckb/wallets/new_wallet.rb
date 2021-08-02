@@ -4,10 +4,11 @@ module CKB
   module Wallets
     class NewWallet
       attr_accessor :from_block_number
-      attr_reader :api, :collector_type, :mode, :input_scripts
+      attr_reader :api, :collector_type, :mode, :input_scripts, :indexer_api
 
-      def initialize(api:, from_addresses:, collector_type: :default_scanner, mode: MODE::TESTNET, from_block_number: 0)
+      def initialize(api:, indexer_api:, from_addresses:, collector_type: :default_indexer, mode: MODE::TESTNET, from_block_number: 0)
         @api = api
+        @indexer_api = indexer_api
         @collector_type = collector_type
         @mode = mode
         @from_block_number = from_block_number
@@ -64,11 +65,11 @@ module CKB
       private
 
       def collector
-        collector = if collector_type == :default_scanner
-          CKB::Collector.new(api).default_scanner(lock_hashes: input_scripts.map(&:compute_hash), from_block_number: from_block_number)
-        else
+        collector = if collector_type == :default_indexer
           search_keys = input_scripts.map { |script| CKB::Indexer::Types::SearchKey.new(script, "lock") }
-          CKB::Collector.new(api).default_indexer(search_keys: search_keys)
+          CKB::Collector.new(indexer_api).default_indexer(search_keys: search_keys)
+        else
+          raise "unsupported collector type"
         end
 
         Enumerator.new do |result|
