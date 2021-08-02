@@ -67,7 +67,8 @@ module CKB
         collector = if collector_type == :default_scanner
           CKB::Collector.new(api).default_scanner(lock_hashes: input_scripts.map(&:compute_hash), from_block_number: from_block_number)
         else
-          CKB::Collector.new(api).default_indexer(lock_hashes: input_scripts.map(&:compute_hash))
+          search_keys = input_scripts.map { |script| CKB::Indexer::Types::SearchKey.new(script, "lock") }
+          CKB::Collector.new(api).default_indexer(search_keys: search_keys)
         end
 
         Enumerator.new do |result|

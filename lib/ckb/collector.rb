@@ -38,29 +38,27 @@ module CKB
       end
     end
 
-    def default_indexer(lock_hashes:)
-      lock_hash_index = 0
-      page = 0
+    def default_indexer(search_keys:, order: "asc")
+      search_key_index = 0
+      cursor = nil
       cell_meta_index = 0
       cell_metas = []
 
       Enumerator.new do |result|
-        while cell_meta_index < cell_metas.size || lock_hash_index < lock_hashes.size
+        while cell_meta_index < cell_metas.size || search_key_index < search_keys.size
           if cell_meta_index < cell_metas.size
             result << cell_metas[cell_meta_index]
             cell_meta_index += 1
           else
             cell_meta_index = 0
-            cell_metas = api.get_live_cells_by_lock_hash(lock_hashes[lock_hash_index], page, MAX_PAGINATES_PER).map do |cell|
-              output_data_len = cell.output_data_len
-              cellbase = cell.cellbase
-              CKB::CellMeta.new(api: api, out_point: CKB::Types::OutPoint.new(tx_hash: cell.created_by.tx_hash, index: cell.created_by.index), output: cell.cell_output, output_data_len: output_data_len, cellbase: cellbase)
+            live_cells = api.get_cells(search_key: search_keys[search_key_index], order: order, limit: MAX_PAGINATES_PER, after_cursor: cursor)
+            cell_metas = live_cells.objects.map do |live_cell|
+              CKB::CellMeta.new(api: nil, out_point: live_cell.out_point, output: live_cell.output, output_data_len: Utils.hex_to_bin(live_cell.output_data).bytesize, cellbase: nil)
             end
-
-            page += 1
+            cursor = live_cells.last_cursor
             if cell_metas.empty?
-              page = 0
-              lock_hash_index += 1
+              cursor = nil
+              search_key_index += 1
             end
           end
         end
