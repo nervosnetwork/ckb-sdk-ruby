@@ -15,18 +15,18 @@ module CKB
         @parent_hash_serializer = Byte32Serializer.new(header.parent_hash)
         @transactions_root_serializer = Byte32Serializer.new(header.transactions_root)
         @proposals_hash_serializer = Byte32Serializer.new(header.proposals_hash)
-        @uncles_hash_serializer = Byte32Serializer.new(header.uncles_hash)
+        @extra_hash_serializer = Byte32Serializer.new(header.extra_hash)
         @dao_serializer = Byte32Serializer.new(header.dao)
       end
 
       private
 
       attr_reader :version_serializer, :compact_target_serializer, :timestamp_serializer, :number_serializer, :epoch_serializer,
-                  :parent_hash_serializer, :transactions_root_serializer, :proposals_hash_serializer, :uncles_hash_serializer, :dao_serializer
+                  :parent_hash_serializer, :transactions_root_serializer, :proposals_hash_serializer, :extra_hash_serializer, :dao_serializer
 
       def body
         version_layout + compact_target_layout + timestamp_layout + number_layout + epoch_layout +
-        parent_hash_layout + transactions_root_layout + proposals_hash_layout + uncles_hash_layout + dao_layout
+        parent_hash_layout + transactions_root_layout + proposals_hash_layout + extra_hash_layout + dao_layout
       end
 
       def version_layout
@@ -61,8 +61,8 @@ module CKB
         proposals_hash_serializer.serialize[2..-1]
       end
 
-      def uncles_hash_layout
-        uncles_hash_serializer.serialize[2..-1]
+      def extra_hash_layout
+        extra_hash_serializer.serialize[2..-1]
       end
 
       def dao_layout
