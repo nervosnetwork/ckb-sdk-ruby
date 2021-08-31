@@ -99,6 +99,7 @@ Bump version to v0.38.0
 
 
 
+
 # [v0.34.0](https://github.com/nervosnetwork/ckb-sdk-ruby/compare/v0.33.0...v0.34.0) (2020-07-21)
 
 
