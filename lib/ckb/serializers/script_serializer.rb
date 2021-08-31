@@ -9,7 +9,7 @@ module CKB
       def initialize(script)
         @code_hash_serializer = CodeHashSerializer.new(script.code_hash)
         @hash_type_serializer = HashTypeSerializer.new(script.hash_type)
-        @args_serializer = ArgSerializer.new(script.args)
+        @args_serializer = BytesSerializer.new(script.args)
         @items_count = 3
       end
 
