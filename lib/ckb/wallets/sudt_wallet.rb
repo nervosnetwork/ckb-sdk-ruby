@@ -70,9 +70,10 @@ module CKB
       def collector
         collector =
           if collector_type == :default_scanner
-            CKB::Collector.new(api).default_scanner(lock_hashes: input_scripts.map(&:compute_hash), from_block_number: from_block_number)
+            search_keys = input_scripts.map { |script| CKB::Indexer::Types::SearchKey.new(script, "lock") }
+            CKB::Collector.new(indexer_api).default_indexer(search_keys: search_keys)
           else
-            CKB::Collector.new(api).default_indexer(lock_hashes: input_scripts.map(&:compute_hash))
+            raise "unsupported collector type"
           end
 
         Enumerator.new do |result|
