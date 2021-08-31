@@ -7,6 +7,7 @@ module CKB
     PREFIX_MAINNET = "ckb"
     PREFIX_TESTNET = "ckt"
     DEFAULT_MODE = MODE::TESTNET
+    FULL_WITH_IDENTIFIER_FORMAT = "00"
     SHORT_FORMAT = "01"
     FULL_DATA_FORMAT = "02"
     FULL_TYPE_FORMAT = "04"
@@ -98,11 +99,19 @@ module CKB
     #
     # @return [String]
     def generate_full_payload_address
-      format_type = CKB::ScriptHashType::TYPE == script.hash_type ? FULL_TYPE_FORMAT : FULL_DATA_FORMAT
-      args = script.has_args? ? CKB::Utils.hex_to_bin(script.args) : ""
-      payload = [format_type].pack("H*") + CKB::Utils.hex_to_bin(script.code_hash) + args
+      CKB::ConvertAddress.encode(prefix, current_version_full_payload(FULL_WITH_IDENTIFIER_FORMAT))
+    end
 
-      CKB::ConvertAddress.encode(prefix, payload)
+    def first_version_full_payload(format_type)
+      args = script.has_args? ? CKB::Utils.hex_to_bin(script.args) : ""
+      [format_type].pack("H*") + CKB::Utils.hex_to_bin(script.code_hash) + args
+    end
+
+    def current_version_full_payload(format_type)
+      args = script.has_args? ? CKB::Utils.hex_to_bin(script.args) : ""
+      hash_type = [CKB::ScriptHashType::TYPES.index(script.hash_type)].pack("C")
+      args_len = args.empty? ? [0].pack("C") : [CKB::Utils.hex_to_bin(script.args).bytesize.to_s(16).rjust(4, "0")].pack("H*")
+      [format_type].pack("H*") + CKB::Utils.hex_to_bin(script.code_hash) + hash_type + "#{args_len}" + args
     end
 
     class InvalidModeError < StandardError; end

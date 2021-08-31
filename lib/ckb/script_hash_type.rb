@@ -2,6 +2,6 @@
 
 module CKB
   module ScriptHashType
-    TYPES = [TYPE = "type", DATA = "data"].freeze
+    TYPES = [DATA = "data", TYPE = "type", DATA1 = "data1"].freeze
   end
 end

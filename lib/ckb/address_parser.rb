@@ -18,6 +18,8 @@ module CKB
         parse_short_payload_address(decoded_prefix, data)
       when Address::FULL_DATA_FORMAT, Address::FULL_TYPE_FORMAT
         parse_full_payload_address(decoded_prefix, data)
+      when Address::FULL_WITH_IDENTIFIER_FORMAT
+        parse_new_full_payload_address(decoded_prefix, data)
       else
         raise InvalidFormatTypeError, "Invalid format type"
       end
@@ -68,6 +70,19 @@ module CKB
 
       OpenStruct.new(mode: mode,
                      script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: hash_type), address_type: parse_address_type(format_type))
+    end
+
+    def parse_new_full_payload_address(decoded_prefix, data)
+      format_type = data[0].unpack("H*").first
+      mode = parse_mode(decoded_prefix)
+      code_hash_size = 32
+      raise InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32" if data[1..-1].size < code_hash_size
+      code_hash = "0x#{data.slice(1..code_hash_size).unpack('H*').first}"
+      hash_type = CKB::Utils.bin_to_hex(data[code_hash_size + 1...code_hash_size + 2]).hex
+      _args_len = data[code_hash_size + 2..code_hash_size + 3]
+      args = CKB::Utils.bin_to_hex(data[code_hash_size + 4..-1])
+      OpenStruct.new(mode: mode,
+                     script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPES[hash_type]), address_type: parse_address_type(format_type))
     end
 
     def parse_hash_type(format_type)

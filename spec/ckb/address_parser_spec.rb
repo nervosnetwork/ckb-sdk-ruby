@@ -97,6 +97,16 @@ RSpec.describe CKB::AddressParser do
       expect(parsed_address.address_type).to eq "FULL"
     end
 
+    it "parse new full payload address" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      parsed_address = CKB::AddressParser.new("ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgutrqyp").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
+    end
+
     it "should raise invalid format type error" do
       invalid_format_type_address = "ckt1q5qrdsefa43s6m882pcj53m4gdnj4k440axqr7p084"
       expect {
@@ -212,6 +222,16 @@ RSpec.describe CKB::AddressParser do
       expect(parsed_address.script.args).to eq full_type_custom_code_hash_script.args
       expect(parsed_address.script.code_hash).to eq full_type_custom_code_hash_script.code_hash
       expect(parsed_address.script.hash_type).to eq full_type_custom_code_hash_script.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
+    end
+
+    it "parse new full payload address" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      parsed_address = CKB::AddressParser.new("ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgdx3csx").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
       expect(parsed_address.address_type).to eq "FULL"
     end
 

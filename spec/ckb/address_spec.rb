@@ -1,3 +1,4 @@
+require 'pry'
 RSpec.describe CKB::Address do
   let(:singlesig_script) { CKB::Types::Script.new(args: "0x36c329ed630d6ce750712a477543672adab57f4c", code_hash: CKB::SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH, hash_type: "type") }
   let(:multisig_script) { CKB::Types::Script.new(args: "0xf04cec84bc37f683613bed2f242c9aa1b678e9fe", code_hash: CKB::SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH, hash_type: "type") }
@@ -49,28 +50,28 @@ RSpec.describe CKB::Address do
       address = CKB::Address.new(acp_lock)
       expect(
         address.generate
-      ).to eq "ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4"
+      ).to eq "ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgutrqyp"
     end
 
     it "generate full payload data address" do
       address = CKB::Address.new(full_data_script)
       expect(
         address.generate
-      ).to eq "ckt1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvdkr98kkxrtvuag8z2j8w4pkw2k6k4l5czshhac"
+      ).to eq "ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfs62pmzq"
     end
 
     it "generate full payload custom args address" do
       address = CKB::Address.new(full_data_custom_args_script)
       expect(
         address.generate
-      ).to eq "ckt1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvg7r98kkxrtvuag8z2j8w4pkw2k6k4lkn9y5sl04c6"
+      ).to eq "ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzc3ux20dvvxkee6swy4ywa2rvu4d4dtldx2fgsfkplx"
     end
 
     it "generate full payload custom code hash address" do
       address = CKB::Address.new(full_type_custom_code_hash_script)
       expect(
         address.generate
-      ).to eq "ckt1qsvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlydkr98kkxrtvuag8z2j8w4pkw2k6k4l5c02auef"
+      ).to eq "ckt1qqvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlyqgqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfsmq4jle"
     end
 
     it "raise error when mode is invalid" do
@@ -83,7 +84,14 @@ RSpec.describe CKB::Address do
     it "should generate full payload address when there are no args" do
       expect do
         script = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", args: "", hash_type: "type")
-        CKB::Address.new(script)
+        CKB::Address.new(script).generate
+      end.not_to raise_error
+    end
+
+    it "should generate current version full payload address" do
+      expect do
+        script = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c", hash_type: "data1")
+        CKB::Address.new(script).generate
       end.not_to raise_error
     end
   end
@@ -132,28 +140,28 @@ RSpec.describe CKB::Address do
       address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1qnfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy532xj3"
+      ).to eq "ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgdx3csx"
     end
 
     it "generate full payload data address" do
       address = CKB::Address.new(full_data_script, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvdkr98kkxrtvuag8z2j8w4pkw2k6k4l5c0nw668"
+      ).to eq "ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfspa4hrg"
     end
 
     it "generate full payload custom args address" do
       address = CKB::Address.new(full_data_custom_args_script, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvg7r98kkxrtvuag8z2j8w4pkw2k6k4lkn9y5q08kzs"
+      ).to eq "ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzc3ux20dvvxkee6swy4ywa2rvu4d4dtldx2fgmg2gm0"
     end
 
     it "generate full payload custom code hash address" do
       address = CKB::Address.new(full_type_custom_code_hash_script, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1qsvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlydkr98kkxrtvuag8z2j8w4pkw2k6k4l5czfy37k"
+      ).to eq "ckb1qqvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlyqgqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfsqhp773"
     end
 
     it "raise error when mode is invalid" do
