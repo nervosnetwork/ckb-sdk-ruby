@@ -50,28 +50,36 @@ RSpec.describe CKB::Address do
       address = CKB::Address.new(acp_lock)
       expect(
         address.generate
-      ).to eq "ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgutrqyp"
+      ).to eq "ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vq20k2lzuhgvrgacd98cxg6s5v7pdpw5w7svqyqscw4rzm"
+    end
+
+    it "generate full 2019 format payload data address" do
+      address = CKB::Address.new(full_data_script, version: CKB::Address::Version::CKB2019)
+      expect(
+        address.generate
+      ).to eq "ckt1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvdkr98kkxrtvuag8z2j8w4pkw2k6k4l5czshhac"
     end
 
     it "generate full payload data address" do
-      address = CKB::Address.new(full_data_script)
+      script = CKB::Types::Script.new(code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8", hash_type: "type", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      address = CKB::Address.new(script)
       expect(
-        address.generate
-      ).to eq "ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfs62pmzq"
+        address.send(:generate_full_payload_address)
+      ).to eq "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqgutnjd"
     end
 
     it "generate full payload custom args address" do
       address = CKB::Address.new(full_data_custom_args_script)
       expect(
         address.generate
-      ).to eq "ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzc3ux20dvvxkee6swy4ywa2rvu4d4dtldx2fgsfkplx"
+      ).to eq "ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqprcv576ccddnn4quf2ga65xee2m26h76v5jsxp7k74"
     end
 
     it "generate full payload custom code hash address" do
       address = CKB::Address.new(full_type_custom_code_hash_script)
       expect(
         address.generate
-      ).to eq "ckt1qqvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlyqgqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfsmq4jle"
+      ).to eq "ckt1qqvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlyqfkcv576ccddnn4quf2ga65xee2m26h7nq8t420m"
     end
 
     it "raise error when mode is invalid" do
@@ -140,28 +148,29 @@ RSpec.describe CKB::Address do
       address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgdx3csx"
+      ).to eq "ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gq20k2lzuhgvrgacd98cxg6s5v7pdpw5w7svqyqsguej72"
     end
 
     it "generate full payload data address" do
-      address = CKB::Address.new(full_data_script, mode: CKB::MODE::MAINNET)
+      script = CKB::Types::Script.new(code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8", hash_type: "type", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      address = CKB::Address.new(script, mode: CKB::MODE::MAINNET)
       expect(
-        address.generate
-      ).to eq "ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfspa4hrg"
+        address.send(:generate_full_payload_address)
+      ).to eq "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4"
     end
 
     it "generate full payload custom args address" do
       address = CKB::Address.new(full_data_custom_args_script, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqqqzc3ux20dvvxkee6swy4ywa2rvu4d4dtldx2fgmg2gm0"
+      ).to eq "ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqprcv576ccddnn4quf2ga65xee2m26h76v5jsak26la"
     end
 
     it "generate full payload custom code hash address" do
       address = CKB::Address.new(full_type_custom_code_hash_script, mode: CKB::MODE::MAINNET)
       expect(
         address.generate
-      ).to eq "ckb1qqvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlyqgqzsmvx20dvvxkee6swy4ywa2rvu4d4dtlfsqhp773"
+      ).to eq "ckb1qqvf96jqmq4483ncl7yrzfzshwchu9jd0glq4yy5r2jcsw04d7xlyqfkcv576ccddnn4quf2ga65xee2m26h7nqfe799r"
     end
 
     it "raise error when mode is invalid" do
