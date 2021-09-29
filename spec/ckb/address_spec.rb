@@ -102,6 +102,14 @@ RSpec.describe CKB::Address do
         CKB::Address.new(script).generate
       end.not_to raise_error
     end
+
+    it "generate full payload data1 address" do
+      script = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", hash_type: "data1", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      address = CKB::Address.new(script)
+      expect(
+        address.generate
+      ).to eq "ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq4nnw7qkdnnclfkg59uzn8umtfd2kwxceq225jvu"
+    end
   end
 
   context "mainnet mode" do
@@ -151,6 +159,13 @@ RSpec.describe CKB::Address do
       ).to eq "ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gq20k2lzuhgvrgacd98cxg6s5v7pdpw5w7svqyqsguej72"
     end
 
+    it "generate full 2019 format payload data address" do
+      address = CKB::Address.new(full_data_script, mode: CKB::MODE::MAINNET, version: CKB::Address::Version::CKB2019)
+      expect(
+        address.generate
+      ).to eq "ckb1q2n9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvdkr98kkxrtvuag8z2j8w4pkw2k6k4l5c0nw668"
+    end
+
     it "generate full payload data address" do
       script = CKB::Types::Script.new(code_hash: "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8", hash_type: "type", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
       address = CKB::Address.new(script, mode: CKB::MODE::MAINNET)
@@ -178,6 +193,14 @@ RSpec.describe CKB::Address do
         address = CKB::Address.new(full_data_custom_args_script, mode: "haha")
         address.generate
       end.to raise_error(CKB::Address::InvalidModeError, "Invalid mode")
+    end
+
+    it "generate full payload data1 address" do
+      script = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", hash_type: "data1", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      address = CKB::Address.new(script, mode: CKB::MODE::MAINNET)
+      expect(
+        address.generate
+      ).to eq "ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq4nnw7qkdnnclfkg59uzn8umtfd2kwxceqyclaxy"
     end
   end
 end

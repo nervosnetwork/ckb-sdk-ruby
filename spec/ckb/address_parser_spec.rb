@@ -141,6 +141,16 @@ RSpec.describe CKB::AddressParser do
         CKB::AddressParser.new(invalid_code_hash_address).parse
       }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
     end
+
+    it "parse 2021 full data1 address" do
+      lock = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", hash_type: "data1", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      parsed_address = CKB::AddressParser.new("ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq4nnw7qkdnnclfkg59uzn8umtfd2kwxceq225jvu").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq lock.args
+      expect(parsed_address.script.code_hash).to eq lock.code_hash
+      expect(parsed_address.script.hash_type).to eq lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
+    end
   end
 
   context "mainnet mode" do
@@ -281,6 +291,16 @@ RSpec.describe CKB::AddressParser do
       expect {
         CKB::AddressParser.new(invalid_code_hash_address).parse
       }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
+
+    it "parse 2021 full data1 address" do
+      lock = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", hash_type: "data1", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      parsed_address = CKB::AddressParser.new("ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq4nnw7qkdnnclfkg59uzn8umtfd2kwxceqyclaxy").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq lock.args
+      expect(parsed_address.script.code_hash).to eq lock.code_hash
+      expect(parsed_address.script.hash_type).to eq lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
     end
   end
 end
