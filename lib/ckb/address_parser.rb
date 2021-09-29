@@ -10,16 +10,15 @@ module CKB
     end
 
     def parse
-      decoded_prefix, data = ConvertAddress.decode(address)
+      decoded_prefix, data, spec = ConvertAddress.decode(address)
       format_type = data[0].unpack("H*").first
-
       case format_type
       when Address::SHORT_FORMAT
-        parse_short_payload_address(decoded_prefix, data)
+        parse_short_payload_address(decoded_prefix, data, spec)
       when Address::FULL_DATA_FORMAT, Address::FULL_TYPE_FORMAT
-        parse_full_payload_address(decoded_prefix, data)
+        parse_full_payload_address(decoded_prefix, data, spec)
       when Address::FULL_WITH_IDENTIFIER_FORMAT
-        parse_new_full_payload_address(decoded_prefix, data)
+        parse_new_full_payload_address(decoded_prefix, data, spec)
       else
         raise InvalidFormatTypeError, "Invalid format type"
       end
@@ -42,7 +41,7 @@ module CKB
       end
     end
 
-    def parse_short_payload_address(decoded_prefix, data)
+    def parse_short_payload_address(decoded_prefix, data, spec)
       format_type = data[0].unpack("H*").first
       code_hash_index = data[1].unpack("H*").first
       mode = parse_mode(decoded_prefix)
@@ -51,18 +50,25 @@ module CKB
       if code_hash_index != CKB::Address::CODE_HASH_INDEX_ANYONE_CAN_PAY && CKB::Utils.hex_to_bin(args).bytesize != 20
         raise InvalidArgSizeError, "Short payload format address args bytesize must equal to 20"
       end
+      if spec != Bech32::Encoding::BECH32
+        raise InvalidEncodingError, "short address must use bech32 encoding"
+      end
 
       OpenStruct.new(mode: mode,
                      script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPE), address_type: parse_address_type(format_type, code_hash_index))
     end
 
-    def parse_full_payload_address(decoded_prefix, data)
+    def parse_full_payload_address(decoded_prefix, data, spec)
       format_type = data[0].unpack("H*").first
       mode = parse_mode(decoded_prefix)
       hash_type = parse_hash_type(format_type)
       offset = 1
       code_hash_size = 32
       raise InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32" if data[1..-1].size < code_hash_size
+
+      if spec != Bech32::Encoding::BECH32
+        raise InvalidEncodingError, "ckb2019 format full address must use bech32 encoding"
+      end
 
       code_hash = "0x#{data.slice(1..code_hash_size).unpack('H*').first}"
       offset += code_hash_size
@@ -72,15 +78,17 @@ module CKB
                      script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: hash_type), address_type: parse_address_type(format_type))
     end
 
-    def parse_new_full_payload_address(decoded_prefix, data)
+    def parse_new_full_payload_address(decoded_prefix, data, spec)
       format_type = data[0].unpack("H*").first
       mode = parse_mode(decoded_prefix)
       code_hash_size = 32
       raise InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32" if data[1..-1].size < code_hash_size
+      if spec != Bech32::Encoding::BECH32M
+        raise InvalidEncodingError, "ckb2021 format full address must use bech32m encoding"
+      end
       code_hash = "0x#{data.slice(1..code_hash_size).unpack('H*').first}"
       hash_type = CKB::Utils.bin_to_hex(data[code_hash_size + 1...code_hash_size + 2]).hex
-      _args_len = data[code_hash_size + 2..code_hash_size + 3]
-      args = CKB::Utils.bin_to_hex(data[code_hash_size + 4..-1])
+      args = CKB::Utils.bin_to_hex(data[code_hash_size + 2..-1])
       OpenStruct.new(mode: mode,
                      script: CKB::Types::Script.new(code_hash: code_hash, args: args, hash_type: CKB::ScriptHashType::TYPES[hash_type]), address_type: parse_address_type(format_type))
     end
@@ -125,13 +133,10 @@ module CKB
     end
 
     class InvalidFormatTypeError < StandardError; end
-
     class InvalidArgSizeError < StandardError; end
-
     class InvalidPrefixError < StandardError; end
-
     class InvalidCodeHashIndexError < StandardError; end
-
     class InvalidCodeHashSizeError < StandardError; end
+    class InvalidEncodingError < StandardError; end
   end
 end
