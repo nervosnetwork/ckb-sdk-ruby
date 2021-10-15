@@ -97,6 +97,16 @@ RSpec.describe CKB::AddressParser do
       expect(parsed_address.address_type).to eq "FULL"
     end
 
+    it "parse new full payload address" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      parsed_address = CKB::AddressParser.new("ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vq20k2lzuhgvrgacd98cxg6s5v7pdpw5w7svqyqscw4rzm").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
+    end
+
     it "should raise invalid format type error" do
       invalid_format_type_address = "ckt1q5qrdsefa43s6m882pcj53m4gdnj4k440axqr7p084"
       expect {
@@ -130,6 +140,16 @@ RSpec.describe CKB::AddressParser do
       expect {
         CKB::AddressParser.new(invalid_code_hash_address).parse
       }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
+
+    it "parse 2021 full data1 address" do
+      lock = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", hash_type: "data1", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      parsed_address = CKB::AddressParser.new("ckt1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq4nnw7qkdnnclfkg59uzn8umtfd2kwxceq225jvu").parse
+      expect(parsed_address.mode).to eq CKB::MODE::TESTNET
+      expect(parsed_address.script.args).to eq lock.args
+      expect(parsed_address.script.code_hash).to eq lock.code_hash
+      expect(parsed_address.script.hash_type).to eq lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
     end
   end
 
@@ -215,6 +235,22 @@ RSpec.describe CKB::AddressParser do
       expect(parsed_address.address_type).to eq "FULL"
     end
 
+    it "parse new full payload address" do
+      acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101")
+      parsed_address = CKB::AddressParser.new("ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gq20k2lzuhgvrgacd98cxg6s5v7pdpw5w7svqyqsguej72").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq acp_lock.args
+      expect(parsed_address.script.code_hash).to eq acp_lock.code_hash
+      expect(parsed_address.script.hash_type).to eq acp_lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
+    end
+
+    it "should raise invalid encoding error when encoding is invalid" do
+      expect do
+        CKB::AddressParser.new("ckb1qrfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gqgqza8m903wt5xp5wuxjnurydg2x0qksh280gxqzqgdx3csx").parse
+      end.to raise_error( CKB::AddressParser::InvalidEncodingError, "ckb2021 format full address must use bech32m encoding")
+    end
+
     it "should raise invalid format type error" do
       invalid_format_type_address = "ckb1q5qrdsefa43s6m882pcj53m4gdnj4k440axq7mlstf"
       expect {
@@ -255,6 +291,16 @@ RSpec.describe CKB::AddressParser do
       expect {
         CKB::AddressParser.new(invalid_code_hash_address).parse
       }.to raise_error(CKB::AddressParser::InvalidCodeHashSizeError, "CodeHash bytesize must equal to 32")
+    end
+
+    it "parse 2021 full data1 address" do
+      lock = CKB::Types::Script.new(code_hash: "0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176", hash_type: "data1", args: "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+      parsed_address = CKB::AddressParser.new("ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq4nnw7qkdnnclfkg59uzn8umtfd2kwxceqyclaxy").parse
+      expect(parsed_address.mode).to eq CKB::MODE::MAINNET
+      expect(parsed_address.script.args).to eq lock.args
+      expect(parsed_address.script.code_hash).to eq lock.code_hash
+      expect(parsed_address.script.hash_type).to eq lock.hash_type
+      expect(parsed_address.address_type).to eq "FULL"
     end
   end
 end

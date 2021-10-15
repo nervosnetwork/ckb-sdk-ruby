@@ -1,4 +1,3 @@
-require 'pry'
 RSpec.describe CKB::Wallets::AnyoneCanPayWallet do
   # deploy anyone can pay and get tx hash
   # ```

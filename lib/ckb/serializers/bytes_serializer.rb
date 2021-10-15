@@ -2,7 +2,7 @@
 
 module CKB
   module Serializers
-    class ArgSerializer
+    class BytesSerializer
       include BaseSerializer
 
       # @param arg [String]

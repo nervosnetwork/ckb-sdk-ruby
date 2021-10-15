@@ -11,16 +11,16 @@ module CKB
         @uncles_serializer = DynVecSerializer.new(block.uncles, UncleBlockSerializer)
         @transactions_serializer = DynVecSerializer.new(block.transactions, TransactionSerializer)
         @proposals_serializer = FixVecSerializer.new(block.proposals, ProposalShortIdSerializer)
-
-        @items_count = 4
+        @extension_serializer = BytesSerializer.new(block.extension)
+        @items_count = 5
       end
 
       private
 
-      attr_reader :header_serializer, :uncles_serializer, :transactions_serializer, :proposals_serializer, :items_count
+      attr_reader :header_serializer, :uncles_serializer, :transactions_serializer, :proposals_serializer, :extension_serializer, :items_count
 
       def body
-        header_layout + uncles_layout + transactions_layout + proposals_layout
+        header_layout + uncles_layout + transactions_layout + proposals_layout + extension_layout
       end
 
       def offsets
@@ -28,8 +28,8 @@ module CKB
         offset1 = offset0 + header_capacity
         offset2 = offset1 + uncles_capacity
         offset3 = offset2 + transactions_capacity
-
-        [offset0, offset1, offset2, offset3]
+        offset4 = offset3 + proposals_capacity
+        [offset0, offset1, offset2, offset3, offset4]
       end
 
       def header_layout
@@ -48,6 +48,10 @@ module CKB
         proposals_serializer.serialize[2..-1]
       end
 
+      def extension_layout
+        extension_serializer.serialize[2..-1]
+      end
+
       def header_capacity
         header_serializer.capacity
       end
@@ -58,6 +62,10 @@ module CKB
 
       def transactions_capacity
         transactions_serializer.capacity
+      end
+
+      def proposals_capacity
+        proposals_serializer.capacity
       end
     end
   end
