@@ -5,7 +5,7 @@ module CKB
     class Consensus
       attr_accessor :id, :genesis_hash, :dao_type_hash, :secp256k1_blake160_sighash_all_type_hash, :secp256k1_blake160_multisig_all_type_hash, :initial_primary_epoch_reward, :secondary_epoch_reward, :max_uncles_num,
                     :orphan_rate_target, :epoch_duration_target, :tx_proposal_window, :proposer_reward_ratio, :cellbase_maturity, :median_time_block_count, :max_block_cycles, :max_block_bytes, :block_version, :tx_version,
-                    :type_id_code_hash, :max_block_proposals_limit, :primary_epoch_reward_halving_interval, :permanent_difficulty_in_dummy
+                    :type_id_code_hash, :max_block_proposals_limit, :primary_epoch_reward_halving_interval, :permanent_difficulty_in_dummy, :hardfork_features
 
       # @param id [String]
       # @param genesis_hash [String]
@@ -29,8 +29,9 @@ module CKB
       # @param max_block_proposals_limit [Integer | String]
       # @param primary_epoch_reward_halving_interval [Integer | String]
       # @param permanent_difficulty_in_dummy [Boolean]
+      # @param hardfork_features [CKB::Types::HardForkFeature]
       def initialize(id:, genesis_hash:, dao_type_hash:, secp256k1_blake160_sighash_all_type_hash:, secp256k1_blake160_multisig_all_type_hash:, initial_primary_epoch_reward:, secondary_epoch_reward:, max_uncles_num:, orphan_rate_target:, epoch_duration_target:,
-                     tx_proposal_window:, proposer_reward_ratio:, cellbase_maturity:, median_time_block_count:, max_block_cycles:, max_block_bytes:, block_version:, tx_version:, type_id_code_hash:, max_block_proposals_limit:, primary_epoch_reward_halving_interval:, permanent_difficulty_in_dummy:)
+                     tx_proposal_window:, proposer_reward_ratio:, cellbase_maturity:, median_time_block_count:, max_block_cycles:, max_block_bytes:, block_version:, tx_version:, type_id_code_hash:, max_block_proposals_limit:, primary_epoch_reward_halving_interval:, permanent_difficulty_in_dummy:, hardfork_features:)
         @id = id
         @genesis_hash = genesis_hash
         @dao_type_hash = dao_type_hash
@@ -53,6 +54,7 @@ module CKB
         @max_block_proposals_limit = CKB::Utils.to_int(max_block_proposals_limit)
         @primary_epoch_reward_halving_interval = CKB::Utils.to_int(primary_epoch_reward_halving_interval)
         @permanent_difficulty_in_dummy = permanent_difficulty_in_dummy
+        @hardfork_features = hardfork_features
       end
 
       def to_h
@@ -78,7 +80,8 @@ module CKB
           type_id_code_hash: type_id_code_hash,
           max_block_proposals_limit: CKB::Utils.to_hex(max_block_proposals_limit),
           primary_epoch_reward_halving_interval: CKB::Utils.to_hex(primary_epoch_reward_halving_interval),
-          permanent_difficulty_in_dummy: permanent_difficulty_in_dummy
+          permanent_difficulty_in_dummy: permanent_difficulty_in_dummy,
+          hardfork_features: hardfork_features.to_h
         }
       end
 
@@ -107,7 +110,8 @@ module CKB
           type_id_code_hash: hash[:type_id_code_hash],
           max_block_proposals_limit: hash[:max_block_proposals_limit],
           primary_epoch_reward_halving_interval: hash[:primary_epoch_reward_halving_interval],
-          permanent_difficulty_in_dummy: hash[:permanent_difficulty_in_dummy]
+          permanent_difficulty_in_dummy: hash[:permanent_difficulty_in_dummy],
+          hardfork_features: hash[:hardfork_features].map { |hardfork_feature| CKB::Types::HardForkFeature.from_h(hardfork_feature) }
         )
       end
     end

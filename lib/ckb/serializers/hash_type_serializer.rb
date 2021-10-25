@@ -19,7 +19,14 @@ module CKB
       end
 
       def body
-        hash_type == "data" ? "00" : "01"
+        case hash_type
+        when "data"
+          "00"
+        when "type"
+          "01"
+        when "data1"
+          "02"
+        end
       end
     end
   end

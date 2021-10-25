@@ -3,17 +3,19 @@
 module CKB
   module Types
     class Block
-      attr_accessor :uncles, :proposals, :transactions, :header
+      attr_accessor :uncles, :proposals, :transactions, :header, :extension
 
       # @param uncles [CKB::Types::Uncle[]]
       # @param proposals [String[]] 0x...
       # @param transactions [CKB::Type::Transaction[]]
       # @param header [CKB::Type::BlockHeader]
-      def initialize(uncles:, proposals:, transactions:, header:)
+      # @param extension [String]
+      def initialize(uncles:, proposals:, transactions:, header:, extension: nil)
         @uncles = uncles
         @proposals = proposals
         @transactions = transactions
         @header = header
+        @extension = extension
       end
 
       # https://github.com/nervosnetwork/ckb/blob/develop/util/types/src/extension/serialized_size.rs#L22-L30
@@ -33,7 +35,8 @@ module CKB
           uncles: @uncles.map(&:to_h),
           proposals: @proposals,
           transactions: @transactions.map(&:to_h),
-          header: header.to_h
+          header: header.to_h,
+          extension: extension
         }
       end
 
@@ -42,7 +45,8 @@ module CKB
           uncles: uncles.map(&:to_h),
           proposals: proposals,
           transactions: transactions.map(&:to_raw_transaction_h),
-          header: header.to_h.reject { |key| key == :hash }
+          header: header.to_h.reject { |key| key == :hash },
+          extension: extension
         }
       end
 
@@ -53,7 +57,8 @@ module CKB
           uncles: hash[:uncles].map { |uncle| Uncle.from_h(uncle) },
           proposals: hash[:proposals],
           transactions: hash[:transactions].map { |tx| Transaction.from_h(tx) },
-          header: BlockHeader.from_h(hash[:header])
+          header: BlockHeader.from_h(hash[:header]),
+          extension: hash[:extension]
         )
       end
     end
