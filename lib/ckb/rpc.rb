@@ -85,7 +85,7 @@ module CKB
     end
 
     def post(body)
-      request = Net::HTTP::Post.new(uri.path)
+      request = Net::HTTP::Post.new(request_path)
       request.body = body.to_json
       request["Content-Type"] = "application/json"
       http.request(uri, request)
@@ -97,6 +97,10 @@ module CKB
       else
         { error: response.body, code: response.code }
       end
+    end
+
+    def request_path
+      uri.path.empty? ? "/" : uri.path
     end
   end
 end
