@@ -10,14 +10,14 @@ RSpec.describe CKB::Address do
     it "generate short payload singlesig address" do
       addr = CKB::Address.new(singlesig_script)
       expect(
-        addr.to_s
+        addr.generate_short_payload_singlesig_address
       ).to eq "ckt1qyqrdsefa43s6m882pcj53m4gdnj4k440axqswmu83"
     end
 
     it "generate short payload multisig address" do
       address = CKB::Address.new(multisig_script)
       expect(
-        address.generate
+        address.generate_short_payload_multisig_address
       ).to eq "ckt1qyqlqn8vsj7r0a5rvya76tey9jd2rdnca8lqh4kcuq"
     end
 
@@ -25,7 +25,7 @@ RSpec.describe CKB::Address do
 	    acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a")
 	    address = CKB::Address.new(acp_lock)
 	    expect(
-		    address.generate
+		    address.generate_short_payload_anyone_can_pay_address
 	    ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaq3xzhsz"
     end
 
@@ -33,7 +33,7 @@ RSpec.describe CKB::Address do
       acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c")
       address = CKB::Address.new(acp_lock)
       expect(
-        address.generate
+        address.generate_short_payload_anyone_can_pay_address
       ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqc9q8fqw"
     end
 
@@ -41,7 +41,7 @@ RSpec.describe CKB::Address do
       acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01")
       address = CKB::Address.new(acp_lock)
       expect(
-        address.generate
+        address.generate_short_payload_anyone_can_pay_address
       ).to eq "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz"
     end
 
@@ -116,14 +116,14 @@ RSpec.describe CKB::Address do
     it "generate short payload singlesig address" do
       addr = CKB::Address.new(singlesig_script, mode: CKB::MODE::MAINNET)
       expect(
-        addr.to_s
+        addr.generate_short_payload_singlesig_address
       ).to eq "ckb1qyqrdsefa43s6m882pcj53m4gdnj4k440axqdt9rtd"
     end
 
     it "generate short payload multisig address" do
       address = CKB::Address.new(multisig_script, mode: CKB::MODE::MAINNET)
       expect(
-        address.generate
+        address.generate_short_payload_multisig_address
       ).to eq "ckb1qyqlqn8vsj7r0a5rvya76tey9jd2rdnca8lq2sg8su"
     end
 
@@ -131,7 +131,7 @@ RSpec.describe CKB::Address do
       acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a")
       address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
       expect(
-        address.generate
+        address.generate_short_payload_anyone_can_pay_address
       ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqvrugu7"
     end
 
@@ -139,7 +139,7 @@ RSpec.describe CKB::Address do
       acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c")
       address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
       expect(
-        address.generate
+        address.generate_short_payload_anyone_can_pay_address
       ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcehzz9g"
     end
 
@@ -147,7 +147,7 @@ RSpec.describe CKB::Address do
       acp_lock = CKB::Types::Script.new(code_hash: CKB::SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, hash_type: "type", args: "0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01")
       address = CKB::Address.new(acp_lock, mode: CKB::MODE::MAINNET)
       expect(
-        address.generate
+        address.generate_short_payload_anyone_can_pay_address
       ).to eq "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw"
     end
 
