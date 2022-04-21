@@ -34,20 +34,7 @@ module CKB
     # payload = type(01) | code hash index(00) | pubkey blake160
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     def generate
-      unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && SHORT_PAYLOAD_AVAILABLE_ARGS_LEN.include?(CKB::Utils.hex_to_bin(script.args).bytesize)
-        return generate_full_payload_address
-      end
-
-      if SystemCodeHash::SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.code_hash
-        generate_short_payload_singlesig_address
-      elsif SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
-        generate_short_payload_multisig_address
-      elsif [SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA,
-             SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON].include?(script.code_hash)
-        generate_short_payload_anyone_can_pay_address
-      else
-        generate_full_payload_address
-      end
+      generate_full_payload_address
     end
 
     alias to_s generate
@@ -63,21 +50,15 @@ module CKB
       end
     end
 
-    private
-
-    def short_payload(code_hash_index)
-      blake160_bin = CKB::Utils.hex_to_bin(script.args)
-      type = [SHORT_FORMAT].pack("H*")
-      code_hash_index = [code_hash_index].pack("H*")
-      type + code_hash_index + blake160_bin
-    end
-
     # Generates short payload format address
     # payload = type(01) | code hash index(00) | single_arg
     # see https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more info.
     #
     # @return [String]
     def generate_short_payload_singlesig_address
+      warn "[DEPRECATION] `generate_short_payload_singlesig_address` is no longer recommended."
+      return unless CKB::ScriptHashType::TYPE == script.hash_type && script.has_args? && SHORT_PAYLOAD_AVAILABLE_ARGS_LEN.include?(CKB::Utils.hex_to_bin(script.args).bytesize)
+
       ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_SINGLESIG), Bech32::Encoding::BECH32)
     end
 
@@ -87,6 +68,9 @@ module CKB
     #
     # @return [String]
     def generate_short_payload_multisig_address
+      warn "[DEPRECATION] `generate_short_payload_multisig_address` is no longer recommended."
+      return unless SystemCodeHash::SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.code_hash
+
       ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_MULTISIG_SIG), Bech32::Encoding::BECH32)
     end
 
@@ -96,7 +80,19 @@ module CKB
     #
     # @return [String]
     def generate_short_payload_anyone_can_pay_address
+      warn "[DEPRECATION] `generate_short_payload_anyone_can_pay_address` is no longer recommended."
+      return unless [SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_LINA, SystemCodeHash::ANYONE_CAN_PAY_CODE_HASH_ON_AGGRON].include?(script.code_hash)
+
       ConvertAddress.encode(prefix, short_payload(CODE_HASH_INDEX_ANYONE_CAN_PAY), Bech32::Encoding::BECH32)
+    end
+
+    private
+
+    def short_payload(code_hash_index)
+      blake160_bin = CKB::Utils.hex_to_bin(script.args)
+      type = [SHORT_FORMAT].pack("H*")
+      code_hash_index = [code_hash_index].pack("H*")
+      type + code_hash_index + blake160_bin
     end
 
     # Generates full payload format address
