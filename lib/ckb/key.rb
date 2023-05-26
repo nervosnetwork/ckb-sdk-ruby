@@ -9,13 +9,13 @@ module CKB
 
     # @param privkey [String] hex string
     def initialize(privkey)
-      @context = Secp256k1::Context.create
       raise ArgumentError, "invalid privkey!" unless privkey.instance_of?(String) && privkey.size == 66
 
       raise ArgumentError, "invalid hex string!" unless CKB::Utils.valid_hex_string?(privkey)
 
       @privkey = privkey
       @privkey_bin = Utils.hex_to_bin(privkey)
+      @context = Secp256k1::Context.create
 
       begin
         @key_pair = @context.key_pair_from_private_key(@privkey_bin)
@@ -53,9 +53,10 @@ module CKB
     end
 
     def self.pubkey(privkey)
-      privkey_bin = [privkey[2..-1]].pack("H*")
-      pubkey_bin = Secp256k1::PrivateKey.from_data(privkey_bin)
-      Utils.bin_to_hex(pubkey_bin.compressed)
+      context = Secp256k1::Context.create
+      privkey_bin = Utils.hex_to_bin(privkey)
+      key_pair = context.key_pair_from_private_key(privkey_bin)
+      pubkey = Utils.bin_to_hex(key_pair.public_key.compressed)
     end
 
     def self.blake160(pubkey)
