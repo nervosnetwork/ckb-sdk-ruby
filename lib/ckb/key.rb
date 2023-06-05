@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "securerandom"
-require "secp256k1"
+require "rbsecp256k1"
 
 module CKB
   class Key
@@ -14,33 +14,33 @@ module CKB
       raise ArgumentError, "invalid hex string!" unless CKB::Utils.valid_hex_string?(privkey)
 
       @privkey = privkey
+      @privkey_bin = Utils.hex_to_bin(privkey)
+      @context = Secp256k1::Context.create
 
       begin
-        @pubkey = self.class.pubkey(@privkey)
-      rescue Secp256k1::AssertError
-        raise ArgumentError, "invalid privkey!"
+        @key_pair = @context.key_pair_from_private_key(@privkey_bin)
+        @pubkey = Utils.bin_to_hex @key_pair.public_key.compressed
+      rescue Secp256k1::Error => e
+        if e.message == 'invalid private key data'
+          raise ArgumentError, "invalid privkey!"
+        else
+          raise e
+        end
       end
     end
 
     # @param data [String] hex string
     # @return [String] signature in hex string
     def sign(data)
-      privkey_bin = Utils.hex_to_bin(privkey)
-      secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-      signature_bin = secp_key.ecdsa_serialize(
-        secp_key.ecdsa_sign(Utils.hex_to_bin(data), raw: true)
-      )
-      Utils.bin_to_hex(signature_bin)
+      signature_bin = @context.sign(@key_pair.private_key, Utils.hex_to_bin(data))
+      Utils.bin_to_hex(signature_bin.der_encoded)
     end
 
     # @param data [String] hex string
     # @return [String] signature in hex string
     def sign_recoverable(data)
-      privkey_bin = Utils.hex_to_bin(privkey)
-      secp_key = Secp256k1::PrivateKey.new(privkey: privkey_bin)
-      signature_bin, recid = secp_key.ecdsa_recoverable_serialize(
-        secp_key.ecdsa_sign_recoverable(Utils.hex_to_bin(data), raw: true)
-      )
+      signature = @context.sign_recoverable(@key_pair.private_key, Utils.hex_to_bin(data))
+      signature_bin, recid = signature.compact
       Utils.bin_to_hex(signature_bin + [recid].pack("C*"))
     end
 
@@ -53,9 +53,10 @@ module CKB
     end
 
     def self.pubkey(privkey)
-      privkey_bin = [privkey[2..-1]].pack("H*")
-      pubkey_bin = Secp256k1::PrivateKey.new(privkey: privkey_bin).pubkey.serialize
-      Utils.bin_to_hex(pubkey_bin)
+      context = Secp256k1::Context.create
+      privkey_bin = Utils.hex_to_bin(privkey)
+      key_pair = context.key_pair_from_private_key(privkey_bin)
+      Utils.bin_to_hex(key_pair.public_key.compressed)
     end
 
     def self.blake160(pubkey)

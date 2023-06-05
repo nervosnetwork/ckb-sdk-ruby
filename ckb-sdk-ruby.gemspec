@@ -44,5 +44,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "net-http-persistent", "~> 4.0.1"
   spec.add_dependency "rbnacl", "~> 7.1.1"
-  spec.add_dependency "bitcoin-secp256k1", "~> 0.5.2"
+  spec.add_dependency "rbsecp256k1", "~> 5.1.1"
 end

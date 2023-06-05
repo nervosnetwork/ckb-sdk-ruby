@@ -29,7 +29,7 @@ Require Ruby 2.4 and above.
 sudo apt install libsodium-dev
 ```
 
-This SDK depends on the [bitcoin-secp256k1](https://github.com/cryptape/ruby-bitcoin-secp256k1) gem. You need to install libsecp256k1 with `--enable-module-recovery` (on which bitcoin-secp256k1 depends) manually. Follow [this](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequisite) to do so.
+This SDK depends on the [rbsecp256k1](https://github.com/etscrivner/rbsecp256k1) gem. You need to install libsecp256k1. Follow [this](https://github.com/etscrivner/rbsecp256k1#requirements) to do so.
 
 ### macOS
 
