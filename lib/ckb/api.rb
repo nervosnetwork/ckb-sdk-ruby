@@ -12,6 +12,7 @@ module CKB
                 :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
     VALID_BLOCK_VERBOSITY_LEVELS = [0, 2]
     VALID_BLOCK_HEDER_VERBOSITY_LEVELS = [0, 1]
+    VALID_TRANSACTION_VERBOSITY_LEVELS = [0, 1, 2]
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
@@ -141,9 +142,13 @@ module CKB
     # @param tx_hash [String]
     #
     # @return [CKB::Types::TransactionWithStatus]
-    def get_transaction(tx_hash)
-      tx_h = rpc.get_transaction(tx_hash)
-      Types::TransactionWithStatus.from_h(tx_h)
+    def get_transaction(tx_hash, verbosity = 2, only_committed = nil)
+      if !VALID_TRANSACTION_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0, 1 or 2"
+      end
+
+      tx_h = rpc.get_transaction(tx_hash, verbosity)
+      Types::TransactionWithStatus.from_h(tx_h, verbosity)
     end
 
     # @param out_point [CKB::Types::OutPoint]
