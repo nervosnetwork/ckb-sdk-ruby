@@ -451,6 +451,15 @@ module CKB
       end
     end
 
+    # @param target [Integer]
+    def get_fee_rate_statistics(target = 21)
+      if target < 1 || target > 101
+        raise ArgumentError, "Invalid target, target should be 1 ~ 101"
+      end
+      rs = rpc.get_fee_rate_statistics(target)
+      Types::FeeRateStatistics.from_h(rs)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end

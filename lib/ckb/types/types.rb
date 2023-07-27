@@ -56,6 +56,7 @@ require_relative "alert"
 require_relative "serialized_block"
 require_relative "block_filter"
 require_relative "transaction_and_witness_proof"
+require_relative "fee_rate_statistics"
 
 module CKB
   module Types
