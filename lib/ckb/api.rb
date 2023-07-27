@@ -93,7 +93,7 @@ module CKB
     # @param verbosity [Integer]
     # @param with_cycles [Boolean]
     #
-    # @return [CKB::Types::Block] | [String]
+    # @return [CKB::Types::Block] | [CKB::Types::SerializedBlock]
     def get_block(block_hash, verbosity = 2, with_cycles = false)
       if !VALID_VERBOSITY_LEVELS.include?(verbosity)
         raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
@@ -109,11 +109,21 @@ module CKB
     end
 
     # @param block_number [String | Integer]
+    # @param verbosity [Integer]
+    # @param with_cycles [Boolean]
     #
-    # @return [CKB::Types::Block]
-    def get_block_by_number(block_number)
-      block_h = rpc.get_block_by_number(block_number)
-      Types::Block.from_h(block_h)
+    # @return [CKB::Types::Block] | [CKB::Types::SerializedBlock]
+    def get_block_by_number(block_number, verbosity = 2, with_cycles = false)
+      if !VALID_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
+      end
+
+      block_h = rpc.get_block_by_number(block_number, verbosity, with_cycles)
+      if verbosity == 2 && !with_cycles
+        return Types::Block.from_h(block_h)
+      end
+
+      Types::SerializedBlock.from_h(block_h)
     end
 
     # @return [CKB::Types::BlockHeader]
