@@ -52,6 +52,8 @@ require_relative "consensus"
 require_relative "rational_u256"
 require_relative "proposal_window"
 require_relative "hardfork_feature"
+require_relative "alert"
+require_relative "serialized_block"
 
 module CKB
   module Types
