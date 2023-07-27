@@ -422,6 +422,19 @@ module CKB
       rpc.verify_transaction_and_witness_proof(proof.to_h)
     end
 
+    def get_fork_block(block_hash, verbosity = 2)
+      if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
+      end
+
+      block_h = rpc.get_fork_block(block_hash, verbosity)
+      if verbosity == 2
+        return Types::Block.from_h(block_h)
+      end
+
+      Types::SerializedBlock.from_h(block_h)
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end
