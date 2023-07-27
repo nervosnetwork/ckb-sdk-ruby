@@ -10,7 +10,8 @@ module CKB
   class API
     attr_reader :rpc, :secp_group_out_point, :secp_code_out_point, :secp_data_out_point, :secp_cell_type_hash,
                 :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
-    VALID_VERBOSITY_LEVELS = [0, 2]
+    VALID_BLOCK_VERBOSITY_LEVELS = [0, 2]
+    VALID_BLOCK_HEDER_VERBOSITY_LEVELS = [0, 1]
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
@@ -95,7 +96,7 @@ module CKB
     #
     # @return [CKB::Types::Block] | [CKB::Types::SerializedBlock]
     def get_block(block_hash, verbosity = 2, with_cycles = false)
-      if !VALID_VERBOSITY_LEVELS.include?(verbosity)
+      if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
         raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
       end
 
@@ -114,7 +115,7 @@ module CKB
     #
     # @return [CKB::Types::Block] | [CKB::Types::SerializedBlock]
     def get_block_by_number(block_number, verbosity = 2, with_cycles = false)
-      if !VALID_VERBOSITY_LEVELS.include?(verbosity)
+      if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
         raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
       end
 
@@ -246,10 +247,18 @@ module CKB
 
     # @param block_hash [String] 0x...
     #
-    # @return [CKB::Types::BlockHeader]
-    def get_header(block_hash)
-      block_header_h = rpc.get_header(block_hash)
-      Types::BlockHeader.from_h(block_header_h)
+    # @return [CKB::Types::BlockHeader] | [String]
+    def get_header(block_hash, verbosity = 1)
+      if !VALID_BLOCK_HEDER_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 1"
+      end
+
+      block_header_h = rpc.get_header(block_hash, verbosity)
+      if verbosity == 1
+        return Types::BlockHeader.from_h(block_header_h)
+      end
+
+      block_header_h
     end
 
     # @param block_number [String | Integer]
