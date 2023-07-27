@@ -392,6 +392,11 @@ module CKB
       rpc.send_alert(alert)
     end
 
+    # @param block_hash [string]
+    def get_block_filter(block_hash)
+      Types::BlockFilter.from_h(rpc.get_block_filter(block_hash))
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end

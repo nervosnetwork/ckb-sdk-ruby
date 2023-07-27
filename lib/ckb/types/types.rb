@@ -54,6 +54,7 @@ require_relative "proposal_window"
 require_relative "hardfork_feature"
 require_relative "alert"
 require_relative "serialized_block"
+require_relative "block_filter"
 
 module CKB
   module Types
