@@ -460,6 +460,19 @@ module CKB
       Types::FeeRateStatistics.from_h(rs)
     end
 
+    def get_indexer_tip
+      rs = rpc.get_indexer_tip
+      Types::IndexerTip.from_h(rs)
+    end
+
+    def tx_pool_ready
+      rpc.tx_pool_ready
+    end
+
+    def get_deployments_info
+      rpc.get_deployments_info
+    end
+
     def inspect
       "\#<API@#{rpc.uri}>"
     end

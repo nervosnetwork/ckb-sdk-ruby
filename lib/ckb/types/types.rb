@@ -57,6 +57,7 @@ require_relative "serialized_block"
 require_relative "block_filter"
 require_relative "transaction_and_witness_proof"
 require_relative "fee_rate_statistics"
+require_relative "indexer_tip"
 
 module CKB
   module Types
