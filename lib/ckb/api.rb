@@ -10,6 +10,7 @@ module CKB
   class API
     attr_reader :rpc, :secp_group_out_point, :secp_code_out_point, :secp_data_out_point, :secp_cell_type_hash,
                 :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
+    VALID_VERBOSITY_LEVELS = [0, 2]
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
@@ -89,11 +90,22 @@ module CKB
     end
 
     # @param block_hash [String] 0x...
+    # @param verbosity [Integer]
+    # @param with_cycles [Boolean]
     #
-    # @return [CKB::Types::Block]
-    def get_block(block_hash)
-      block_h = rpc.get_block(block_hash)
-      Types::Block.from_h(block_h)
+    # @return [CKB::Types::Block] | [String]
+    def get_block(block_hash, verbosity = 2, with_cycles = false)
+      if !VALID_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
+      end
+
+      #  https://github.com/nervosnetwork/ckb/tree/develop/rpc#method-get_block
+      block_h = rpc.get_block(block_hash, verbosity, with_cycles)
+      if verbosity == 2 && !with_cycles
+        return Types::Block.from_h(block_h)
+      end
+
+      Types::SerializedBlock.from_h(block_h)
     end
 
     # @param block_number [String | Integer]
@@ -346,6 +358,11 @@ module CKB
     # @return block_hash [string]
     def generate_block_with_template(block_template)
       rpc.generate_block_with_template(block_template.to_h)
+    end
+
+    # @param alert [CKB::Types::Alert]
+    def send_alert(alert)
+      rpc.send_alert(alert)
     end
 
     def inspect
