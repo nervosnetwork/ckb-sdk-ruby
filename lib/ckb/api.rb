@@ -129,9 +129,17 @@ module CKB
     end
 
     # @return [CKB::Types::BlockHeader]
-    def get_tip_header
-      header_h = rpc.get_tip_header
-      Types::BlockHeader.from_h(header_h)
+    def get_tip_header(verbosity = 1)
+      if !VALID_BLOCK_HEDER_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 1"
+      end
+
+      header_h = rpc.get_tip_header(verbosity)
+      if verbosity == 1
+        return Types::BlockHeader.from_h(header_h)
+      end
+
+      header_h
     end
 
     # @return [String]
