@@ -386,7 +386,7 @@ module CKB
 
     # @param proof [CKB::Types::TransactionProof]
     def verify_transaction_proof(proof)
-      rpc.verify_transaction_proof(proof)
+      rpc.verify_transaction_proof(proof.to_h)
     end
 
     def clear_banned_addresses
@@ -408,6 +408,11 @@ module CKB
     # @param block_hash [string]
     def get_block_filter(block_hash)
       Types::BlockFilter.from_h(rpc.get_block_filter(block_hash))
+    end
+
+    def get_transaction_and_witness_proof(tx_hashes:, block_hash: nil)
+      transaction_and_witness_proof_h = rpc.get_transaction_and_witness_proof(tx_hashes, block_hash)
+      CKB::Types::TransactionAndWitnessProof.from_h(transaction_and_witness_proof_h)
     end
 
     def inspect

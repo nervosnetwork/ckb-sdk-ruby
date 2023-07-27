@@ -55,6 +55,7 @@ require_relative "hardfork_feature"
 require_relative "alert"
 require_relative "serialized_block"
 require_relative "block_filter"
+require_relative "transaction_and_witness_proof"
 
 module CKB
   module Types
