@@ -263,10 +263,18 @@ module CKB
 
     # @param block_number [String | Integer]
     #
-    # @return [CKB::Types::BlockHeader]
-    def get_header_by_number(block_number)
-      block_header_h = rpc.get_header_by_number(block_number)
-      Types::BlockHeader.from_h(block_header_h)
+    # @return [CKB::Types::BlockHeader] | [String]
+    def get_header_by_number(block_number, verbosity = 1)
+       if !VALID_BLOCK_HEDER_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 1"
+      end
+
+      block_header_h = rpc.get_header_by_number(block_number, verbosity)
+      if verbosity == 1
+        return Types::BlockHeader.from_h(block_header_h)
+      end
+
+      block_header_h
     end
 
     # @param block_hash [String] 0x...
