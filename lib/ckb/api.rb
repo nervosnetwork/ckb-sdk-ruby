@@ -422,6 +422,8 @@ module CKB
       rpc.verify_transaction_and_witness_proof(proof.to_h)
     end
 
+    # @param block_hash [string]
+    # @param verbosity [Integer]
     def get_fork_block(block_hash, verbosity = 2)
       if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
         raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
@@ -433,6 +435,20 @@ module CKB
       end
 
       Types::SerializedBlock.from_h(block_h)
+    end
+
+    # @param block_hash [string]
+    # @return block_median_time [string]
+    def get_block_median_time(block_hash)
+      rpc.get_block_median_time(block_hash)
+    end
+
+    # @param tx [CKB::Types::Transaction]
+    def estimate_cycles(tx)
+      rs = rpc.estimate_cycles(tx.to_raw_transaction_h)
+      unless rs.nil?
+        rs[:cycles]
+      end
     end
 
     def inspect
