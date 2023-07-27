@@ -10,7 +10,7 @@ module CKB
       # @param witnesses_proof CKB::Types::MerkleProof
       def initialize(block_hash:, transactions_proof:, witnesses_proof:)
         @block_hash = block_hash
-        @ransactions_proof = transactions_proof
+        @transactions_proof = transactions_proof
         @witnesses_proof = witnesses_proof
       end
 
