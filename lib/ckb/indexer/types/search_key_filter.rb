@@ -4,9 +4,9 @@ module CKB
   module Indexer
     module Types
       class SearchKeyFilter
-        attr_accessor :script, :output_data_len_range, :output_capacity_range, :block_range
+        attr_accessor :script, :script_len_range, :output_data_len_range, :output_capacity_range, :block_range
 
-        def initialize(script: nil, output_data_len_range: nil, output_capacity_range: nil, block_range: nil)
+        def initialize(script: nil, script_len_range: nil, output_data_len_range: nil, output_capacity_range: nil, block_range: nil)
           raise ArgumentError, "script type must be CKB::Types::Script" if script && !script.is_a?(CKB::Types::Script)
           if output_data_len_range && !output_data_len_range.is_a?(Array)
             raise ArgumentError, "output_data_len_range type must be Array"
@@ -17,6 +17,7 @@ module CKB
           raise ArgumentError, "block_range type must be Array" if block_range && !block_range.is_a?(Array)
 
           @script = script
+          @script_len_range = script_len_range
           @output_data_len_range = output_data_len_range
           @output_capacity_range = output_capacity_range
           @block_range = block_range
@@ -25,6 +26,7 @@ module CKB
         def to_h
           hash = {}
           hash[:script] = script.to_h if script
+          hash[:script_len_range] = script_len_range.map { |r| Utils.to_hex(r) } if script_len_range
           hash[:output_data_len_range] = output_data_len_range.map { |r| Utils.to_hex(r) } if output_data_len_range
           hash[:output_capacity_range] = output_capacity_range.map { |r| Utils.to_hex(r) } if output_capacity_range
           hash[:block_range] = block_range.map { |r| Utils.to_hex(r) } if block_range

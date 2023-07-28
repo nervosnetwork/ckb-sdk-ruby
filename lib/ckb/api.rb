@@ -13,6 +13,7 @@ module CKB
     VALID_BLOCK_VERBOSITY_LEVELS = [0, 2]
     VALID_BLOCK_HEDER_VERBOSITY_LEVELS = [0, 1]
     VALID_TRANSACTION_VERBOSITY_LEVELS = [0, 1, 2]
+    DEFAULT_LIMIT = 1000
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
@@ -460,17 +461,45 @@ module CKB
       Types::FeeRateStatistics.from_h(rs)
     end
 
-    def get_indexer_tip
-      rs = rpc.get_indexer_tip
-      Types::IndexerTip.from_h(rs)
-    end
-
     def tx_pool_ready
       rpc.tx_pool_ready
     end
 
     def get_deployments_info
       rpc.get_deployments_info
+    end
+
+    def get_indexer_tip
+      rs = rpc.get_indexer_tip
+      Types::IndexerTip.from_h(rs)
+    end
+
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    # @param order [String] "asc" or "desc"
+    # @param limit [Integer]
+    # @param after_cursor [String]
+    #
+    # return [CKB::Indexer::Types::LiveCells]
+    def get_cells(search_key:, order: "asc", limit: DEFAULT_LIMIT, after_cursor: nil)
+      result = rpc.get_cells(search_key.to_h, order, Utils.to_hex(limit), after_cursor)
+      CKB::Indexer::Types::LiveCells.from_h(result)
+    end
+
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    #
+    # return [CKB::Indexer::Types::CellsCapacity]
+    def get_cells_capacity(search_key)
+      result = rpc.get_cells_capacity(search_key.to_h)
+      CKB::Indexer::Types::CellsCapacity.from_h(result)
+    end
+
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    # @param order [String] "asc" or "desc"
+    # @param limit [Integer]
+    # @param after_cursor [String]
+    def get_transactions(search_key:, order: "asc", limit: DEFAULT_LIMIT, after_cursor: nil)
+      result = rpc.get_transactions(search_key.to_h, order, Utils.to_hex(limit), after_cursor)
+      CKB::Indexer::Types::Transactions.from_h(result)
     end
 
     def inspect
