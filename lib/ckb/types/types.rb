@@ -52,6 +52,12 @@ require_relative "consensus"
 require_relative "rational_u256"
 require_relative "proposal_window"
 require_relative "hardfork_feature"
+require_relative "alert"
+require_relative "serialized_block"
+require_relative "block_filter"
+require_relative "transaction_and_witness_proof"
+require_relative "fee_rate_statistics"
+require_relative "indexer_tip"
 
 module CKB
   module Types

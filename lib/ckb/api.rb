@@ -10,6 +10,10 @@ module CKB
   class API
     attr_reader :rpc, :secp_group_out_point, :secp_code_out_point, :secp_data_out_point, :secp_cell_type_hash,
                 :secp_cell_code_hash, :dao_out_point, :dao_code_hash, :dao_type_hash, :multi_sign_secp_cell_type_hash, :multi_sign_secp_group_out_point
+    VALID_BLOCK_VERBOSITY_LEVELS = [0, 2]
+    VALID_BLOCK_HEDER_VERBOSITY_LEVELS = [0, 1]
+    VALID_TRANSACTION_VERBOSITY_LEVELS = [0, 1, 2]
+    DEFAULT_LIMIT = 1000
 
     def initialize(host: CKB::RPC::DEFAULT_URL, mode: MODE::TESTNET, timeout_config: {})
       @rpc = CKB::RPC.new(host: host, timeout_config: timeout_config)
@@ -89,25 +93,54 @@ module CKB
     end
 
     # @param block_hash [String] 0x...
+    # @param verbosity [Integer]
+    # @param with_cycles [Boolean]
     #
-    # @return [CKB::Types::Block]
-    def get_block(block_hash)
-      block_h = rpc.get_block(block_hash)
-      Types::Block.from_h(block_h)
+    # @return [CKB::Types::Block] | [CKB::Types::SerializedBlock]
+    def get_block(block_hash, verbosity = 2, with_cycles = false)
+      if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
+      end
+
+      #  https://github.com/nervosnetwork/ckb/tree/develop/rpc#method-get_block
+      block_h = rpc.get_block(block_hash, verbosity, with_cycles)
+      if verbosity == 2 && !with_cycles
+        return Types::Block.from_h(block_h)
+      end
+
+      Types::SerializedBlock.from_h(block_h)
     end
 
     # @param block_number [String | Integer]
+    # @param verbosity [Integer]
+    # @param with_cycles [Boolean]
     #
-    # @return [CKB::Types::Block]
-    def get_block_by_number(block_number)
-      block_h = rpc.get_block_by_number(block_number)
-      Types::Block.from_h(block_h)
+    # @return [CKB::Types::Block] | [CKB::Types::SerializedBlock]
+    def get_block_by_number(block_number, verbosity = 2, with_cycles = false)
+      if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
+      end
+
+      block_h = rpc.get_block_by_number(block_number, verbosity, with_cycles)
+      if verbosity == 2 && !with_cycles
+        return Types::Block.from_h(block_h)
+      end
+
+      Types::SerializedBlock.from_h(block_h)
     end
 
     # @return [CKB::Types::BlockHeader]
-    def get_tip_header
-      header_h = rpc.get_tip_header
-      Types::BlockHeader.from_h(header_h)
+    def get_tip_header(verbosity = 1)
+      if !VALID_BLOCK_HEDER_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 1"
+      end
+
+      header_h = rpc.get_tip_header(verbosity)
+      if verbosity == 1
+        return Types::BlockHeader.from_h(header_h)
+      end
+
+      header_h
     end
 
     # @return [String]
@@ -118,9 +151,13 @@ module CKB
     # @param tx_hash [String]
     #
     # @return [CKB::Types::TransactionWithStatus]
-    def get_transaction(tx_hash)
-      tx_h = rpc.get_transaction(tx_hash)
-      Types::TransactionWithStatus.from_h(tx_h)
+    def get_transaction(tx_hash, verbosity = 2, only_committed = nil)
+      if !VALID_TRANSACTION_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0, 1 or 2"
+      end
+
+      tx_h = rpc.get_transaction(tx_hash, verbosity)
+      Types::TransactionWithStatus.from_h(tx_h, verbosity)
     end
 
     # @param out_point [CKB::Types::OutPoint]
@@ -224,18 +261,34 @@ module CKB
 
     # @param block_hash [String] 0x...
     #
-    # @return [CKB::Types::BlockHeader]
-    def get_header(block_hash)
-      block_header_h = rpc.get_header(block_hash)
-      Types::BlockHeader.from_h(block_header_h)
+    # @return [CKB::Types::BlockHeader] | [String]
+    def get_header(block_hash, verbosity = 1)
+      if !VALID_BLOCK_HEDER_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 1"
+      end
+
+      block_header_h = rpc.get_header(block_hash, verbosity)
+      if verbosity == 1
+        return Types::BlockHeader.from_h(block_header_h)
+      end
+
+      block_header_h
     end
 
     # @param block_number [String | Integer]
     #
-    # @return [CKB::Types::BlockHeader]
-    def get_header_by_number(block_number)
-      block_header_h = rpc.get_header_by_number(block_number)
-      Types::BlockHeader.from_h(block_header_h)
+    # @return [CKB::Types::BlockHeader] | [String]
+    def get_header_by_number(block_number, verbosity = 1)
+       if !VALID_BLOCK_HEDER_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 1"
+      end
+
+      block_header_h = rpc.get_header_by_number(block_number, verbosity)
+      if verbosity == 1
+        return Types::BlockHeader.from_h(block_header_h)
+      end
+
+      block_header_h
     end
 
     # @param block_hash [String] 0x...
@@ -334,7 +387,7 @@ module CKB
 
     # @param proof [CKB::Types::TransactionProof]
     def verify_transaction_proof(proof)
-      rpc.verify_transaction_proof(proof)
+      rpc.verify_transaction_proof(proof.to_h)
     end
 
     def clear_banned_addresses
@@ -346,6 +399,107 @@ module CKB
     # @return block_hash [string]
     def generate_block_with_template(block_template)
       rpc.generate_block_with_template(block_template.to_h)
+    end
+
+    # @param alert [CKB::Types::Alert]
+    def send_alert(alert)
+      rpc.send_alert(alert)
+    end
+
+    # @param block_hash [string]
+    def get_block_filter(block_hash)
+      Types::BlockFilter.from_h(rpc.get_block_filter(block_hash))
+    end
+
+    # @param tx_hashes [string[]]
+    # @param block_hash [string]
+    def get_transaction_and_witness_proof(tx_hashes:, block_hash: nil)
+      transaction_and_witness_proof_h = rpc.get_transaction_and_witness_proof(tx_hashes, block_hash)
+      CKB::Types::TransactionAndWitnessProof.from_h(transaction_and_witness_proof_h)
+    end
+
+    # @param proof [CKB::Types::TransactionAndWitnessProof]
+    def verify_transaction_and_witness_proof(proof)
+      rpc.verify_transaction_and_witness_proof(proof.to_h)
+    end
+
+    # @param block_hash [string]
+    # @param verbosity [Integer]
+    def get_fork_block(block_hash, verbosity = 2)
+      if !VALID_BLOCK_VERBOSITY_LEVELS.include?(verbosity)
+        raise ArgumentError, "Invalid verbosity, verbosity should be 0 or 2"
+      end
+
+      block_h = rpc.get_fork_block(block_hash, verbosity)
+      if verbosity == 2
+        return Types::Block.from_h(block_h)
+      end
+
+      Types::SerializedBlock.from_h(block_h)
+    end
+
+    # @param block_hash [string]
+    # @return block_median_time [string]
+    def get_block_median_time(block_hash)
+      rpc.get_block_median_time(block_hash)
+    end
+
+    # @param tx [CKB::Types::Transaction]
+    def estimate_cycles(tx)
+      rs = rpc.estimate_cycles(tx.to_raw_transaction_h)
+      unless rs.nil?
+        rs[:cycles]
+      end
+    end
+
+    # @param target [Integer]
+    def get_fee_rate_statistics(target = 21)
+      if target < 1 || target > 101
+        raise ArgumentError, "Invalid target, target should be 1 ~ 101"
+      end
+      rs = rpc.get_fee_rate_statistics(target)
+      Types::FeeRateStatistics.from_h(rs)
+    end
+
+    def tx_pool_ready
+      rpc.tx_pool_ready
+    end
+
+    def get_deployments_info
+      rpc.get_deployments_info
+    end
+
+    def get_indexer_tip
+      rs = rpc.get_indexer_tip
+      Types::IndexerTip.from_h(rs)
+    end
+
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    # @param order [String] "asc" or "desc"
+    # @param limit [Integer]
+    # @param after_cursor [String]
+    #
+    # return [CKB::Indexer::Types::LiveCells]
+    def get_cells(search_key:, order: "asc", limit: DEFAULT_LIMIT, after_cursor: nil)
+      result = rpc.get_cells(search_key.to_h, order, Utils.to_hex(limit), after_cursor)
+      CKB::Indexer::Types::LiveCells.from_h(result)
+    end
+
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    #
+    # return [CKB::Indexer::Types::CellsCapacity]
+    def get_cells_capacity(search_key)
+      result = rpc.get_cells_capacity(search_key.to_h)
+      CKB::Indexer::Types::CellsCapacity.from_h(result)
+    end
+
+    # @param search_key [CKB::Indexer::Types::SearchKey]
+    # @param order [String] "asc" or "desc"
+    # @param limit [Integer]
+    # @param after_cursor [String]
+    def get_transactions(search_key:, order: "asc", limit: DEFAULT_LIMIT, after_cursor: nil)
+      result = rpc.get_transactions(search_key.to_h, order, Utils.to_hex(limit), after_cursor)
+      CKB::Indexer::Types::Transactions.from_h(result)
     end
 
     def inspect

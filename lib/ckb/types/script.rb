@@ -8,7 +8,7 @@ module CKB
       # @param code_hash [String]
       # @param args [String]
       # @param hash_type [String] data/type
-      def initialize(code_hash:, args:, hash_type: "data")
+      def initialize(code_hash:, args:, hash_type: "type")
         @code_hash = code_hash
         @args = args
         @hash_type = hash_type
