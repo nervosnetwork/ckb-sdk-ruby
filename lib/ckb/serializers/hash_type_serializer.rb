@@ -26,6 +26,8 @@ module CKB
           "01"
         when "data1"
           "02"
+        when "data2"
+          "04"
         end
       end
     end
